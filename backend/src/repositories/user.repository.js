@@ -6,57 +6,86 @@ class UserRepository extends BaseRepository {
     super(User);
   }
 
-  async findByEmail(email) {
-    return this.findOne({
-      email: String(email || '').trim().toLowerCase(),
-      is_deleted: false,
-    });
+  async findByEmail(email, options = {}) {
+    return this.findOne(
+      {
+        email: String(email || "").trim().toLowerCase(),
+        is_deleted: false,
+      },
+      {},
+      options
+    );
   }
 
-  async findByEmailWithPassword(email) {
-    return this.findOne({
-      email: String(email || '').trim().toLowerCase(),
-      is_deleted: false,
-    }).select('+password');
+  async findByEmailWithPassword(email, options = {}) {
+    return this.model
+      .findOne(
+        {
+          email: String(email || "").trim().toLowerCase(),
+          is_deleted: false,
+        },
+        {},
+        options
+      )
+      .select("+password")
+      .session(options.session || null);
   }
 
-  async findByUsername(username) {
-    return this.findOne({
-      username: String(username || '').trim().toLowerCase(),
-      is_deleted: false,
-    });
+  async findByUsername(username, options = {}) {
+    return this.findOne(
+      {
+        username: String(username || "").trim().toLowerCase(),
+        is_deleted: false,
+      },
+      {},
+      options
+    );
   }
 
-  async existsByEmail(email) {
-    const user = await this.exists({
-      email: String(email || '').trim().toLowerCase(),
-      is_deleted: false,
-    });
+  async existsByEmail(email, options = {}) {
+    const user = await this.exists(
+      {
+        email: String(email || "").trim().toLowerCase(),
+        is_deleted: false,
+      },
+      options
+    );
 
     return !!user;
   }
 
-  async existsByUsername(username) {
-    const user = await this.exists({
-      username: String(username || '').trim().toLowerCase(),
-      is_deleted: false,
-    });
+  async existsByUsername(username, options = {}) {
+    const user = await this.exists(
+      {
+        username: String(username || "").trim().toLowerCase(),
+        is_deleted: false,
+      },
+      options
+    );
 
     return !!user;
   }
 
-  async findByGoogleSub(google_sub) {
-    return this.findOne({
-      google_sub: String(google_sub || '').trim(),
-      is_deleted: false,
-    });
+  async findByGoogleSub(google_sub, options = {}) {
+    return this.findOne(
+      {
+        google_sub: String(google_sub || "").trim(),
+        is_deleted: false,
+      },
+      {},
+      options
+    );
   }
 
-  async findActiveById(id) {
-    return this.findOne({
-      _id: id,
-      is_deleted: false,
-    });
+  async findActiveById(id, options = {}) {
+    return this.findOne(
+      {
+        _id: id,
+        is_deleted: false,
+      },
+      {},
+      options
+    );
   }
 }
 

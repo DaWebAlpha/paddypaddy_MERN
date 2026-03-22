@@ -1,6 +1,6 @@
 import BaseRepository from "../base.repository.js";
 import District from "../../models/location/district.model.js";
-import { formatTitle } from "../../utils/string.utils.js";
+import { formatName} from "../../utils/string.utils.js";
 
 class DistrictRepository extends BaseRepository{
     constructor(){
@@ -8,14 +8,14 @@ class DistrictRepository extends BaseRepository{
     }
 
     
-    async existsByDistrictAndRegion(district, region_id){
+    async existsByDistrictAndRegion(district, region_id, options = {}){
         if(!region_id) return false;
 
         const districtExists = await this.exists({
-            district: formatTitle(String(district || '').trim()),
+            district: formatName(String(district || '').trim()),
             region_id,
             is_deleted: false
-        }) ;
+        }, options) ;
         return !!districtExists;
     }
 
