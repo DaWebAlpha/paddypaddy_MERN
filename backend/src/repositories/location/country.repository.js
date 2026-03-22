@@ -5,7 +5,7 @@ import { formatTitle, formatSlug, cleanName } from "../../utils/string.utils.js"
 class CountryRepository extends BaseRepository {
   constructor() {
     super(Country);
-  };
+  }
 
   async existsByCountry(country) {
     const countryExists = await this.exists({
@@ -13,7 +13,7 @@ class CountryRepository extends BaseRepository {
       is_deleted: false,
     });
     return !!countryExists;
-  };
+  }
 
   async existsByIso_code(iso_code) {
     const isoCodeExists = await this.exists({
@@ -21,7 +21,7 @@ class CountryRepository extends BaseRepository {
       is_deleted: false,
     });
     return !!isoCodeExists;
-  };
+  }
 
   async existsBySlug(slug) {
     const slugExists = await this.exists({
@@ -30,7 +30,7 @@ class CountryRepository extends BaseRepository {
     });
     return !!slugExists;
   }
-};
+}
 
 const countryRepository = new CountryRepository();
 
