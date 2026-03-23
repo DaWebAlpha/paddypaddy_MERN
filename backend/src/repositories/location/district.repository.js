@@ -24,4 +24,4 @@ class DistrictRepository extends BaseRepository{
 
 const districtRepository = new DistrictRepository();
 export default districtRepository;
-export { districtRepository };
+export { districtRepository, DistrictRepository };

@@ -25,4 +25,4 @@ class RegionRepository extends BaseRepository {
 const regionRepository = new RegionRepository();
 
 export default regionRepository;
-export { regionRepository };
+export { regionRepository, RegionRepository };

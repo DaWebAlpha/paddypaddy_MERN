@@ -23,4 +23,4 @@ class TownRepository extends BaseRepository{
 
 const townRepository = new TownRepository();
 export default townRepository;
-export { townRepository };
+export { townRepository, TownRepository };

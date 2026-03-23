@@ -46,4 +46,4 @@ class CountryRepository extends BaseRepository {
 const countryRepository = new CountryRepository();
 
 export default countryRepository;
-export { countryRepository };
+export { countryRepository, CountryRepository };

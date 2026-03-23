@@ -4,12 +4,37 @@ export default class BaseRepository {
   }
 
   /* -------------------------------------------------------------------------- */
+  /* INTERNAL HELPERS */
+  /* -------------------------------------------------------------------------- */
+
+  _extractQueryOptions(options = {}) {
+    const { session, sort, skip, limit, collation, hint } = options;
+    const queryOptions = {};
+
+    if (session) queryOptions.session = session;
+    if (sort) queryOptions.sort = sort;
+    if (skip !== undefined) queryOptions.skip = skip;
+    if (limit !== undefined) queryOptions.limit = limit;
+    if (collation) queryOptions.collation = collation;
+    if (hint) queryOptions.hint = hint;
+
+    return queryOptions;
+  }
+
+  _applyModifiers(query, options = {}) {
+    if (options.session) query.session(options.session);
+    if (options.populate) query.populate(options.populate);
+    if (options.lean) query.lean();
+    return query;
+  }
+
+  /* -------------------------------------------------------------------------- */
   /* CREATE */
   /* -------------------------------------------------------------------------- */
 
   async create(payload, options = {}) {
-    const docs = await this.model.create([payload], options);
-    return docs[0];
+    const [doc] = await this.model.create([payload], options);
+    return doc;
   }
 
   async insertMany(data, options = {}) {
@@ -20,33 +45,42 @@ export default class BaseRepository {
   /* READ */
   /* -------------------------------------------------------------------------- */
 
-  async find(filter = {}, projection = {}, options = {}) {
-    let query = this.model.find(filter, projection, options);
-    if (options.session) query = query.session(options.session);
+  find(filter = {}, projection = {}, options = {}) {
+    const query = this.model.find(
+      filter,
+      projection,
+      this._extractQueryOptions(options)
+    );
+    return this._applyModifiers(query, options);
+  }
+
+  findOne(filter = {}, projection = {}, options = {}) {
+    const query = this.model.findOne(
+      filter,
+      projection,
+      this._extractQueryOptions(options)
+    );
+    return this._applyModifiers(query, options);
+  }
+
+  findById(id, projection = {}, options = {}) {
+    const query = this.model.findById(
+      id,
+      projection,
+      this._extractQueryOptions(options)
+    );
+    return this._applyModifiers(query, options);
+  }
+
+  exists(filter = {}, options = {}) {
+    const query = this.model.exists(filter);
+    if (options.session) query.session(options.session);
     return query;
   }
 
-  async findOne(filter = {}, projection = {}, options = {}) {
-    let query = this.model.findOne(filter, projection, options);
-    if (options.session) query = query.session(options.session);
-    return query;
-  }
-
-  async findById(id, projection = {}, options = {}) {
-    let query = this.model.findById(id, projection, options);
-    if (options.session) query = query.session(options.session);
-    return query;
-  }
-
-  async exists(filter = {}, options = {}) {
-    let query = this.model.exists(filter);
-    if (options.session) query = query.session(options.session);
-    return query;
-  }
-
-  async countDocuments(filter = {}, options = {}) {
-    let query = this.model.countDocuments(filter);
-    if (options.session) query = query.session(options.session);
+  countDocuments(filter = {}, options = {}) {
+    const query = this.model.countDocuments(filter);
+    if (options.session) query.session(options.session);
     return query;
   }
 
@@ -54,32 +88,54 @@ export default class BaseRepository {
   /* UPDATE */
   /* -------------------------------------------------------------------------- */
 
-  async findByIdAndUpdate(id, update = {}, options = {}) {
-    return this.model.findByIdAndUpdate(id, update, options);
+  findByIdAndUpdate(id, update = {}, options = {}) {
+    const config = {
+      new: true,
+      ...this._extractQueryOptions(options),
+    };
+
+    const query = this.model.findByIdAndUpdate(id, update, config);
+    return this._applyModifiers(query, options);
   }
 
-  async findOneAndUpdate(filter = {}, update = {}, options = {}) {
-    return this.model.findOneAndUpdate(filter, update, options);
+  findOneAndUpdate(filter = {}, update = {}, options = {}) {
+    const config = {
+      new: true,
+      ...this._extractQueryOptions(options),
+    };
+
+    const query = this.model.findOneAndUpdate(filter, update, config);
+    return this._applyModifiers(query, options);
   }
 
-  async updateMany(filter = {}, update = {}, options = {}) {
-    return this.model.updateMany(filter, update, options);
+  updateMany(filter = {}, update = {}, options = {}) {
+    return this.model.updateMany(
+      filter,
+      update,
+      this._extractQueryOptions(options)
+    );
   }
 
   /* -------------------------------------------------------------------------- */
   /* DELETE */
   /* -------------------------------------------------------------------------- */
 
-  async deleteOne(filter = {}, options = {}) {
-    return this.model.deleteOne(filter, options);
+  deleteOne(filter = {}, options = {}) {
+    return this.model.deleteOne(
+      filter,
+      this._extractQueryOptions(options)
+    );
   }
 
-  async deleteMany(filter = {}, options = {}) {
-    return this.model.deleteMany(filter, options);
+  deleteMany(filter = {}, options = {}) {
+    return this.model.deleteMany(
+      filter,
+      this._extractQueryOptions(options)
+    );
   }
 
   /* -------------------------------------------------------------------------- */
-  /* AGGREGATE */
+  /* AGGREGATE / BULK */
   /* -------------------------------------------------------------------------- */
 
   async aggregate(pipeline = [], options = {}) {
@@ -88,11 +144,7 @@ export default class BaseRepository {
     return agg.exec();
   }
 
-  /* -------------------------------------------------------------------------- */
-  /* BULK */
-  /* -------------------------------------------------------------------------- */
-
-  async bulkWrite(operations = [], options = {}) {
+  bulkWrite(operations = [], options = {}) {
     return this.model.bulkWrite(operations, options);
   }
 
@@ -100,7 +152,7 @@ export default class BaseRepository {
   /* DOCUMENT */
   /* -------------------------------------------------------------------------- */
 
-  async save(document, options = {}) {
+  save(document, options = {}) {
     return document.save(options);
   }
 
@@ -108,29 +160,46 @@ export default class BaseRepository {
   /* PAGINATION */
   /* -------------------------------------------------------------------------- */
 
-  async paginate(filter = {}, page = 1, limit = 20, projection = {}, options = {}) {
-    return this.model.paginate(filter, page, limit, projection, options);
+  paginate(filter = {}, page = 1, limit = 20, projection = {}, options = {}) {
+    return this.model.paginate(filter, {
+      page,
+      limit,
+      select: projection,
+      ...options,
+    });
   }
 
   /* -------------------------------------------------------------------------- */
-  /* SOFT DELETE / DOMAIN METHODS */
+  /* DOMAIN LOGIC (SOFT DELETE / RESTORE / SUSPEND) */
   /* -------------------------------------------------------------------------- */
 
   async softDeleteById(id, userId = null, options = {}) {
-    const doc = await this.findOne({ _id: id, is_deleted: false }, {}, options);
-    if (!doc) return null;
-    return doc.softDelete(userId, options);
+    const doc = await this.findOne(
+      { _id: id, is_deleted: false },
+      {},
+      { ...options, lean: false }
+    );
+
+    return doc ? doc.softDelete(userId, options) : null;
   }
 
   async restoreSoftDeletedById(id, userId = null, options = {}) {
-    const doc = await this.findOne({ _id: id, is_deleted: true }, {}, options);
-    if (!doc) return null;
-    return doc.restore(userId, options);
+    const doc = await this.findOne(
+      { _id: id, is_deleted: true },
+      {},
+      { ...options, lean: false }
+    );
+
+    return doc ? doc.restore(userId, options) : null;
   }
 
   async suspendUserAccount(id, durationMs = null, userId = null, options = {}) {
-    const doc = await this.findOne({ _id: id, is_deleted: false }, {}, options);
-    if (!doc) return null;
-    return doc.suspendAccount(durationMs, userId, options);
+    const doc = await this.findOne(
+      { _id: id, is_deleted: false },
+      {},
+      { ...options, lean: false }
+    );
+
+    return doc ? doc.suspendAccount(durationMs, userId, options) : null;
   }
 }
