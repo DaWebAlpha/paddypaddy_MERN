@@ -5,7 +5,7 @@ import {
   BadRequestError,
   ConflictError
 } from "../../errors/index.js";
-
+import { autoCatchFn } from "../../lib/autoCatchFn.js";
 
 class CountryService{
     async createCountry(payload){
@@ -61,5 +61,6 @@ class CountryService{
 
 const countryService = new CountryService;
 
-export { countryService };
+
 export default countryService;
+export { countryService, CountryService };
