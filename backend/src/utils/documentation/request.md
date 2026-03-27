@@ -674,3 +674,242 @@ Whenever a request comes in, this file asks:
 5.  If the device has no ID, can I create one?
 
 That is the whole purpose of the module.
+
+
+
+Here is a comprehensive list of **every possible user metadata** you can collect from a request.
+
+This is categorized by where the data comes from: the **Network**, the **Device**, the **App**, and the **Location**.
+
+---
+
+# 1. Network Metadata
+*Information about how the user is connected to the internet.*
+
+| Metadata | Source | Example Value | Use Case |
+| :--- | :--- | :--- | :--- |
+| **IP Address** | `x-forwarded-for` | `197.210.54.12` | Geo-blocking, fraud detection. |
+| **Protocol** | `x-forwarded-proto` | `https` | Ensuring secure connections. |
+| **Port** | `socket.remotePort` | `54321` | Debugging network issues. |
+| **Host** | `headers.host` | `api.messenger.com` | Routing requests. |
+| **Connection Type** | `headers['connection']` | `keep-alive` | Performance tuning. |
+
+**JSON Example:**
+```json
+{
+  "network": {
+    "ip_address": "197.210.54.12",
+    "protocol": "https",
+    "host": "api.messenger.com",
+    "connection": "keep-alive"
+  }
+}
+```
+
+---
+
+# 2. Device & Hardware Metadata
+*Information about the physical device holding the app.*
+
+| Metadata | Source | Example Value | Use Case |
+| :--- | :--- | :--- | :--- |
+| **Device Name** | `body` or Headers | `"John's iPhone 15"` | "Remember this device" features. |
+| **Device ID** | `body` or Headers | `"A1B2-C3D4..."` | Unique tracking, blocking stolen phones. |
+| **Device Type** | Derived from UA | `"Mobile"`, `"Tablet"`, `"Desktop"` | UI customization. |
+| **Screen Resolution** | `body.screen` | `1170 x 2532` | Sending optimized images. |
+| **Battery Level** | `body.battery` | `85%` | Preventing heavy uploads on low battery. |
+| **Memory (RAM)** | `body.memory` | `6GB` | performance optimization. |
+| **CPU Cores** | `body.cores` | `8` | Intensive processing tasks. |
+
+**JSON Example:**
+```json
+{
+  "device": {
+    "name": "John's iPhone 15",
+    "id": "device-uuid-12345",
+    "type": "Mobile",
+    "screen": {
+      "width": 1170,
+      "height": 2532,
+      "pixel_ratio": 3
+    },
+    "hardware": {
+      "battery_level": 85,
+      "is_charging": true,
+      "total_memory": "6GB",
+      "cpu_cores": 6
+    }
+  }
+}
+```
+
+---
+
+# 3. Operating System & Software Metadata
+*Information about the software running on the device.*
+
+| Metadata | Source | Example Value | Use Case |
+| :--- | :--- | :--- | :--- |
+| **User Agent** | Headers | `Mozilla/5.0...` | Raw string for analysis. |
+| **OS Name** | Derived from UA | `"iOS"`, `"Android"`, `"Windows"` | Platform specific fixes. |
+| **OS Version** | Derived from UA | `"17.2"` | Fixing bugs in specific versions. |
+| **Rooted/Jailbroken** | `body.is_rooted` | `true` | Security risk detection. |
+| **Language** | `headers['accept-language']` | `en-US` | Sending emails in user's language. |
+| **Timezone** | `body.timezone` | `Africa/Lagos` | Sending notifications at the right time. |
+
+**JSON Example:**
+```json
+{
+  "software": {
+    "raw_user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_2...)",
+    "os": {
+      "name": "iOS",
+      "version": "17.2"
+    },
+    "locale": {
+      "language": "en-US",
+      "timezone": "Africa/Lagos"
+    },
+    "security": {
+      "is_rooted": false,
+      "has_antivirus": true
+    }
+  }
+}
+```
+
+---
+
+# 4. App Metadata
+*Information about your specific app installed on the device.*
+
+| Metadata | Source | Example Value | Use Case |
+| :--- | :--- | :--- | :--- |
+| **App Version** | `headers['x-app-version']` | `2.5.1` | Force update logic. |
+| **Build Number** | `headers['x-build-number']` | `450` | Debugging specific builds. |
+| **Installation ID** | Generated UUID | `550e8400...` | Tracking unique installs. |
+| **Environment** | `headers['x-env']` | `production`, `staging` | Debugging logs. |
+| **Push Token** | `body.push_token` | `apns:...` | Sending notifications. |
+
+**JSON Example:**
+```json
+{
+  "app": {
+    "name": "MyMessenger",
+    "version": "2.5.1",
+    "build_number": 450,
+    "environment": "production",
+    "push_notification_token": "apns-device-token-string"
+  }
+}
+```
+
+---
+
+# 5. Geolocation Metadata
+*Information about where the user is physically located.*
+
+| Metadata | Source | Example Value | Use Case |
+| :--- | :--- | :--- | :--- |
+| **Geo IP Location** | Derived from IP | `Lagos, Nigeria` | Fraud detection (Login from unusual country). |
+| **GPS Coordinates** | `body.location` | `6.5244, 3.3792` | Location tagging, finding nearby friends. |
+| **Speed** | `body.speed` | `0 m/s` | Detecting if user is driving. |
+| **Altitude** | `body.altitude` | `50m` | Fitness or tracking apps. |
+
+**JSON Example:**
+```json
+{
+  "location": {
+    "geo_ip": {
+      "country": "NG",
+      "city": "Lagos",
+      "accuracy_radius": 50
+    },
+    "gps": {
+      "latitude": 6.5244,
+      "longitude": 3.3792,
+      "accuracy": 10,
+      "altitude": 50
+    }
+  }
+}
+```
+
+---
+
+# 6. Request Context Metadata
+*Technical details about the HTTP request itself.*
+
+| Metadata | Source | Example Value | Use Case |
+| :--- | :--- | :--- | :--- |
+| **Request ID** | `headers['x-request-id']` | `req-abc-123` | Tracing logs across microservices. |
+| **Referrer** | `headers['referer']` | `https://google.com` | Marketing attribution. |
+| **Origin** | `headers['origin']` | `https://myapp.com` | CORS security checks. |
+| **Content Type** | `headers['content-type']` | `application/json` | Parsing body correctly. |
+| **Request Size** | `headers['content-length']` | `4023` | Monitoring bandwidth. |
+
+**JSON Example:**
+```json
+{
+  "request_context": {
+    "id": "req-abc-123",
+    "origin": "https://myapp.com",
+    "referrer": "https://google.com",
+    "method": "POST",
+    "path": "/api/login",
+    "size_bytes": 4023
+  }
+}
+```
+
+---
+
+# The Complete Metadata Object (Combined)
+
+If you were to collect **everything** in a real-world production system (like Facebook or Instagram), your database record for a session or event might look like this:
+
+```json
+{
+  "user_id": "user_5566",
+  "timestamp": "2023-11-05T14:30:00Z",
+  
+  "network": {
+    "ip": "197.210.54.12",
+    "isp": "MTN Nigeria",
+    "connection_type": "4G"
+  },
+
+  "device": {
+    "id": "device-uuid-123",
+    "name": "John's iPhone 15 Pro",
+    "type": "Mobile",
+    "screen": { "width": 1170, "height": 2532 },
+    "battery": { "level": 85, "charging": true }
+  },
+
+  "software": {
+    "os": "iOS 17.2",
+    "locale": "en-NG",
+    "timezone": "Africa/Lagos",
+    "user_agent": "Mozilla/5.0 (iPhone...) MyMessenger/2.5.1"
+  },
+
+  "app": {
+    "version": "2.5.1",
+    "build": 450,
+    "push_token": "apns_token_here"
+  },
+
+  "location": {
+    "country": "NG",
+    "city": "Lagos",
+    "gps_coords": [6.5244, 3.3792]
+  },
+
+  "security": {
+    "is_vpn": false,
+    "is_rooted": false,
+    "risk_score": 0.1
+  }
+}
+```
