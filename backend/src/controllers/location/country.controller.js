@@ -1,12 +1,11 @@
 import countryService from "../../services/location/country.service.js";
 import autoCatchFn from "../../utils/autoCatchFn.js";
-import { audit_logger } from "../../core/pino.logger.js";
+import { access_logger } from "../../core/pino.logger.js";
 
 class CountryController{
     createCountry = autoCatchFn(async (req, res) =>{
         const result = await countryService.createCountry(req.body);
-        
-       
+             
         access_logger.info(
           {
             method: req.method,
