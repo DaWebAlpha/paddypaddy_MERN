@@ -1,0 +1,52 @@
+import seedTowns from "./helper.js";
+
+
+const raw_mampong_data = [
+  { town: "Abuontem" },
+  { town: "Adidwan" },
+  { town: "Adweeho" },
+  { town: "Aframano" },
+  { town: "Anyankamamu Kesse" },
+  { town: "Apaa" },
+  { town: "Asaam" },
+  { town: "Atakora Akuraa" },
+  { town: "Atonsuagya" },
+  { town: "Benim" },
+  { town: "Bosofour" },
+  { town: "Bosomkyekye" },
+  { town: "Brengo" },
+  { town: "Bresua" },
+  { town: "Bunso" },
+  { town: "Damang" },
+  { town: "Dome" },
+  { town: "Hwidiem" },
+  { town: "Kofiase" },
+  { town: "Kokoben" },
+  { town: "Kontonho" },
+  { town: "Krobo" },
+  { town: "Kukubi" },
+  { town: "Kyekyewere" },
+  { town: "Kyiremfaso" },
+  { town: "Mampong" },
+  { town: "Mpeso" },
+  { town: "Mprim" },
+  { town: "Naama" },
+  { town: "Nintin" },
+  { town: "Nkubeta" },
+  { town: "Nkwanta" },
+  { town: "Nobem" },
+  { town: "Nwaadan" },
+  { town: "Nwoase" },
+  { town: "Nyinampong" },
+  { town: "Oseikrom" },
+  { town: "Penten" },
+  { town: "Sataso" },
+  { town: "Sekruwa" },
+  { town: "Sesease" },
+  { town: "Teacher Marfo Akuraa" },
+  { town: "Timber Nkwanta" },
+  { town: "Yonso" }
+];
+
+
+seedTowns(raw_mampong_data, "ghana", "ashanti", "asante-mampong")

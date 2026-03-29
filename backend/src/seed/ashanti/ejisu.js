@@ -1,0 +1,51 @@
+import seedTowns from "./helper.js";
+
+
+
+const raw_ejisu_data = [
+  { town: "Abankro" },
+  { town: "Abenase" },
+  { town: "Achiase" },
+  { town: "Achinakrom" },
+  { town: "Adadientem" },
+  { town: "Adarko Jachie" },
+  { town: "Akyawkrom" },
+  { town: "Akokoamong" },
+  { town: "Akrofoso" },
+  { town: "Ampabame" },
+  { town: "Asaman Akrofoso" },
+  { town: "Asansuaso" },
+  { town: "Asawase" },
+  { town: "Asotwe" },
+  { town: "Bafoso" },
+  { town: "Baworo" },
+  { town: "Besease" },
+  { town: "Boankra" },
+  { town: "Bonwire" },
+  { town: "Deduako" },
+  { town: "Domeabra" },
+  { town: "Donaso" },
+  { town: "Donyina" },
+  { town: "Edwenase" },
+  { town: "Ejisu" },
+  { town: "Ekyem" },
+  { town: "Essienimpong" },
+  { town: "Fumesua" },
+  { town: "Hwireso" },
+  { town: "Jamase" },
+  { town: "Kokobra" },
+  { town: "Korase" },
+  { town: "Krapa" },
+  { town: "Kwamo" },
+  { town: "Kwaso" },
+  { town: "Manhyia" },
+  { town: "Odaho" },
+  { town: "Okyerekrom" },
+  { town: "Onwe" },
+  { town: "Sarpe" },
+  { town: "Serwaakuraa" },
+  { town: "Tikrom" },
+  { town: "Timeabu" }
+];
+
+seedTowns(raw_ejisu_data, "ghana", "ashanti", "ejisu")

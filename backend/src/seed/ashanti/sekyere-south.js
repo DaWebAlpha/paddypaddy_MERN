@@ -1,0 +1,48 @@
+import seedTowns from "./helper.js";
+
+const raw_sekyere_south_data = [
+  { town: "Abrakaso" },
+  { town: "Afamanso" },
+  { town: "Agona" },
+  { town: "Akotosu" },
+  { town: "Akrofonso" },
+  { town: "Akyekesease" },
+  { town: "Amangoase" },
+  { town: "Amenase" },
+  { town: "Aponapon" },
+  { town: "Asamang" },
+  { town: "Bedomase" },
+  { town: "Bepoase" },
+  { town: "Bipoa" },
+  { town: "Boanim" },
+  { town: "Brehoma Patase" },
+  { town: "Brofoyedru" },
+  { town: "Canaan" },
+  { town: "Dabang" },
+  { town: "Daboso" },
+  { town: "Dawu" },
+  { town: "Dome" },
+  { town: "Domeabra" },
+  { town: "Funifuni" },
+  { town: "Hiamankyene" },
+  { town: "Jamasi" },
+  { town: "Kofifofiekrom" },
+  { town: "Kofikrom" },
+  { town: "Kokoteasua" },
+  { town: "Kona" },
+  { town: "Konya" },
+  { town: "Kyeremfa" },
+  { town: "Montonsua" },
+  { town: "Muoso" },
+  { town: "Odumase" },
+  { town: "Okrakrom" },
+  { town: "Otom" },
+  { town: "Sofialine" },
+  { town: "Tabre" },
+  { town: "Tutu Nkwantoo" },
+  { town: "Wiamoase" },
+  { town: "Yamoakrom" }
+];
+
+
+seedTowns(raw_sekyere_south_data, "ghana", "ashanti", "sekyere-south")

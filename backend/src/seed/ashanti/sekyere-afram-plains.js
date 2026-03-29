@@ -1,0 +1,57 @@
+import seedTowns from "./helper.js";
+
+
+
+const raw_sekyere_afram_plains_data = [
+  { town: "Abenoa" },
+  { town: "Abofrem" },
+  { town: "Abotantri" },
+  { town: "Abura" },
+  { town: "Adobesu" },
+  { town: "Adonso" },
+  { town: "Adu-adu" },
+  { town: "Akoma" },
+  { town: "Anoke-beem" },
+  { town: "Anyinofi" },
+  { town: "Asisiwa" },
+  { town: "Asubuasu" },
+  { town: "Asuogya / Oku" },
+  { town: "Azorke" },
+  { town: "Babaduasu" },
+  { town: "Babayili" },
+  { town: "Boffour" },
+  { town: "Bomsosoa" },
+  { town: "Bosomfour" },
+  { town: "Campele" },
+  { town: "Charity" },
+  { town: "Dagomba" },
+  { town: "Dawia" },
+  { town: "Drobonso" },
+  { town: "Fumsua" },
+  { town: "Hamidu" },
+  { town: "Hyiamankyene" },
+  { town: "Issakura" },
+  { town: "Konfenini" },
+  { town: "Kuubu" },
+  { town: "Mamprusi" },
+  { town: "Mempekasa" },
+  { town: "Mossi Panin" },
+  { town: "Nyame" },
+  { town: "Nyameani" },
+  { town: "Offe" },
+  { town: "Pantanjo" },
+  { town: "Piipiso" },
+  { town: "Poolo" },
+  { town: "Saabum" },
+  { town: "Saabuso" },
+  { town: "Sabrewa" },
+  { town: "Sampson" },
+  { town: "Samso" },
+  { town: "Seneso" },
+  { town: "Tuntum" },
+  { town: "Wenamda" },
+  { town: "Yakubu" }
+];
+
+
+seedTowns(raw_sekyere_afram_plains_data, "ghana", "ashanti", "sekyere-afram-plains")

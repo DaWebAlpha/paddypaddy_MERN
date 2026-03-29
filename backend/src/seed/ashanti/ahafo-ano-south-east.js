@@ -1,0 +1,52 @@
+import seedTowns from "./helper.js";
+
+
+
+const raw_ahafo_ano_south_east_data = [
+  "ASEMPANAYE",
+  "ASEMPAYE",
+  "DWENEHO",
+  "BIEMSO",
+  "AKYIESO",
+  "YAWBOADIKROM",
+  "BANAHENEKROM",
+  "DUEFUROKROM",
+  "ADENSE",
+  "DWINYAMA",
+  "AMAKOM",
+  "ATTAKROM",
+  "POTRIKROM",
+  "BIEMTETRETE",
+  "ASUADEI",
+  "NSUTEM",
+  "YEBOAHKROM",
+  "POKUASE",
+  "AMOAKOKROM",
+  "APENIMADI",
+  "ESSIENKYEM",
+  "BONSUKROM",
+  "BANOKROM",
+  "ABURASO",
+  "KWAMEKYEMKROM",
+  "FAWOMANG",
+  "BETINKO",
+  "APONAPONSO",
+  "AMOKROM",
+  "BOKROWA",
+  "ADUKROM",
+  "SABRONUM",
+  "NYAMEBEKYERE",
+  "AKYERAKROM",
+  "AHWEREWAM",
+  "MANTUKWA",
+  "DOMIABRA",
+  "POKUKROM",
+  "AMANGOASE",
+  "NSUTA",
+  "OGYAM",
+  "ABESEWA",
+  "ABUGYA",
+  "DETIBI"
+];
+
+seedTowns(raw_ahafo_ano_south_east_data, "ghana", "ashanti", "ahafo-ano-south-east")

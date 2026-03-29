@@ -1,11 +1,9 @@
-import { regionRepository, districtRepository } from "../../repositories/index.js";
+import { regionRepository, districtRepository } from "../../repositories/location/district.repository.js";
 import { system_logger, audit_logger } from "../../core/pino.logger.js";
 import { formatSlug, formatName } from "../../utils/string.utils.js";
-import {
-  BadRequestError,
-  NotFoundError,
-  ConflictError
-} from "../../errors/index.js";
+import { BadRequestError } from '../../errors/bad-request.error.js';
+import { ConflictError } from "../../errors/conflict.error.js";
+import { NotFoundError } from "../../errors/not-found.error.js";
 
 class DistrictService {
   async createDistrict(payload) {

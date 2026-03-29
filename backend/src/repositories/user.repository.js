@@ -17,12 +17,16 @@ class UserRepository extends BaseRepository {
     );
   }
 
-  async findByEmailWithPassword(email, options = {}) {
+  async findByEmailOrUsernameWithPassword(email, options = {}) {
     return this.model
       .findOne(
         {
-          email: String(email || "").trim().toLowerCase(),
-          is_deleted: false,
+          $or: [
+            {email: String(email || "").trim().toLowerCase()},
+            {username: String(username || "").trim().toLowerCase()}
+          ],
+            is_deleted: false,
+
         },
         {},
         options
@@ -46,7 +50,6 @@ class UserRepository extends BaseRepository {
     const user = await this.exists(
       {
         email: String(email || "").trim().toLowerCase(),
-        is_deleted: false,
       },
       options
     );
@@ -58,7 +61,6 @@ class UserRepository extends BaseRepository {
     const user = await this.exists(
       {
         username: String(username || "").trim().toLowerCase(),
-        is_deleted: false,
       },
       options
     );

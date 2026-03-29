@@ -1,14 +1,13 @@
 import BaseRepository from "./base.repository.js";
 import User from "../models/auth/user.model.js";
+import normalizeName from "../utils/string.utils.js";
 
 class UserRepository extends BaseRepository {
   constructor() {
     super(User);
   }
 
-  normalize(value) {
-    return String(value || "").trim().toLowerCase();
-  }
+  
 
   async findAllSoftDeleted(options = {}) {
     return this.find(
@@ -23,7 +22,7 @@ class UserRepository extends BaseRepository {
   async findByStatus(status, options = {}) {
     return this.find(
       {
-        account_status: this.normalize(status),
+        account_status: this.normalizeName(status),
         is_deleted: false,
       },
       {},
@@ -53,7 +52,7 @@ class UserRepository extends BaseRepository {
   async checkLoginLogsByRole(userRole, options = {}) {
     return this.find(
       {
-        role: this.normalize(userRole),
+        role: this.normalizeName(userRole),
         is_deleted: false,
       },
       {},

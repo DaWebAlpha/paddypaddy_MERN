@@ -6,7 +6,7 @@ import {
     NotFoundError,
     ConflictError
 } from "../../errors/index.js";
-import { autoCatchFn } from "../../lib/autoCatchFn.js";
+
 
 
 class RegionService {

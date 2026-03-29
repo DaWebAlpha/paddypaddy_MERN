@@ -1,11 +1,10 @@
-import { countryRepository } from "../../repositories/index.js";
+import { countryRepository } from "../../repositories/location/country.repository.js";
 import {system_logger, audit_logger} from "../../core/pino.logger.js";
 import { cleanName, formatName } from "../../utils/string.utils.js";
-import {
-  BadRequestError,
-  ConflictError
-} from "../../errors/index.js";
-import { autoCatchFn } from "../../lib/autoCatchFn.js";
+import { BadRequestError } from '../../errors/bad-request.error.js';
+import { ConflictError } from "../../errors/conflict.error.js";
+
+
 
 class CountryService{
     async createCountry(payload){
