@@ -63,6 +63,7 @@ export default function createBaseModel(name, schemaDefinition, configCallback) 
     return this.deleteOne();
   };
 
+  
   schema.statics.paginate = async function (
     filter = {},
     page = 1,
