@@ -2685,6 +2685,7 @@ Arrays can be created using array literals or the Array constructor. Elements ar
 // Creating arrays
 const arr1 = [1, 2, 3, 4, 5];
 const arr2 = new Array(5); // Creates array with length 5 (empty)
+const arr = new Array(5).fill(2) // creates array with length 5 and fills with 2 => [2, 2, 2, 2, 2]
 const arr3 = new Array(1, 2, 3); // Creates array [1, 2, 3]
 const arr4 = Array.of(1, 2, 3); // Creates array [1, 2, 3]
 const arr5 = Array.from("hello"); // Creates array ['h', 'e', 'l', 'l', 'o']
@@ -2721,8 +2722,9 @@ const first = arr.shift();   // Remove from beginning: returns 0
 // Deleting elements (creates holes - not recommended)
 delete arr[2]; // [0, 1, empty, 3, 4, 5]
 
-// Splice for adding/removing at any position
+// Splice for adding/removing at any position. Splice mutates the array changes it 
 const nums = [1, 2, 3, 4, 5];
+
 
 // Remove 2 elements starting at index 1
 const removed = nums.splice(1, 2); // removed: [2, 3], nums: [1, 4, 5]
@@ -2733,12 +2735,69 @@ nums.splice(1, 0, 'a', 'b'); // nums: [1, 'a', 'b', 4, 5]
 // Replace elements
 nums.splice(1, 2, 'x', 'y'); // nums: [1, 'x', 'y', 4, 5]
 
+
+//toSpliced does not mutate the array changes it 
+const fruits = ["Apple", "Banana", "Orange", "Mango"];
+
+// We want to remove "Banana" and "Orange" and add "Kiwi"
+// without changing the original 'fruits' array.
+const updatedFruits = fruits.toSpliced(1, 2, "Kiwi");
+
+console.log(fruits);        // ["Apple", "Banana", "Orange", "Mango"] (Original is safe!)
+console.log(updatedFruits); // ["Apple", "Kiwi", "Mango"] (New array created)
+
+const nums = [1, 2, 3, 4, 5];
+
+const updated = nums.toSpliced(2, 0, 99);
+console.log(updated);
+// Remove 2 elements starting at index 1
+const removed = nums.splice(1, 2); // removed: [2, 3], nums: [1, 4, 5]
+
+// Insert elements at index 1
+nums.splice(1, 0, 'a', 'b'); // nums: [1, 'a', 'b', 4, 5]
+
+// Replace elements
+nums.splice(1, 2, 'x', 'y'); // nums: [1, 'x', 'y', 4, 5]
+
+const nums = [1, 2, 3, 4, 5];
+
+const updated = nums.toSpliced(2, 0, 99);
+console.log(updated);
+
 // Slice - extract portion without modifying original
 const letters = ['a', 'b', 'c', 'd', 'e'];
 const sliced = letters.slice(1, 4); // ['b', 'c', 'd']
-const copy = letters.slice(); // Creates shallow copy
-const lastThree = letters.slice(-3); // ['c', 'd', 'e']
+const copy = letters.slice(); // Creates shallow copy what ever you change in the shallow copy affects main copy
 
+
+
+//CREATES A SHALLOW COPY WHEN CHANGED CHANGES THE ORIGINAL ARRAY
+const arr1 = [
+    {name: "Paul", age: 30},
+    {name: "John", age: 31},
+    {name: "Jane", age: 29}
+];
+const arr2 = arr1.slice();
+
+arr2[0]["name"] = "Medusa";
+console.log(arr1);
+
+
+OR
+ const arr1 = [
+        {name: "Paul", age: 30},
+        {name: "John", age: 31},
+        {name: "Jane", age: 29}
+    ];
+
+const arr2 = [...arr1];
+
+arr2[0].name = "Medusa";
+console.log(arr1)
+
+
+
+const lastThree = letters.slice(-3); // ['c', 'd', 'e']
 // Concat - merge arrays
 const arrA = [1, 2];
 const arrB = [3, 4];
