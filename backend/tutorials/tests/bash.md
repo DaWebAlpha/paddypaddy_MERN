@@ -502,6 +502,8 @@ if [[ ! "$age" =~ ^[0-9]+$ ]]; then
     exit 1
 fi
 
+
+
 # Save data only if all inputs are valid
 echo "Name: $name, Age: $age" >> "$file"
 echo "Registered successfully!"
