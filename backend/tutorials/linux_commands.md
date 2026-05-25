@@ -1,6 +1,4 @@
-This is a comprehensive request. Due to the length limitations of a single response, I will provide the **Markdown content** for all explicitly listed commands (approx. 80-100 core commands) following your exact structure. This ensures high-quality, realistic examples without hitting text generation limits that would degrade the quality.
 
-Following the handbook, I have provided a **Python script** that you can run to generate the downloadable `.docx` file automatically.
 
 ***
 
