@@ -1,622 +1,475 @@
+# Enterprise Bash Automation Starter (Explained)
 
-# Project 1 — Directory Creator
+## main.sh
 
-## Task
-
-Write a script that:
-
-* Creates a variable:
-
-```bash
-project="website"
-```
-
-* Checks whether the directory exists
-* If it exists:
-
-```text
-Directory already exists
-```
-
-* Otherwise create it
-* Move into the directory
-* Print:
-
-```text
-You are now inside website
-```
-
-## Tips
-
-Variable:
-
-```bash
-name="something"
-```
-
-Check directory:
-
-```bash
-[ -d "$name" ]
-```
-
-Create directory:
-
-```bash
-mkdir "$name"
-```
-
-Change directory:
-
-```bash
-cd "$name"
-```
-
-Print:
-
-```bash
-echo "message"
-```
-
-## Solution
-
-```bash
+``` bash
 #!/bin/bash
 
-project="website"
+set -Eeuo pipefail
 
-if [ -d "$project" ]; then
-    echo "Directory already exists."
-else
-    mkdir "$project"
-    echo "Directory created."
-fi
+readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-cd "$project" || exit
+source "$ROOT_DIR/lib/logger.sh"
+source "$ROOT_DIR/lib/validator.sh"
+source "$ROOT_DIR/lib/dependency.sh"
+source "$ROOT_DIR/lib/filesystem.sh"
+source "$ROOT_DIR/lib/project.sh"
+source "$ROOT_DIR/lib/cleanup.sh"
 
-echo "You are now inside $project"
+trap cleanup EXIT
+trap 'handle_error $LINENO' ERR
+
+main(){
+
+    log_info "Application starting"
+
+    check_dependencies
+
+    ask_project_info
+
+    create_project_structure
+
+    initialize_project
+
+    log_info "Finished successfully"
+
+}
+
+main "$@"
 ```
 
----
+### Line-by-line explanation
 
-# Project 2 — Greeting System
+-   `#!/bin/bash`
+    -   Tells the system to run the script with Bash.
+-   `set -Eeuo pipefail`
+    -   `-E`: preserve error traps
+    -   `-e`: stop if a command fails
+    -   `-u`: stop if undefined variables are used
+    -   `pipefail`: fail if any command in a pipeline fails
+-   `readonly ROOT_DIR=...`
+    -   Stores the project's root folder path.
+    -   `readonly` means the value cannot change later.
+-   `source ...`
+    -   Loads functions from other files.
+-   `trap cleanup EXIT`
+    -   Run cleanup automatically when script ends.
+-   `trap 'handle_error $LINENO' ERR`
+    -   Run error handler if something fails.
+-   `main(){}`
+    -   Main function where application flow lives.
+-   `main "$@"`
+    -   Starts program execution.
+    -   `"$@"` passes command-line arguments.
 
-## Task
+------------------------------------------------------------------------
 
-Write a script that:
+## logger.sh
 
-* Ask:
-
-```text
-Enter your name:
-```
-
-* Store the answer
-* Print:
-
-```text
-Hello Kashi
-```
-
-## Tips
-
-Read input:
-
-```bash
-read variable
-```
-
-Display variable:
-
-```bash
-echo "$variable"
-```
-
-## Solution
-
-```bash
+``` bash
 #!/bin/bash
 
-echo "Enter your name: " 
-read name
+LOGFILE="logs/app.log"
 
-if [ -z "$name" ]; then
-    echo "You did not enter a name."
-else
-    echo "Hello $name!"
-fi
+log_info(){
 
-or 
+    local message="$1"
 
-#!/bin/bash
+    echo "[INFO] $message"
 
-echo "Enter your name: " 
-read name
-
-if [ ${#name} -gt 0 ]; then
-    echo "Hello, $name!"
-else
-    echo "You did not enter a name."
-fi
+    echo "[INFO] $(date): $message" >> "$LOGFILE"
+}
 ```
 
----
+### Explanation
 
-# Project 3 — Age Checker
+-   `LOGFILE="logs/app.log"`
+    -   Stores where logs should be written.
+-   `local message="$1"`
+    -   Gets first value passed to function.
+-   `echo`
+    -   Prints message to terminal.
+-   `>>`
+    -   Appends text to file.
+-   `$(date)`
+    -   Executes date command and inserts result.
 
-## Task
+------------------------------------------------------------------------
 
-Write a script that:
+## validator.sh
 
-* Ask for age
-* If age ≥ 18:
+``` bash
+validate_project_name(){
 
-```text
-Adult
-```
+    local project="$1"
 
-* Else:
-
-```text
-Minor
-```
-
-* Validate input so only numbers work
-
-## Tips
-
-Numeric operators:
-
-```bash
--ge
--gt
--le
--lt
--eq
--ne
-```
-
-Regex number check:
-
-```bash
-[[ "$age" =~ ^[0-9]+$ ]]
-```
-
-## Solution
-
-```bash
-#!/bin/bash
-
-echo "Enter your age:"
-read age
-
-if [[ "$age" =~ ^[0-9]+$ ]]; then
-
-    if [ "$age" -ge 18 ]; then
-        echo "Adult"
-    else
-        echo "Minor"
+    if [[ -z "$project" ]]
+    then
+        log_error "Project name empty"
+        exit 1
     fi
-
-else
-    echo "Please enter numbers only"
-fi
+}
 ```
 
----
+### Explanation
 
-# Project 4 — Student File Generator
+-   `[[ ]]`
+    -   Advanced Bash condition.
+-   `-z`
+    -   Checks if string is empty.
+-   `exit 1`
+    -   Stop script and return failure.
 
-## Task
+------------------------------------------------------------------------
 
-Write a script that:
+## Flow
 
-* Create folder:
+Start ↓ Load modules ↓ Check dependencies ↓ Validate input ↓ Create
+folders ↓ Initialize project ↓ Cleanup ↓ Finish
 
-```text
-students
+
+
+
+
+
+
+# Bash Enterprise Expansion Guide
+
+This section extends the enterprise Bash structure with concepts you can
+plug in later.
+
+------------------------------------------------------------------------
+
+# Arrays
+
+``` bash
+files=(
+"README.md"
+"index.html"
+"style.css"
+"script.js"
+)
 ```
 
-* Create:
+Explanation:
 
-```text
-student1.txt
-student2.txt
-student3.txt
-student4.txt
-student5.txt
+-   `files=()` → creates an array
+-   Each item becomes an element
+
+Access first element:
+
+``` bash
+echo "${files[0]}"
 ```
 
-## Tips
+Output:
 
-Loop:
-
-```bash
-for i in {1..5}
-do
-    commands
-done
-```
-
-Create files:
-
-```bash
-touch file$i.txt
-```
-
-## Solution
-
-```bash
-#!/bin/bash
-
-mkdir -p students
-
-cd students || exit
-
-for i in {1..5}
-do
-    touch student$i.txt
-done
-
-echo "Files created successfully"
-```
-
----
-
-# Project 5 — Notes Writer
-
-## Task
-
-Write a script that:
-
-* Create:
-
-```text
-notes.txt
-```
-
-* Add:
-
-```text
-Welcome
-Bash is fun
-Learning every day
-```
-
-* Display contents
-
-## Tips
-
-Overwrite:
-
-```bash
->
-```
-
-Append:
-
-```bash
->>
-```
-
-Display:
-
-```bash
-cat file.txt
-```
-
-## Solution
-
-```bash
-#!/bin/bash
-
-echo "Welcome" > notes.txt
-echo "Bash is fun" >> notes.txt
-echo "Learning every day" >> notes.txt
-
-cat notes.txt
-```
-
----
-
-# Project 6 — Student Registration System
-
-## Task
-
-Write a script that:
-
-1. Create folder:
-
-```text
-records
-```
-
-2. Ask:
-
-```text
-Enter student name:
-```
-
-3. Create:
-
-```text
-John.txt
-```
-
-4. Ask:
-
-```text
-Enter age:
-```
-
-5. Save:
-
-```text
-Name: John
-Age: 17
-```
-
-6. Display:
-
-```text
-Student registered successfully
-```
-
-## Tips
-
-Create folder:
-
-```bash
-mkdir -p records
-```
-
-Read:
-
-```bash
-read name
-```
-
-Write:
-
-```bash
-echo "text" > file
-```
-
-Append:
-
-```bash
-echo "text" >> file
-```
-
-## Solution
-
-```bash
-#!/bin/bash
-
-dir="record"
-
-# Ensure directory exists
-if [[ -d "$dir" ]]; then
-    echo "Directory \"$dir\" already exists."
-else
-    mkdir "$dir"
-    echo "Directory \"$dir\" created."
-fi
-
-file="$dir/record.txt"
-
-# Ensure file exists
-if [[ -f "$file" ]]; then
-    echo "File $file already exists."
-else
-    touch "$file"
-    echo "File $file created."
-fi
-
-# Loop until a valid name is entered
-while true; do
-    read -p "Enter your name: " name
-    
-    if [[ -z "$name" ]]; then
-        echo "Error: Name cannot be empty. Try again."
-        echo "" # Blank line for readability
-        continue
-    fi
-    
-    if [[ ! "$name" =~ ^[a-zA-Z\ ]+$ ]]; then
-        echo "Error: Name must contain letters and spaces only. Try again."
-        echo ""
-        continue
-    fi
-    
-    # If it passes both checks, break out of the loop
-    break
-done
-
-# Loop until a valid age is entered
-while true; do
-    read -p "Enter your age: " age
-    
-    if [[ ! "$age" =~ ^[0-9]+$ ]]; then
-        echo "Error: Age must be a valid number. Try again."
-        echo ""
-        continue
-    fi
-    
-    # If it passes the check, break out of the loop
-    break
-done
-
-# Save data safely
-echo "Name: $name, Age: $age" >> "$file"
-echo "Registered successfully!"
-
-
-
-
-
-
-OR
-
-
-#!/bin/bash
-
-dir="record"
-
-# Check if directory exists
-if [[ -d "$dir" ]]; then
-    echo "Directory \"$dir\" already exists."
-else
-    mkdir "$dir"
-    echo "Directory \"$dir\" created."
-fi
-
-file="$dir/record.txt"
-
-# Check if file exists
-if [[ -f "$file" ]]; then
-    echo "File $file already exists."
-else
-    touch "$file"
-    echo "File $file created."
-fi
-
-# Get and validate Name
-read -p "Enter your name: " name
-
-if [[ -z "$name" ]]; then
-    echo "Error: Name cannot be empty."
-    exit 1
-fi
-
-if [[ ! "$name" =~ ^[a-zA-Z\ ]+$ ]]; then
-    echo "Error: Please enter a valid name (letters only)."
-    exit 1
-fi
-
-# Get and validate Age
-read -p "Enter your age: " age
-
-if [[ ! "$age" =~ ^[0-9]+$ ]]; then
-    echo "Error: Please enter a valid age (numbers only)."
-    exit 1
-fi
-
-
-
-# Save data only if all inputs are valid
-echo "Name: $name, Age: $age" >> "$file"
-echo "Registered successfully!"
-
-
-
-OR
-
-
-#!/bin/bash
-
-mkdir -p records
-
-echo "Enter student name:"
-read name
-
-echo "Enter age:"
-read age
-
-file="records/$name.txt"
-
-echo "Name: $name" > "$file"
-echo "Age: $age" >> "$file"
-
-echo "Student registered successfully"
-```
-
----
-
-# Project 7 — Project Scaffolder
-
-## Task
-
-Write a script that:
-
-* Ask:
-
-```text
-Enter project name:
-```
-
-* Create project directory
-* Move into it
-* Create:
-
-```text
+``` text
 README.md
-index.html
-style.css
-script.js
 ```
 
-* Print:
+Loop through array:
 
-```text
-Project setup complete
+``` bash
+for file in "${files[@]}"
+do
+    echo "$file"
+done
 ```
 
-## Tips
+------------------------------------------------------------------------
 
-Create many files:
+# Case
 
-```bash
-touch file1 file2 file3
+``` bash
+read -p "Choose environment: " env
+
+case "$env" in
+
+    dev)
+        echo "Development"
+        ;;
+
+    prod)
+        echo "Production"
+        ;;
+
+    *)
+        echo "Unknown option"
+        ;;
+
+esac
 ```
 
-## Solution
+Explanation:
 
-```bash
+-   `case` replaces many `if/elif`
+-   `;;` ends a block
+-   `*` means default
+
+------------------------------------------------------------------------
+
+# For loops
+
+``` bash
+for i in {1..5}
+do
+    echo "$i"
+done
+```
+
+Output:
+
+``` text
+1
+2
+3
+4
+5
+```
+
+------------------------------------------------------------------------
+
+# While loops
+
+``` bash
+count=1
+
+while [ "$count" -le 5 ]
+do
+
+    echo "$count"
+
+    ((count++))
+
+done
+```
+
+Explanation:
+
+-   Runs until condition becomes false
+
+------------------------------------------------------------------------
+
+# Regex
+
+``` bash
+if [[ "$email" =~ ^.+@.+\..+$ ]]
+then
+    echo "Valid email"
+fi
+```
+
+Explanation:
+
+-   `=~` means match pattern
+-   `^` start
+-   `$` end
+-   `.+` one or more characters
+
+------------------------------------------------------------------------
+
+# grep
+
+Search text:
+
+``` bash
+grep "admin" users.txt
+```
+
+Find line numbers:
+
+``` bash
+grep -n "admin" users.txt
+```
+
+------------------------------------------------------------------------
+
+# sed
+
+Replace text:
+
+``` bash
+sed 's/old/new/' file.txt
+```
+
+Modify file permanently:
+
+``` bash
+sed -i 's/old/new/' file.txt
+```
+
+------------------------------------------------------------------------
+
+# awk
+
+Print first column:
+
+``` bash
+awk '{print $1}' users.txt
+```
+
+Example:
+
+Input:
+
+``` text
+John 20
+Mary 18
+```
+
+Output:
+
+``` text
+John
+Mary
+```
+
+------------------------------------------------------------------------
+
+# Command arguments
+
+Script:
+
+``` bash
 #!/bin/bash
 
-echo "Enter project name:"
-read project
-
-mkdir -p "$project"
-
-cd "$project" || exit
-
-touch README.md index.html style.css script.js
-
-echo "Project setup complete"
+echo "First argument: $1"
+echo "Second argument: $2"
 ```
 
----
+Run:
 
-Learning path after these:
-
-```text
-Variables
-↓
-Conditions
-↓
-User input
-↓
-Loops
-↓
-Files
-↓
-Functions
-↓
-Arguments ($1, $2)
-↓
-Arrays
-↓
-grep
-↓
-sed
-↓
-awk
-↓
-System automation
-↓
-Production Bash projects
+``` bash
+./script.sh John 25
 ```
 
-Try solving them without opening the solutions first, then compare your version against the answer.
+Output:
+
+``` text
+First argument: John
+Second argument: 25
+```
+
+------------------------------------------------------------------------
+
+# Trap patterns
+
+Cleanup on exit:
+
+``` bash
+cleanup(){
+
+echo "Cleaning..."
+
+}
+
+trap cleanup EXIT
+```
+
+Error trap:
+
+``` bash
+handle_error(){
+
+echo "Error happened"
+
+}
+
+trap handle_error ERR
+```
+
+------------------------------------------------------------------------
+
+# Deployment automation
+
+Example deploy script:
+
+``` bash
+#!/bin/bash
+
+git pull
+
+npm install
+
+npm run build
+
+pm2 restart app
+```
+
+Flow:
+
+Pull latest code → Install packages → Build → Restart server
+
+------------------------------------------------------------------------
+
+# Docker setup
+
+Dockerfile:
+
+``` docker
+FROM node:20
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm install
+
+EXPOSE 3000
+
+CMD ["npm","start"]
+```
+
+Build:
+
+``` bash
+docker build -t myapp .
+```
+
+Run:
+
+``` bash
+docker run -p 3000:3000 myapp
+```
+
+------------------------------------------------------------------------
+
+# CI/CD script example
+
+GitHub Actions:
+
+``` yaml
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: actions/checkout@v4
+
+    - name: Install
+
+      run: npm install
+
+    - name: Test
+
+      run: npm test
+
+    - name: Build
+
+      run: npm run build
+```
+
+Flow:
+
+Push code ↓ Install packages ↓ Run tests ↓ Build project ↓ Deploy

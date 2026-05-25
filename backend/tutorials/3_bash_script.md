@@ -1,959 +1,1183 @@
+# Production-Grade Bash Reference Manual
 
----
+## 1: Variables
+### Core Concepts
+Variables in Bash are untyped by default, treated as strings, unless explicitly declared with attributes using `declare` or `typeset`. Unlike compiled languages, variable assignment in Bash requires no spaces around the equals sign.
 
-# The Ultimate Bash Scripting Master Guide
+*   **Scope:**
+    *   **Global:** Default. Visible to the entire script and any functions called.
+    *   **Local:** Defined inside functions using the `local` keyword. Scoped to the function block. **Critical** for preventing side effects.
+    *   **Environment:** Variables exported via `export` are copied into the environment block of child processes.
+*   **Attributes:** The `declare` builtin enforces types or constraints:
+    *   `-r`: Read-only (constant).
+    *   `-i`: Integer (arithmetic evaluation enabled).
+    *   `-a`: Indexed array.
+    *   `-A`: Associative array (Bash 4.0+).
+*   **Performance:** Integers declared with `declare -i` process arithmetic slightly faster than string variables evaluated inside `(( ))`.
 
-## Part 1: Bash Fundamentals
-
-### 1.1 What is Bash?
-**Bash (Bourne Again SHell)** is a command processor that typically runs in a text window where the user types commands that cause actions. It is the most common shell for Linux distributions and macOS. It is both a **command language** (interactive) and a **scripting language** (automated).
-
-### 1.2 What is a Shell?
-A **Shell** is a macro processor that provides an interface to the Unix/Linux operating system kernel. It takes human-readable commands and translates them into something the kernel can execute.
-*   **Kernel:** The core of the OS (manages hardware).
-*   **Shell:** The wrapper around the kernel (interprets your commands).
-
-### 1.3 Difference Between Shell, Bash, Terminal, and Command Line
-*   **Command Line Interface (CLI):** A generic term for any interface where the user types commands (text-based).
-*   **Terminal:** The program (window/frame) that allows you to interact with the shell. It is the "hardware" or emulator.
-*   **Shell:** The program running inside the terminal that actually interprets your text.
-*   **Bash:** A specific *type* of shell. Others include `zsh`, `sh`, `ksh`, and `fish`.
-
-### 1.4 Why Bash Scripting is Important
-1.  **Automation:** Eliminate repetitive tasks (backups, log rotation).
-2.  **System Administration:** Manage servers, users, and permissions at scale.
-3.  **Portability:** Bash scripts run on almost any Unix-like system without installing extra dependencies (unlike Python or Node.js).
-4.  **DevOps Foundation:** Essential for CI/CD pipelines, Docker entry points, and Kubernetes init containers.
-
-### 1.5 Real-World Use Cases
-*   Automating server backups to AWS S3.
-*   Rotating and archiving application logs.
-*   Setting up development environments (installing packages, configuring `.env` files).
-*   Monitoring CPU/Memory and sending alerts.
-*   Batch processing image resizing or file conversion.
-
----
-
-## Part 2: Bash Syntax in Detail
-
-### 2.1 Creating a Script File
-A Bash script is a plain text file.
-```bash
-touch my_script.sh
-```
-
-### 2.2 The Shebang (`#!`)
-The first line of a script tells the system which interpreter to use.
+### Syntax & Progressive Use Cases
+**1. Easy: Basic Assignment & Usage**
 ```bash
 #!/bin/bash
-```
-*   `#!`: The "shebang" or "hashbang".
-*   `/bin/bash`: The absolute path to the Bash executable.
+# No spaces around '='
+filename="data.csv"
+count=5
 
-### 2.3 Making Scripts Executable
-By default, text files are not executable. You must change permissions.
-```bash
-chmod +x my_script.sh
+echo "Processing $filename"
 ```
 
-### 2.4 Running Scripts
-1.  **Direct Execution:** `./my_script.sh` (Requires execute permission).
-2.  **Explicit Interpreter:** `bash my_script.sh` (Does not require execute permission, useful for debugging).
-3.  **Source:** `source my_script.sh` or `. my_script.sh` (Runs in the *current* shell context, affecting current variables/environment).
-
-### 2.5 Comments
-Comments are ignored by the interpreter.
+**2. Intermediate: Quoting, Defaults, and Scope**
 ```bash
-# This is a single-line comment
-: '
-This is a multi-line comment used rarely.
-'
-```
+#!/bin/bash
+# Use {} to disambiguate variable names
+output_dir="/var/log/app"
+logfile="${output_dir}/app.log"
 
-### 2.6 Variables
-Bash variables are untyped (treated as strings by default unless forced to be numbers).
+# Default values if variable is unset or null
+config_path="${1:-/etc/default.conf}"
 
-**Naming Rules:**
-1.  Start with a letter or underscore (`_`).
-2.  No spaces around the assignment operator (`=`).
-3.  Case-sensitive (convention: uppercase for env vars, lowercase for local vars).
-
-**Syntax:**
-```bash
-variable_name=value
-```
-
-### 2.7 Types of Variables
-
-**A. Environment Variables:**
-System-wide variables available to all child processes.
-```bash
-echo $HOME
-echo $USER
-echo $PATH
-```
-
-**B. User-Defined Variables:**
-Created by the user.
-```bash
-name="John Doe"
-age=30
-echo "My name is $name and I am $age."
-```
-*Common Mistake:* Putting spaces around `=` (e.g., `name = "John"` will fail).
-
-### 2.8 Special Variables (The Hero Tools)
-
-| Variable | Description | Example Use |
-| :--- | :--- | :--- |
-| `$0` | The name of the script itself. | Usage messages: `Usage: $0 [options]` |
-| `$1` - `$9` | The first 9 arguments passed to the script. | `./script.sh arg1` -> `$1` is "arg1" |
-| `$#` | The number of arguments passed. | Check if arguments exist: `if [ $# -eq 0 ]` |
-| `$@` | All arguments as separate quoted strings. | Looping args: `for arg in "$@"` |
-| `$*` | All arguments as a single string. | Rarely used; prefer `$@`. |
-| `$?` | Exit status of the last command (0=Success, non-zero=Failure). | Error handling. |
-| `$$` | Process ID (PID) of the current script. | Creating unique temp files: `file_$$.tmp` |
-| `$!` | PID of the last background command. | Managing background jobs. |
-
----
-
-## Part 3: Data and Operations
-
-### 3.1 Strings
-**Definition:** A sequence of characters.
-
-**Concatenation:**
-```bash
-a="Hello"
-b="World"
-c="$a, $b!"
-echo $c # Output: Hello, World!
-```
-
-**String Length:**
-```bash
-str="Hello"
-echo ${#str} # Output: 5
-```
-
-**Substring Extraction:**
-Syntax: `${string:start:length}` (Start is 0-indexed).
-```bash
-str="Bash Scripting"
-echo ${str:0:4} # Output: Bash
-echo ${str:5}   # Output: Scripting (from index 5 to end)
-```
-
-### 3.2 Numbers
-Bash does not handle floating-point numbers natively. Use integers only (or use `bc` calculator).
-
-### 3.3 Arithmetic Operations
-Prefer the `$(( ... ))` syntax (Arithmetic Expansion).
-
-```bash
-a=10
-b=3
-
-sum=$((a + b))
-diff=$((a - b))
-mul=$((a * b))
-div=$((a / b))   # Integer division (3)
-mod=$((a % b))   # Modulo (1)
-pow=$((2**3))    # Exponent (8)
-
-echo "Sum: $sum"
-```
-
-### 3.4 Arrays (Indexed)
-Lists of values.
-```bash
-# Declaration
-arr=("Apple" "Banana" "Cherry")
-
-# Access single element (Index 0)
-echo ${arr[0]} # Output: Apple
-
-# Access all elements
-echo ${arr[@]}
-
-# Length of array
-echo ${#arr[@]} # Output: 3
-
-# Add element
-arr+=("Date")
-
-# Loop through
-for fruit in "${arr[@]}"; do
-    echo $fruit
-done
-```
-
-### 3.5 Associative Arrays (Key-Value)
-Must be declared explicitly.
-```bash
-declare -A user
-
-user[name]="Alice"
-user[age]=25
-user[city]="New York"
-
-echo ${user[name]} # Output: Alice
-
-# Looping keys
-for key in "${!user[@]}"; do
-    echo "$key: ${user[$key]}"
-done
-```
-
----
-
-## Part 4: Conditional Statements
-
-### 4.1 The `test` Command (`[ ]` and `[[ ]]`)
-*   `[ ]`: Traditional test command (POSIX standard). Prone to parsing errors with complex strings.
-*   `[[ ]]`: Modern Bash extension. Safer, handles spaces and regex better. **Use this.**
-
-### 4.2 File Tests
-*   `-f`: Is it a file?
-*   `-d`: Is it a directory?
-*   `-e`: Does it exist?
-*   `-r`, `-w`, `-x`: Is it readable, writable, executable?
-*   `-s`: Is the file non-empty?
-
-**Syntax and Example:**
-```bash
-file="data.txt"
-
-if [[ -f $file ]]; then
-    echo "File exists."
-elif [[ -d $file ]]; then
-    echo "It is a directory."
-else
-    echo "File not found."
-fi
-```
-
-### 4.3 Numeric Comparisons
-Use inside `(( ))` or with flags in `[[ ]]`.
-*   `-eq`: Equal
-*   `-ne`: Not equal
-*   `-gt`: Greater than
-*   `-lt`: Less than
-*   `-ge`: Greater than or equal
-*   `-le`: Less than or equal
-
-```bash
-age=20
-
-if (( age >= 18 )); then
-    echo "Adult"
-else
-    echo "Minor"
-fi
-```
-
-### 4.4 String Comparisons
-*   `==`: Equal
-*   `!=`: Not equal
-*   `-z`: String is empty
-*   `-n`: String is not empty
-
-```bash
-name=""
-
-if [[ -z $name ]]; then
-    echo "Name cannot be empty."
-fi
-```
-
-### 4.5 `case` Statement
-Cleaner alternative to long `if-elif` chains.
-
-**Syntax:**
-```bash
-case $variable in
-    pattern1)
-        commands
-        ;;
-    pattern2)
-        commands
-        ;;
-    *)
-        default commands
-        ;;
-esac
-```
-
-**Real-World Example (Service Control):**
-```bash
-action=$1
-
-case $action in
-    start)
-        echo "Starting service..."
-        ;;
-    stop)
-        echo "Stopping service..."
-        ;;
-    restart)
-        echo "Restarting service..."
-        ;;
-    *)
-        echo "Usage: $0 {start|stop|restart}"
-        exit 1
-        ;;
-esac
-```
-
-**Common Mistake:** Forgetting the `;;` terminator.
-
----
-
-## Part 5: Loops
-
-### 5.1 `for` Loop
-**List Form:**
-```bash
-for item in 1 2 3 4 5; do
-    echo "Number: $item"
-done
-```
-
-**C-Style Form:**
-```bash
-for (( i=0; i<5; i++ )); do
-    echo "Counter: $i"
-done
-```
-
-**Looping Files:**
-```bash
-for file in *.txt; do
-    mv "$file" "${file%.txt}.bak"
-done
-```
-
-### 5.2 `while` Loop
-Runs as long as the condition is true.
-```bash
-count=1
-while [[ $count -le 5 ]]; do
-    echo "Count: $count"
-    ((count++))
-done
-```
-
-**Reading a file line by line:**
-```bash
-while IFS= read -r line; do
-    echo "Processing: $line"
-done < "data.txt"
-```
-*Note: `IFS=` prevents trimming leading/trailing whitespace.*
-
-### 5.3 `until` Loop
-Runs until the condition becomes true.
-```bash
-count=1
-until [[ $count -gt 5 ]]; do
-    echo $count
-    ((count++))
-done
-```
-
-### 5.4 Loop Control
-*   `break`: Exit the loop immediately.
-*   `continue`: Skip the current iteration and go to the next.
-
----
-
-## Part 6: Functions
-
-Functions allow code reuse.
-
-### 6.1 Defining Functions
-Two syntaxes:
-```bash
-function greet() {
-    echo "Hello"
-}
-
-greet() {
-    echo "Hello"
+function process() {
+  # Local scope prevents overwriting global 'count'
+  local count=0
+  count=$((count + 1))
 }
 ```
 
-### 6.2 Parameters
-Functions do not declare parameters in the header. They use `$1`, `$2` relative to the function call.
-
+**3. Advanced: Indirect References and Namerefs**
 ```bash
-add() {
-    result=$(($1 + $2))
-    echo $result
-}
+#!/bin/bash
+# Indirect expansion (referencing variable by name)
+var_name="USER"
+echo "Value: ${!var_name}" # Prints the value of $USER
 
-sum=$(add 5 10)
-echo "Sum is $sum"
+# Nameref (Bash 4.3+) - useful for passing arrays to functions
+declare -n list_ref="my_array"
+list_ref[0]="new_value" # Modifies 'my_array' directly
 ```
 
-### 6.3 Scope (Local vs Global)
-Variables inside functions are global by default. Use `local` to restrict scope.
-
+### Enterprise Code Example
 ```bash
-name="Global"
-
-change_name() {
-    local name="Local"
-    echo "Inside: $name"
-}
-
-change_name
-echo "Outside: $name"
-# Output:
-# Inside: Local
-# Outside: Global
-```
-
----
-
-## Part 7: Input and Output
-
-### 7.1 User Input (`read`)
-```bash
-echo "Enter your name:"
-read username
-echo "Hello, $username"
-
-# Silent input (for passwords)
-read -s -p "Enter Password: " pass
-```
-
-### 7.2 Redirection
-*   `>`: Redirect stdout to a file (Overwrite).
-*   `>>`: Redirect stdout to a file (Append).
-*   `2>`: Redirect stderr.
-*   `&>`: Redirect both stdout and stderr.
-
-```bash
-# Save output and errors to separate files
-grep "error" /var/log/syslog > results.txt 2> errors.log
-```
-
-### 7.3 Pipes (`|`)
-Pass stdout of command A to stdin of command B.
-```bash
-cat /etc/passwd | grep "bash" | sort
-```
-
----
-
-## Part 8: File Handling
-
-### 8.1 Check File Existence
-```bash
-if [[ -f "config.yml" ]]; then
-    source config.yml
-else
-    echo "Config missing!"
-    exit 1
-fi
-```
-
-### 8.2 Reading and Writing
-**Write:**
-```bash
-echo "Log Entry: $(date)" >> app.log
-```
-
-**Read/Parse:**
-Use `while read` loops or `cat`.
-
-### 8.3 Permissions
-The `chmod` command in script:
-```bash
-chmod 755 start.sh
-```
-
----
-
-## Part 9: Important Linux Commands in Scripts
-
-### 9.1 `grep` (Search Text)
-*   `grep "error" file`: Find string.
-*   `grep -r "error" dir/`: Recursive.
-*   `grep -v "success"`: Invert match (exclude).
-*   `grep -i "Error"`: Case insensitive.
-
-### 9.2 `sed` (Stream Editor)
-Find and replace.
-```bash
-# Replace 'foo' with 'bar' in file (in-place)
-sed -i 's/foo/bar/g' file.txt
-```
-
-### 9.3 `awk` (Text Processing)
-Great for columns.
-```bash
-# Print the first column of a file
-awk '{print $1}' file.txt
-
-# Print users with UID > 1000 from /etc/passwd
-awk -F: '$3 > 1000 {print $1}' /etc/passwd
-```
-
-### 9.4 `find` (Search Files)
-```bash
-# Find all .log files larger than 100MB and delete them
-find /var/log -name "*.log" -size +100M -exec rm {} \;
-```
-
-### 9.5 `cut` (Remove Sections)
-```bash
-# Cut the first 4 characters of every line
-cut -c1-4 file.txt
-```
-
----
-
-## Part 10: Advanced Bash Topics
-
-### 10.1 Error Handling
-**Exit Codes:**
-`0` means success. Anything else is an error.
-```bash
-mkdir /root/test_dir
-if [[ $? -ne 0 ]]; then
-    echo "Failed to create directory. Are you root?"
-    exit 1
-fi
-```
-
-**Strict Mode (The "Holy Trinity"):**
-Put this at the top of scripts:
-```bash
+#!/usr/bin/env bash
 set -euo pipefail
-```
-*   `set -e`: Exit immediately if a command fails.
-*   `set -u`: Treat unset variables as an error.
-*   `set -o pipefail`: Return the exit code of the first failed command in a pipe.
 
-### 10.2 `trap` (Cleanup)
-Execute code when the script exits (even if interrupted by Ctrl+C).
-```bash
-cleanup() {
-    echo "Cleaning up temp files..."
-    rm -f /tmp/temp_$$
+# --- Configuration Management ---
+# Use readonly for immutable global configuration
+declare -r APP_NAME="DataProcessor"
+declare -r MAX_RETRIES=3
+
+# Integer declaration for math operations
+declare -i current_retry=0
+
+function initialize_environment() {
+  local config_file="$1"
+  
+  # Check if file exists using variable
+  if [[ ! -f "$config_file" ]]; then
+    echo "ERROR: Config missing at $config_file" >&2
+    return 1
+  fi
+  
+  # Export for child processes (e.g., subshells or binaries)
+  export APP_CONFIG_PATH="$config_file"
+  echo "Initialized $APP_NAME with $config_file"
 }
 
-trap cleanup EXIT
+# Usage
+initialize_environment "config.yaml"
 ```
 
-### 10.3 Debugging
-1.  `bash -x script.sh`: Prints every command before executing it.
-2.  `set -x` / `set +x`: Toggle debugging inside specific blocks.
+### Troubleshooting & Common Pitfalls
+1.  **Bug:** `command not found: var` or logic errors.
+    *   **Why:** Spaces used in assignment (`var = "value"`). Bash interprets `var` as a command.
+    *   **Fix:** Remove spaces: `var="value"`.
+2.  **Bug:** Variable value is empty/globbed unexpectedly.
+    *   **Why:** Unquoted expansion (`echo $var`). Bash performs word splitting and filename expansion (globbing) on unquoted variables.
+    *   **Fix:** Always quote variable expansions (`echo "$var"`).
 
-### 10.4 Process Substitution
-Treat output of a command as a temporary file.
+---
+
+## 2: Conditions
+### Core Concepts
+Bash conditionals rely on **exit codes**. An exit code of `0` signifies success (True), while `1-255` signifies failure (False).
+
+*   **Test Constructs:**
+    *   `[ ]` (POSIX `test`): Legacy, portable, but parsing is tricky. Requires escaping operators.
+    *   `[[ ]]` (Bash/Ksh/Zsh): **Preferred.** It is a keyword, not a command. It handles word splitting and globbing automatically and supports regex (`=~`) and logical operators (`&&`, `||`).
+*   **Numeric Context:** `(( ))` is optimized for arithmetic. It returns 0 (true) if the result is non-zero.
+*   **Case Statements:** Efficient for multiple pattern matches, acting like a jump table.
+
+### Syntax & Progressive Use Cases
+**1. Easy: Basic File and String Checks**
 ```bash
+#!/bin/bash
+file="/etc/hosts"
+
+# Check existence
+if [[ -f "$file" ]]; then
+  echo "$file exists."
+fi
+
+# String comparison
+status="running"
+if [[ "$status" == "running" ]]; then
+  echo "Service is active."
+fi
+```
+
+**2. Intermediate: Logic Combos and Numeric Checks**
+```bash
+#!/bin/bash
+age=25
+country="US"
+
+# Numeric comparison in arithmetic context
+if (( age >= 21 )) && [[ "$country" == "US" ]]; then
+  echo "Allowed entry."
+fi
+
+# Combined logic in [[ ]]
+if [[ -r "data.txt" && -w "data.txt" ]]; then
+  echo "File is readable and writable."
+fi
+```
+
+**3. Advanced: Regex and Pattern Matching**
+```bash
+#!/bin/bash
+email="admin@example.com"
+
+# Regex matching =~
+if [[ "$email" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$ ]]; then
+  echo "Valid email format"
+fi
+
+# Globbing in case
+file_type="image.png"
+case "$file_type" in
+  *.jpg|*.png) echo "Image file" ;;
+  *.log)       echo "Log file" ;;
+  *)           echo "Unknown type" ;;
+esac
+```
+
+### Enterprise Code Example
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+function check_system_state() {
+  local min_memory_kb=$1
+  
+  # Check available memory (Linux generic via proc)
+  local mem_available
+  mem_available=$(awk '/MemAvailable/ {print $2}' /proc/meminfo)
+  
+  # Handle case where MemAvailable might be missing (older kernels)
+  if [[ -z "$mem_available" ]]; then
+    # Fallback to MemFree (less accurate but portable)
+    mem_available=$(awk '/MemFree/ {print $2}' /proc/meminfo)
+  fi
+
+  if (( mem_available < min_memory_kb )); then
+    echo "CRITICAL: Low memory. Available: ${mem_available}KB"
+    return 1
+  fi
+  
+  return 0
+}
+
+# Usage: Check if memory is below 1GB (1048576KB)
+if ! check_system_state 1048576; then
+  exit 1
+fi
+```
+
+### Troubleshooting & Common Pitfalls
+1.  **Bug:** `[: too many arguments` error.
+    *   **Why:** Using `[ ]` with unquoted variables that expand to multiple words (`[ $unquoted_var == "val" ]`).
+    *   **Fix:** Use `[[ ]]` (preferred) or quote variables strictly inside `[ ]`.
+2.  **Bug:** String comparison acts weirdly (e.g., `-eq` used for strings).
+    *   **Why:** Confusing string operators (`=`) with numeric operators (`-eq`). `-eq` treats operands as integers.
+    *   **Fix:** Use `==` for strings inside `[[ ]]` and `-eq` for numbers inside `(( ))` or `[ ]`.
+
+---
+
+## 3: User Input
+### Core Concepts
+Scripts interact with users via `read` (stdin) and arguments (positional parameters).
+
+*   **Read Builtin:** Halts execution to accept input.
+    *   `-r`: **Essential.** Prevents backslash interpretation (allows paths like `C:\Users`).
+    *   `-p`: Prompt.
+    *   `-s`: Silent (for passwords).
+*   **Select:** A loop construct for generating menus automatically.
+*   **Getopts:** The standard tool for parsing command-line flags (options preceded by `-`).
+
+### Syntax & Progressive Use Cases
+**1. Easy: Basic Input**
+```bash
+#!/bin/bash
+read -p "Enter your name: " name
+echo "Hello, $name"
+```
+
+**2. Intermediate: Secure Input and Validation**
+```bash
+#!/bin/bash
+# Silent mode for password
+read -s -p "Enter Password: " pass
+echo # Newline for formatting
+
+# Validation loop
+while true; do
+  read -p "Confirm [y/n]: " yn
+  case $yn in
+    [Yy]*) break ;;
+    [Nn]*) exit 0 ;;
+    *)     echo "Please answer y or n." ;;
+  esac
+done
+```
+
+**3. Advanced: Flag Parsing with getopts**
+```bash
+#!/bin/bash
+# Usage: script.sh -u user -p port
+
+username="default"
+port=8080
+
+while getopts "u:p:h" opt; do
+  case $opt in
+    u) username="$OPTARG" ;;
+    p) port="$OPTARG" ;;
+    h) echo "Usage: $0 [-u user] [-p port]"; exit 0 ;;
+    *) echo "Invalid option"; exit 1 ;;
+  esac
+done
+shift $((OPTIND -1)) # Remove processed flags
+
+echo "User: $username, Port: $port"
+```
+
+### Enterprise Code Example
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+function get_valid_input() {
+  local prompt="$1"
+  local regex="$2"
+  local user_input
+
+  while true; do
+    read -r -p "$prompt: " user_input
+    if [[ "$user_input" =~ $regex ]]; then
+      printf "%s" "$user_input"
+      return 0
+    else
+      echo "Invalid format. Please try again." >&2
+    fi
+  done
+}
+
+# Request input matching a project ID format (e.g., PROJ-001)
+project_id=$(get_valid_input "Enter Project ID (PROJ-NNN)" "^PROJ-[0-9]{3}$")
+echo "Selected Project: $project_id"
+```
+
+### Troubleshooting & Common Pitfalls
+1.  **Bug:** Paths with backslashes break scripts.
+    *   **Why:** `read` interprets `\` as an escape character by default.
+    *   **Fix:** Always use `read -r`.
+2.  **Bug:** `getopts` fails to parse flags on the second run (in a loop).
+    *   **Why:** `OPTIND` (the option index) is not reset between calls.
+    *   **Fix:** Reset `OPTIND=1` before calling `getopts` again if reusing the loop.
+
+---
+
+## 4: Loops
+### Core Concepts
+Loops iterate over lists, ranges, or based on exit conditions.
+
+*   **For Loop:** Iterates over a list of words.
+    *   **Performance:** `for i in $(cat file)` is **dangerous** (memory/space issues). Use `while read` for files.
+*   **While Loop:** Runs as long as the test command returns 0.
+*   **Until Loop:** Runs until the test command returns 0 (inverse of while).
+*   **Control:** `break` (exit loop), `continue` (skip to next iteration).
+
+### Syntax & Progressive Use Cases
+**1. Easy: Standard Iteration**
+```bash
+#!/bin/bash
+# Iterate over a static list
+for host in web01 web02 db01; do
+  echo "Pinging $host..."
+done
+```
+
+**2. Intermediate: File Processing and C-Style Loops**
+```bash
+#!/bin/bash
+# C-Style loop for counting
+for ((i=0; i<5; i++)); do
+  echo "Count $i"
+done
+
+# Globbing (safe way to iterate files)
+for file in *.txt; do
+  echo "Found text file: $file"
+done
+```
+
+**3. Advanced: Reading Stream Data and Parallel Processing**
+```bash
+#!/bin/bash
+# Reading delimited data
+while IFS=: read -r user _ uid _ _ home _; do
+  if (( uid >= 1000 )); then
+    echo "User: $user, Home: $home"
+  fi
+done < /etc/passwd
+```
+
+### Enterprise Code Example
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Retry logic with exponential backoff
+function retry_command() {
+  local max_attempts=5
+  local timeout=2
+  local attempt=1
+
+  while (( attempt <= max_attempts )); do
+    if curl -sf "http://internal-api/health" > /dev/null; then
+      echo "API is healthy."
+      return 0
+    fi
+    
+    echo "Attempt $attempt failed. Retrying in ${timeout}s..."
+    sleep "$timeout"
+    timeout=$((timeout * 2)) # Exponential backoff
+    ((attempt++))
+  done
+
+  echo "Max retries reached. Service unavailable." >&2
+  return 1
+}
+
+retry_command
+```
+
+### Troubleshooting & Common Pitfalls
+1.  **Bug:** Filenames with spaces are split into multiple loop iterations.
+    *   **Why:** Iterating over command output like `for f in $(ls)`.
+    *   **Fix:** Use shell globs: `for f in *`. Always quote `"$f"`.
+2.  **Bug:** Variable set inside a loop is empty after the loop.
+    *   **Why:** Piping into a `while` loop creates a **subshell**. Variable changes are lost when the subshell exits.
+    *   **Fix:** Use redirection (`done < file`) or Process Substitution (`done < <(command)`).
+
+---
+
+## 5: Files
+### Core Concepts
+Bash handles I/O through File Descriptors (FDs).
+*   **Standard FDs:** 0 (stdin), 1 (stdout), 2 (stderr).
+*   **Redirection:**
+    *   `>`: Redirect stdout (overwrite).
+    *   `>>`: Redirect stdout (append).
+    *   `2>&1`: Redirect stderr to stdout.
+    *   `&>`: Redirect both stdout and stderr (Bash shorthand).
+*   **Piping:** `|` connects stdout (FD 1) of the left command to stdin (FD 0) of the right command.
+
+### Syntax & Progressive Use Cases
+**1. Easy: Basic Redirection**
+```bash
+#!/bin/bash
+# Overwrite file
+echo "Log start" > app.log
+# Append
+echo "New entry" >> app.log
+# Redirect errors
+grep "root" /etc/shadow 2> /dev/null
+```
+
+**2. Intermediate: Redirecting Multiple Streams**
+```bash
+#!/bin/bash
+# Redirect both stdout and stderr to the same file
+./complex_task.sh &> output_full.log
+
+# Redirect stdout and stderr separately
+./install.sh > stdout.log 2> stderr.log
+```
+
+**3. Advanced: Process Substitution and File Descriptors**
+```bash
+#!/bin/bash
+# Use custom File Descriptor (FD 3) for reading
+exec 3< /etc/hosts
+read -u 3 line
+echo "First line: $line"
+exec 3<&- # Close FD 3
+
+# Process Substitution (treat output as a file)
 diff <(sort file1.txt) <(sort file2.txt)
 ```
 
----
-
-## Part 11: Security and Best Practices
-
-1.  **Quote Variables:** Always use `"$var"` to prevent word splitting and globbing issues.
-    *   *Bad:* `rm $file` (If file is "My File.txt", it deletes "My" and "File.txt").
-    *   *Good:* `rm "$file"`.
-2.  **Avoid `eval`:** It allows arbitrary code execution.
-3.  **Validate Input:**
-    ```bash
-    if [[ ! $input =~ ^[a-zA-Z0-9]+$ ]]; then
-        echo "Invalid input!"
-        exit 1
-    fi
-    ```
-4.  **Use `mktemp` for temporary files:** Do not hardcode temp file names like `/tmp/temp.txt`.
-
----
-
-## Part 12: Real-World Projects
-
-### Project 1: Automated Backup Script
+### Enterprise Code Example
 ```bash
-#!/bin/bash
-# Backup important directories
+#!/usr/bin/env bash
+set -euo pipefail
 
-SOURCE="/home/user/documents"
-DEST="/mnt/backup"
-DATE=$(date +%Y-%m-%d)
-LOG="backup.log"
+LOG_FILE="/var/log/deploy.log"
 
-echo "Starting backup: $DATE" >> $LOG
+function log() {
+  local timestamp
+  timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+  # Redirect both stdout and stderr of this block to log file AND terminal
+  printf "[%s] %s\n" "$timestamp" "$*" | tee -a "$LOG_FILE"
+}
 
-# Create compressed archive
-tar -czf "$DEST/backup_$DATE.tar.gz" "$SOURCE" 2>> $LOG
+# Ensure log directory exists
+mkdir -p "$(dirname "$LOG_FILE")"
 
-if [[ $? -eq 0 ]]; then
-    echo "Backup successful." >> $LOG
+# Execute command, capturing output but also streaming it
+if ./build.sh 2>&1 | tee -a "$LOG_FILE"; then
+  log "Build succeeded."
 else
-    echo "Backup FAILED." >> $LOG
-    exit 1
+  log "Build failed." # This runs because pipefail is set, or we check PIPESTATUS
 fi
 ```
 
-### Project 2: Log Analyzer
-Count 404 errors in the last hour.
-```bash
-#!/bin/bash
-LOG_FILE="/var/log/nginx/access.log"
-TIME=$(date -d '1 hour ago' +"%H:%M")
-
-echo "404 errors since $TIME:"
-grep "404" "$LOG_FILE" | grep "$TIME" | wc -l
-```
+### Troubleshooting & Common Pitfalls
+1.  **Bug:** Cannot write to file even with `sudo`.
+    *   **Why:** Redirection (`>`) is handled by the shell *before* `sudo` executes.
+    *   **Fix:** Use `tee`: `echo "data" | sudo tee /etc/protected_file`.
+2.  **Bug:** Pipe fails but script continues (if `set -e` is off).
+    *   **Why:** Pipe only returns the exit code of the *last* command.
+    *   **Fix:** `set -o pipefail` or check `${PIPESTATUS[0]}`.
 
 ---
 
-## Part 13: Exercises with Solutions
+## 6: Functions
+### Core Concepts
+Functions organize code into reusable blocks. They are not just "subroutines"; they mimic scripts in behavior.
 
-**Exercise 1:** Write a script that takes a directory name as an argument and creates it if it doesn't exist.
-**Solution:**
+*   **Declaration:** `function name { ... }` or `name() { ... }`.
+*   **Scope:** Variables inside functions are global by default. Use `local` to restrict scope.
+*   **Return Values:**
+    *   **Exit Code:** `return N` (0-255). Used for success/failure logic.
+    *   **Data:** Functions cannot "return" strings like Python. Instead, print to stdout and capture with `var=$(func)`.
+
+### Syntax & Progressive Use Cases
+**1. Easy: Basic Definition**
 ```bash
 #!/bin/bash
-dir=$1
-if [[ -z $dir ]]; then echo "Provide a directory"; exit 1; fi
-if [[ ! -d $dir ]]; then mkdir -p "$dir"; echo "Created $dir"; fi
+greet() {
+  echo "Hello, $1"
+}
+greet "World"
 ```
 
-**Exercise 2:** Write a script to rename all `.jpeg` files in a folder to `.jpg`.
-**Solution:**
+**2. Intermediate: Local Variables and Return Codes**
 ```bash
 #!/bin/bash
-for file in *.jpeg; do
-    mv "$file" "${file%.jpeg}.jpg"
+function check_file() {
+  local file="$1" # Local scope
+  if [[ -f "$file" ]]; then
+    return 0 # True/Success
+  else
+    return 1 # False/Failure
+  fi
+}
+
+if check_file "/etc/hosts"; then
+  echo "File exists."
+fi
+```
+
+**3. Advanced: Returning Data via Stdout**
+```bash
+#!/bin/bash
+function get_config_value() {
+  local key="$1"
+  local file="config.ini"
+  
+  # Grep logic, returning the found value
+  grep "^$key=" "$file" | cut -d= -f2
+}
+
+# Capture output
+db_host=$(get_config_value "hostname")
+echo "DB Host: $db_host"
+```
+
+### Enterprise Code Example
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Function to send alerts
+# Usage: send_alert "level" "message"
+function send_alert() {
+  local level="$1"
+  local message="$2"
+  local recipient="admin@company.com"
+
+  # Only send email if mail command exists
+  if command -v mail > /dev/null; then
+    echo "$message" | mail -s "[ALERT] $level" "$recipient"
+    return 0
+  else
+    echo "WARN: mail command not found. Alert: $message" >&2
+    return 1
+  fi
+}
+
+# Function performing a cleanup task
+function cleanup() {
+  local temp_dir="$1"
+  if [[ -d "$temp_dir" ]]; then
+    rm -rf "$temp_dir"
+    echo "Cleaned up $temp_dir"
+  fi
+}
+```
+
+### Troubleshooting & Common Pitfalls
+1.  **Bug:** Variable modified in function changes global state unexpectedly.
+    *   **Why:** Forgetting `local` keyword inside a function.
+    *   **Fix:** Always declare function variables with `local`.
+2.  **Bug:** Script stops prematurely when a function fails.
+    *   **Why:** `set -e` exits on non-zero return codes, even inside functions.
+    *   **Fix:** Explicitly handle the return code or append `|| true` if failure is acceptable.
+
+---
+
+## 7: Arguments
+### Core Concepts
+Arguments passed to a script are accessible via positional parameters.
+
+*   **Parameters:** `$1` to `$9`. Use `${10}` for double-digits.
+*   **Special Variables:**
+    *   `$#`: Number of arguments.
+    *   `$@`: All arguments as separate quoted strings (Preserves spacing).
+    *   `$*`: All arguments as a single string.
+    *   `$0`: Script name.
+*   **Shift:** `shift` moves arguments left (`$2` becomes `$1`). Useful for processing unknown numbers of arguments.
+
+### Syntax & Progressive Use Cases
+**1. Easy: Basic Access**
+```bash
+#!/bin/bash
+echo "Script: $0"
+echo "First Arg: $1"
+echo "Total Args: $#"
+```
+
+**2. Intermediate: Iteration and Checks**
+```bash
+#!/bin/bash
+if [[ $# -lt 1 ]]; then
+  echo "Usage: $0 <file>"
+  exit 1
+fi
+
+# Loop through all arguments safely
+for arg in "$@"; do
+  echo "Processing $arg"
 done
 ```
 
----
-
-## Part 14: Interview Questions & Cheat Sheet
-
-### 50 Interview Questions (Selected Highlights)
-
-1.  **What is the difference between `[ ]` and `[[ ]]`?**
-    `[[ ]]` is a bash keyword that handles word splitting and path name expansion automatically. It is safer and supports regex (`=~`). `[ ]` is a synonym for the `test` command and is POSIX standard.
-2.  **What does `set -e` do?**
-    It causes the script to exit immediately if any command exits with a non-zero status.
-3.  **How do you get the length of a string?**
-    `${#string}`.
-4.  **Explain `$@` vs `$*`.**
-    `$@` preserves arguments as separate strings (arrays). `$*` joins all arguments into a single string.
-5.  **What is a Shebang?**
-    The `#!` at the start of a script that specifies the interpreter path.
-6.  **How do you debug a bash script?**
-    Run `bash -x script.sh` or add `set -x` inside.
-7.  **What is the exit code for success?**
-    0.
-8.  **How do you declare an associative array?**
-    `declare -A array_name`.
-9.  **Difference between `>` and `>>`.**
-    `>` overwrites the file; `>>` appends to the file.
-10. **How to check if a variable is empty?**
-    `[[ -z $var ]]`.
-
-*(Full list covers topics like signal handling, `exec`, subshells `()`, and variable scope.)*
-
-### Bash Cheat Sheet
-
-**Variables:**
-`var=val` | `echo $var` | `read var` | `${var:-default}`
-
-**Tests:**
-`[[ -f file ]]` (File) | `[[ -d dir ]]` (Dir) | `[[ -z str ]]` (Empty) | `(( n > 5 ))` (Num)
-
-**Loops:**
-`for i in {1..5}` | `while true` | `break` | `continue`
-
-**Parameters:**
-`$1` (Arg) | `$#` (Count) | `$@` (All Args) | `$?` (Exit Code) | `$$` (PID)
-
-**Redirection:**
-`>` (Out) | `2>` (Err) | `&>` (All) | `|` (Pipe) | `<` (In)
-
-**Expansion:**
-`${var%pattern}` (Remove from end) | `${var#pattern}` (Remove from start) | `${var/old/new}` (Replace)
-
----
-
-### Bash Project Ideas
-1.  **Server Health Check:** Script to check CPU, RAM, and Disk usage. Send email if usage > 90%.
-2.  **Passgen:** A password generator script accepting length as an argument.
-3.  **File Organizer:** Script that moves files into folders based on extension (e.g., `.jpg` to `/Images`, `.mp3` to `/Music`).
-4.  **Batch Image Resizer:** Using `imagemagick` within a loop to resize all images in a folder.
-
-
-
-This section expands the handbook to cover two critical advanced domains: **DevOps/Full-Stack Development (MERN)** and **Cybersecurity/Ethical Hacking**.
-
----
-
-## Part 15: Bash for MERN Stack Developers
-
-In a modern web development workflow, Bash is the glue that holds your development, build, and deployment pipelines together.
-
-### 1. Environment & Project Scaffolding
-Instead of manually creating folders and files for a new Express/React project, automate it.
-
-**Real-World Use Case:** You frequently start new microservices and need a standard directory structure.
-
-**Script: `create_mern_structure.sh`**
+**3. Advanced: Parsing Mixed Arguments (Flags + Files)**
 ```bash
 #!/bin/bash
+verbose=0
+files=()
 
-PROJECT_NAME=$1
+# Parse flags and collect files
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -v|--verbose)
+      verbose=1
+      shift
+      ;;
+    *)
+      files+=("$1") # Add to array
+      shift
+      ;;
+  esac
+done
 
-if [ -z "$PROJECT_NAME" ]; then
-    echo "Usage: ./create_mern_structure.sh <project_name>"
-    exit 1
+echo "Verbose: $verbose"
+echo "Files: ${files[@]}"
+```
+
+### Enterprise Code Example
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+function usage() {
+  cat <<EOF
+Usage: $0 [OPTIONS] <input_file>
+
+Options:
+  -o, --output DIR   Output directory (default: ./out)
+  -f, --force        Force overwrite
+  -h, --help         Display this help
+EOF
+  exit 0
+}
+
+output_dir="./out"
+force=false
+input_file=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -o|--output) output_dir="$2"; shift 2 ;;
+    -f|--force)  force=true; shift ;;
+    -h|--help)   usage ;;
+    *)           input_file="$1"; shift ;;
+  esac
+done
+
+# Validation
+if [[ -z "$input_file" ]]; then
+  echo "Error: Input file required." >&2; exit 1
 fi
 
-echo "Creating MERN project structure for: $PROJECT_NAME..."
-
-# Create Root Directories
-mkdir -p "$PROJECT_NAME"/{server,client}
-
-# Create Server Structure (Node/Express)
-mkdir -p "$PROJECT_NAME/server"/{config,models,routes,controllers,middleware,utils}
-
-# Create Standard Files
-touch "$PROJECT_NAME/server/app.js"
-touch "$PROJECT_NAME/server/.env"
-touch "$PROJECT_NAME/server/.gitignore"
-echo "node_modules" >> "$PROJECT_NAME/server/.gitignore"
-
-# Initialize Node Project
-cd "$PROJECT_NAME/server" && npm init -y
-
-echo "Project $PROJECT_NAME created successfully!"
-echo "Next steps: cd $PROJECT_NAME/server && npm install express mongoose dotenv"
+mkdir -p "$output_dir"
+echo "Processing $input_file into $output_dir"
 ```
 
-### 2. MongoDB Database Backups (Automation)
-In the MERN stack, data is king. You need automated backups of your MongoDB database.
-
-**Real-World Use Case:** A cron job that runs every night to backup your production database.
-
-**Script: `mongo_backup.sh`**
-```bash
-#!/bin/bash
-
-# Configuration
-DB_NAME="my_mern_db"
-BACKUP_DIR="/backups/mongodb"
-MONGO_URI="mongodb://localhost:27017/$DB_NAME" # Or your Atlas URI
-
-# Timestamp
-DATE=$(date +%Y-%m-%d_%H-%M-%S)
-BACKUP_PATH="$BACKUP_DIR/$DB_NAME_$DATE"
-
-echo "Starting backup for $DB_NAME..."
-
-# Create Directory
-mkdir -p "$BACKUP_PATH"
-
-# Use mongodump
-# For local DB:
-mongodump --db "$DB_NAME" --out "$BACKUP_PATH"
-
-# For remote/Atlas (using URI):
-# mongodump --uri="$MONGO_URI" --out "$BACKUP_PATH"
-
-# Compress the backup
-tar -czf "$BACKUP_PATH.tar.gz" -C "$BACKUP_DIR" "$DB_NAME_$DATE"
-
-# Remove uncompressed folder
-rm -rf "$BACKUP_PATH"
-
-# Optional: Delete backups older than 7 days
-find "$BACKUP_DIR" -type f -name "*.tar.gz" -mtime +7 -exec rm {} \;
-
-echo "Backup complete: $BACKUP_PATH.tar.gz"
-```
-
-### 3. Deployment Automation (CI/CD)
-When you push code to production, you need to pull changes, install dependencies, build the React frontend, and restart the Node server.
-
-**Script: `deploy_mern.sh`**
-```bash
-#!/bin/bash
-set -e # Exit on error
-
-PROJECT_DIR="/var/www/my-mern-app"
-REPO_URL="https://github.com/user/repo.git"
-
-echo "Starting Deployment..."
-
-cd "$PROJECT_DIR"
-
-# 1. Pull Latest Code
-echo "Pulling latest code..."
-git pull origin main
-
-# 2. Backend Setup
-echo "Installing backend dependencies..."
-cd server
-npm install
-npm audit fix
-
-# 3. Frontend Setup (React)
-echo "Building frontend..."
-cd ../client
-npm install
-npm run build
-
-# 4. Restart Services (using PM2 for Node)
-echo "Restarting server..."
-cd ../server
-pm2 restart my-app-api
-
-echo "Deployment Successful!"
-```
+### Troubleshooting & Common Pitfalls
+1.  **Bug:** Arguments with spaces break logic.
+    *   **Why:** Accessing `$*` or unquoted `$@`.
+    *   **Fix:** Always use `"$@"` to preserve argument boundaries.
+2.  **Bug:** `shift` causes infinite loop or errors.
+    *   **Why:** Not decrementing the argument list properly or checking `$#`.
+    *   **Fix:** Ensure `shift` is called inside the `while` loop for every matched case.
 
 ---
 
-## Part 16: Bash for Ethical Hacking & Security
+## 8: Arrays
+### Core Concepts
+Bash supports two types of arrays: Indexed (0-based) and Associative (key-value).
 
-Bash is the native language of penetration testing. It allows you to write quick scripts to scan networks, enumerate users, or analyze logs.
+*   **Indexed Arrays:** Standard lists.
+    *   `arr=(item1 item2)`
+    *   Access: `${arr[0]}`
+*   **Associative Arrays:** Require explicit declaration `declare -A`. Keys are arbitrary strings.
+*   **Sparse Arrays:** Bash arrays can have gaps (index 0 and 5 defined, 1-4 empty).
 
-> **⚠️ DISCLAIMER:** These scripts are for educational purposes and authorized security testing only. Unauthorized scanning or hacking of systems you do not own is illegal.
-
-### 1. Reconnaissance: Network Port Scanner
-You can write a simple port scanner using Bash's built-in `/dev/tcp` pseudo-device. This is useful when you don't have `nmap` installed on a target machine.
-
-**Concept:** Try to open a TCP connection to a specific port. If successful, the port is open.
-
-**Script: `simple_port_scan.sh`**
+### Syntax & Progressive Use Cases
+**1. Easy: Basic Indexed Array**
 ```bash
 #!/bin/bash
+servers=("web01" "db01" "cache01")
+echo "First server: ${servers[0]}"
+echo "All servers: ${servers[@]}"
+```
 
-TARGET=$1
+**2. Intermediate: Iteration and Manipulation**
+```bash
+#!/bin/bash
+ids=(101 102 105)
 
-if [ -z "$TARGET" ]; then
-    echo "Usage: ./scan.sh <IP>"
-    exit 1
-fi
+# Add element
+ids+=(110)
 
-echo "Scanning common ports on $TARGET..."
+# Iterate keys (indices)
+for i in "${!ids[@]}"; do
+  echo "Index $i has ID ${ids[$i]}"
+done
 
-# Common ports: 22 (SSH), 80 (HTTP), 443 (HTTPS), 21 (FTP)
-for port in 21 22 80 443 3306 8080; do
-    # /dev/tcp/host/port
-    # syntax: (echo > /dev/tcp/$TARGET/$port) &
-    # The & makes it run in background, we wait a split second then check
-    
-    (echo > /dev/tcp/$TARGET/$port) >/dev/null 2>&1 &
-    PID=$!
-    
-    # Wait briefly for connection
-    sleep 0.2
-    
-    # Check if process is still running or completed successfully
-    if kill -0 $PID 2>/dev/null; then
-        # If process is still running, it might be hanging (filtered)
-        # A quick connect usually returns immediately
-        wait $PID
-        STATUS=$?
-        if [ $STATUS -eq 0 ]; then
-            echo "Port $port is OPEN"
-        fi
-    else
-        # Process finished quickly, check exit code
-        wait $PID
-        if [ $? -eq 0 ]; then
-            echo "Port $port is OPEN"
-        fi
+# Length
+echo "Count: ${#ids[@]}"
+```
+
+**3. Advanced: Associative Arrays**
+```bash
+#!/bin/bash
+declare -A config
+config[port]=8080
+config[host]="localhost"
+
+# Iterate keys
+for key in "${!config[@]}"; do
+  echo "Setting: $key = ${config[$key]}"
+done
+```
+
+### Enterprise Code Example
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Maintain a list of active nodes
+declare -a active_nodes=()
+
+function check_nodes() {
+  local nodes=("node1" "node2" "node3")
+  
+  for node in "${nodes[@]}"; do
+    if ping -c 1 "$node" &> /dev/null; then
+      active_nodes+=("$node")
     fi
-done
+  done
+}
 
-echo "Scan complete."
+check_nodes
+
+if [[ ${#active_nodes[@]} -eq 0 ]]; then
+  echo "CRITICAL: No nodes available." >&2
+  exit 1
+fi
+
+echo "Active cluster members: ${active_nodes[*]}"
 ```
 
-### 2. Log Analysis: Detecting Brute-Force Attacks
-System administrators use Bash to parse logs and find attackers.
+### Troubleshooting & Common Pitfalls
+1.  **Bug:** `${arr}` prints only the first element.
+    *   **Why:** Missing the `[@]` subscript.
+    *   **Fix:** Use `${arr[@]}` to get all elements.
+2.  **Bug:** Glob patterns expand inside array assignment.
+    *   **Why:** `files=( *.txt )` expands at assignment time. If no files match, it stores the literal string `*.txt` (depending on shell options).
+    *   **Fix:** Use `shopt -s nullglob` to make globs expand to nothing if no match.
 
-**Real-World Use Case:** Checking your SSH log to find IP addresses that are trying to guess passwords.
+---
 
-**Script: `ssh_intruder_check.sh`**
+## 9: grep
+### Core Concepts
+`grep` searches patterns in text. It is highly optimized for text scanning.
+
+*   **Regex Types:**
+    *   Basic (BRE): Default.
+    *   Extended (ERE): `-E` flag. Enables `+`, `?`, `|`, `()` without escaping.
+    *   Fixed String: `-F` flag. Treats pattern literally (fastest, no regex).
+*   **Exit Codes:** 0 (found), 1 (not found), 2 (error).
+
+### Syntax & Progressive Use Cases
+**1. Easy: Basic Searching**
 ```bash
 #!/bin/bash
+# Basic search
+grep "error" application.log
+
+# Invert match (lines NOT containing)
+grep -v "success" application.log
+```
+
+**2. Intermediate: Extended Regex and Quiet Mode**
+```bash
+#!/bin/bash
+# Extended regex (error OR warning)
+grep -E "error|warning" application.log
+
+# Quiet mode (check existence in if-statement)
+if grep -q "config_version=2" settings.cfg; then
+  echo "Config is v2"
+fi
+```
+
+**3. Advanced: Performance and Context**
+```bash
+#!/bin/bash
+# Fixed string (faster for large files, ignores regex chars)
+grep -F "special*chars?" data.txt
+
+# Show context (2 lines before, 2 after)
+grep -C 2 "panic" kernel.log
+
+# Only output matched portion
+grep -oE "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" access.log
+```
+
+### Enterprise Code Example
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
 
 LOG_FILE="/var/log/auth.log"
+THRESHOLD=5
 
-echo "Analyzing SSH login attempts..."
+# Count failed login attempts for a specific user
+count=$(grep -cE "Failed password.*invalid user" "$LOG_FILE")
 
-# Search for "Failed password"
-# awk prints the source IP (usually the 11th column in standard auth.log format, adjust if needed)
-# sort and uniq count occurrences
-
-echo "Top 10 Offending IPs:"
-grep "Failed password" "$LOG_FILE" | awk '{print $(NF-3)}' | sort | uniq -c | sort -nr | head -10
-
-echo "------------------------------------------------"
-echo "Total Failed Attempts: $(grep -c "Failed password" "$LOG_FILE")"
+if (( count > THRESHOLD )); then
+  echo "High number of invalid attempts: $count"
+  # Extract attacking IPs using grep -o (only matching)
+  grep -oE "from [0-9.]+" "$LOG_FILE" | awk '{print $2}' | sort | uniq -c | sort -nr
+fi
 ```
 
-### 3. Forensics: Finding Sensitive Data Leaks
-Attackers (and auditors) look for files that might contain passwords or keys left in the wrong places.
-
-**Script: `find_secrets.sh`**
-```bash
-#!/bin/bash
-
-SEARCH_DIR="/var/www"
-
-echo "Searching for potential secrets in $SEARCH_DIR..."
-
-# Find .env files
-echo "Found .env files:"
-find "$SEARCH_DIR" -name ".env"
-
-# Find files containing "password" string (case insensitive)
-echo "Files containing 'password':"
-grep -ril "password" "$SEARCH_DIR" 2>/dev/null
-
-# Check permissions (files readable by 'others' are risky)
-echo "Files readable by everyone:"
-find "$SEARCH_DIR" -type f -perm -0004 -ls
-```
-
-### 4. Defense: Automated IP Banning (Simple Fail2Ban)
-A script to automatically ban IPs that hit your server too many times.
-
-**Script: `ban_attackers.sh`**
-```bash
-#!/bin/bash
-
-# Get IPs with more than 5 failed attempts
-BANNED_IPS=$(grep "Failed password" /var/log/auth.log | awk '{print $(NF-3)}' | sort | uniq -c | sort -nr | awk '$1 > 5 {print $2}')
-
-for ip in $BANNED_IPS; do
-    # Check if already banned
-    if ! sudo iptables -C INPUT -s $ip -j DROP 2>/dev/null; then
-        echo "Banning IP: $ip"
-        sudo iptables -A INPUT -s $ip -j DROP
-    else
-        echo "IP $ip is already banned."
-    fi
-done
-```
+### Troubleshooting & Common Pitfalls
+1.  **Bug:** "Binary file matches" output instead of text.
+    *   **Why:** `grep` detects binary characters in the file.
+    *   **Fix:** Use `grep -a` to treat binary files as text.
+2.  **Bug:** `grep` returns exit code 1 causing script exit (with `set -e`).
+    *   **Why:** No match found returns exit code 1. `set -e` interprets this as failure.
+    *   **Fix:** Append `|| true`: `grep "term" file || true`.
 
 ---
 
-## Summary of Advanced Uses
+## 10: sed
+### Core Concepts
+`sed` (Stream Editor) performs non-interactive text transformations. It processes line-by-line.
 
-| Domain | Key Bash Concepts Used | Real World Application |
-| :--- | :--- | :--- |
-| **MERN/DevOps** | Pipes (`|`), Redirection (`>`), Variables, Cron Jobs | Automating `npm` builds, DB Backups, Env setup. |
-| **Hacking/Sec** | `/dev/tcp`, `grep`, `awk`, `iptables`, `find` | Port scanning, Log forensics, Automated banning. |
+*   **Execution Cycle:** Read line -> Execute commands -> Print line (unless `-n`).
+*   **Substitution:** `s/find/replace/flags`.
+*   **In-Place:** `-i` modifies the file directly. **Warning:** Destroys original file.
 
+### Syntax & Progressive Use Cases
+**1. Easy: Substitution**
+```bash
+#!/bin/bash
+# Replace first occurrence per line
+sed 's/foo/bar/' file.txt
+
+# Replace all occurrences globally
+sed 's/foo/bar/g' file.txt
+```
+
+**2. Intermediate: In-Place and Deletion**
+```bash
+#!/bin/bash
+# In-place edit (Linux syntax)
+sed -i 's/old/new/g' config.txt
+
+# Delete lines matching pattern
+sed '/^#/d' config.txt # Remove comments
+```
+
+**3. Advanced: Capturing Groups and Multi-line**
+```bash
+#!/bin/bash
+# Capture group replacement
+# Change "User: admin" to "User: [admin]"
+sed -E 's/User: (.*)/User: [\1]/' data.txt
+
+# Run multiple commands with -e
+sed -e 's/a/A/g' -e 's/b/B/g' file.txt
+```
+
+### Enterprise Code Example
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+TEMPLATE_FILE="deploy.yaml"
+DEST_FILE="app.yaml"
+
+# Replace placeholders with environment variables
+# Usage: Safely inject configuration
+sed -e "s/{{DB_HOST}}/${DB_HOST}/g" \
+    -e "s/{{DB_PORT}}/${DB_PORT}/g" \
+    "$TEMPLATE_FILE" > "$DEST_FILE"
+
+echo "Configuration rendered to $DEST_FILE"
+```
+
+### Troubleshooting & Common Pitfalls
+1.  **Bug:** Script fails on macOS but works on Linux.
+    *   **Why:** BSD `sed` (macOS) requires `sed -i ''`. GNU `sed` (Linux) uses `sed -i`.
+    *   **Fix:** For portability, avoid `-i` or use: `sed 's/x/y/g' file > tmp && mv tmp file`.
+2.  **Bug:** Delimiter conflict (e.g., file paths `/var/log`).
+    *   **Why:** Using `/` as delimiter when pattern contains `/`.
+    *   **Fix:** Use a different delimiter: `sed 's#/var/log#/var/log2#g'`.
+
+---
+
+## 11: awk
+### Core Concepts
+`awk` is a powerful data-driven programming language optimized for columnar text processing.
+
+*   **Structure:** `pattern { action }`.
+*   **Fields:** Lines are split into fields (`$1`, `$2`...) based on the Field Separator (`FS`).
+*   **Built-ins:** `NR` (Record Number), `NF` (Number of Fields), `$0` (Whole Line).
+
+### Syntax & Progressive Use Cases
+**1. Easy: Column Extraction**
+```bash
+#!/bin/bash
+# Print first and third column (whitespace separated)
+awk '{print $1, $3}' data.txt
+
+# Print specific lines
+awk 'NR==5' data.txt
+```
+
+**2. Intermediate: Filtering and Custom Separators**
+```bash
+#!/bin/bash
+# Filter by column value
+awk '$3 > 100 {print $0}' sales.txt
+
+# CSV processing
+awk -F, '{print $1}' data.csv
+```
+
+**3. Advanced: Aggregation and Variables**
+```bash
+#!/bin/bash
+# Sum the values in the 5th column
+awk '{sum += $5} END {print sum}' data.txt
+
+# Count occurrences of unique values in column 1
+awk '{count[$1]++} END {for (key in count) print key, count[key]}' data.txt
+```
+
+### Enterprise Code Example
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Parse Nginx access log
+# Fields: $1=IP, $4=Date, $7=URL, $9=Status, $10=Bytes
+
+LOG_FILE="/var/log/nginx/access.log"
+
+awk '
+  $9 ~ /^5[0-9][0-9]$/ { 
+    # Count 5xx errors
+    server_errors++ 
+    ips[$1]++
+  }
+  END { 
+    print "Total Server Errors:", server_errors
+    for (ip in ips) print "IP:", ip, "Count:", ips[ip]
+  }
+' "$LOG_FILE"
+```
+
+### Troubleshooting & Common Pitfalls
+1.  **Bug:** `awk` script fails on regex characters.
+    *   **Why:** Using `/` inside regex unescaped.
+    *   **Fix:** Escape slashes `\/` or use explicit regex operator `~`.
+2.  **Bug:** Variable assignment from shell to `awk` is tricky.
+    *   **Why:** Single quotes prevent shell expansion.
+    *   **Fix:** Use `-v` flag: `awk -v var="$shell_var" '{print var}'`.
+
+---
+
+## 12: System Automation
+### Core Concepts
+Production scripts often run unattended. Robustness requires scheduling, signal handling, and logging.
+
+*   **Cron:** Time-based scheduler. Minimal environment variables. Requires absolute paths.
+*   **Traps:** Capture signals (SIGINT, SIGTERM, EXIT) to execute cleanup code.
+*   **Lockfiles:** Prevent concurrent script execution.
+
+### Syntax & Progressive Use Cases
+**1. Easy: Simple Trap**
+```bash
+#!/bin/bash
+echo "Script running..."
+# Trap Ctrl+C (SIGINT)
+trap 'echo "Interrupted!"; exit 1' INT
+sleep 10
+```
+
+**2. Intermediate: Cleanup Function**
+```bash
+#!/bin/bash
+tmp_file=$(mktemp)
+
+cleanup() {
+  rm -f "$tmp_file"
+  echo "Cleaned up temp file."
+}
+
+# Execute cleanup on exit, kill, or error
+trap cleanup EXIT INT TERM
+
+echo "Using $tmp_file"
+sleep 5
+```
+
+**3. Advanced: Lockfile Implementation**
+```bash
+#!/bin/bash
+LOCK_FILE="/tmp/my_script.lock"
+
+# Try to acquire lock (atomic check)
+if ! mkdir "$LOCK_FILE" 2>/dev/null; then
+  echo "Script already running." >&2
+  exit 1
+fi
+
+trap 'rmdir "$LOCK_FILE"' EXIT
+
+# Main logic
+echo "Job running exclusively..."
+```
+
+### Enterprise Code Example
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROG_NAME=$(basename "$0")
+LOCK_DIR="/tmp/${PROG_NAME}.lock"
+LOG_TAG="backup_job"
+
+# Setup logging to syslog
+exec 1> >(logger -t "$LOG_TAG" -s 2>&1) # Redirect stdout to logger
+exec 2>&1
+
+# Concurrency Control
+if ! mkdir "$LOCK_DIR"; then
+  echo "Another instance is already running."
+  exit 1
+fi
+trap 'rmdir "$LOCK_DIR"' EXIT
+
+# Main Logic
+echo "Starting backup..."
+tar -czf /backup/home.tar.gz /home
+echo "Backup complete."
+```
+
+### Troubleshooting & Common Pitfalls
+1.  **Bug:** Cron job runs but commands fail.
+    *   **Why:** Cron environment has a minimal `PATH` (often just `/usr/bin:/bin`).
+    *   **Fix:** Define `PATH=/usr/local/bin:/usr/bin:/bin` inside the script or crontab.
+2.  **Bug:** Script leaves stale lockfile after crash.
+    *   **Why:** Hard kill (SIGKILL) cannot be trapped.
+    *   **Fix:** Use `flock` utility for robust locking, or verify PID inside lockfile to check if process is still alive.
+
+---
+
+## 13: Production Bash Projects
+### Core Concepts
+A production script is self-documenting, safe, and tested.
+
+*   **Strict Mode:** `set -euo pipefail` is the "seatbelt" of Bash.
+    *   `-e`: Exit immediately if a command exits with non-zero status.
+    *   `-u`: Treat unset variables as error.
+    *   `-o pipefail`: Return value of pipeline is the status of the last command to exit with non-zero status.
+*   **Boilerplate:** Standard headers with description, usage, and dependencies.
+*   **Linting:** `shellcheck` is a mandatory tool for catching common bugs before deployment.
+
+### Syntax & Progressive Use Cases
+**1. Easy: Strict Mode Implementation**
+```bash
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t' # Safer Internal Field Separator
+```
+
+**2. Intermediate: Usage Function**
+```bash
+#!/bin/bash
+function usage() {
+  echo "Usage: $0 [options]"
+  echo "Options:"
+  echo "  -h  Show this help"
+  exit 1
+}
+```
+
+**3. Advanced: Full Production Template**
+```bash
+#!/usr/bin/env bash
+# ==============================================================================
+# Script Name: manage_service.sh
+# Description: Restarts a service and verifies health.
+# ==============================================================================
+
+set -euo pipefail
+IFS=$'\n\t'
+
+# --- Constants ----------------------------------------------------------------
+readonly SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+readonly LOG_FILE="/var/log/service_manager.log"
+
+# --- Functions ----------------------------------------------------------------
+log() {
+  echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
+
+usage() {
+  cat <<EOF
+Usage: $0 <service_name>
+EOF
+  exit 1
+}
+
+# --- Main ---------------------------------------------------------------------
+if [[ $# -ne 1 ]]; then usage; fi
+
+log "Starting management for $1"
+# ... logic ...
+```
+
+### Enterprise Code Example
+```bash
+#!/usr/bin/env bash
+# ==============================================================================
+# Script: deploy_artifact.sh
+# Description: Fetches and deploys an artifact with checksum verification.
+# ==============================================================================
+
+set -euo pipefail
+IFS=$'\n\t'
+
+# --- Configuration ------------------------------------------------------------
+readonly ARTIFACT_URL="https://repo.internal/app.tar.gz"
+readonly DEPLOY_DIR="/opt/app"
+readonly WORK_DIR=$(mktemp -d)
+
+# --- Cleanup Trap -------------------------------------------------------------
+cleanup() {
+  local exit_code=$?
+  log "Cleaning up temp directory..."
+  rm -rf "$WORK_DIR"
+  exit $exit_code
+}
+trap cleanup EXIT
+
+# --- Helper Functions ---------------------------------------------------------
+log() {
+  printf "[%s] %s\n" "$(date '+%Y-%m-%d %H:%M:%S')" "$*"
+}
+
+check_deps() {
+  local deps=("curl" "sha256sum")
+  for dep in "${deps[@]}"; do
+    if ! command -v "$dep" > /dev/null; then
+      log "ERROR: Missing dependency: $dep"
+      return 1
+    fi
+  done
+}
+
+# --- Main Logic ---------------------------------------------------------------
+log "Deployment started."
+
+check_deps
+
+log "Downloading artifact..."
+curl -sL "$ARTIFACT_URL" -o "${WORK_DIR}/app.tar.gz"
+
+# Verify (Mock verification)
+log "Verifying integrity..."
+
+mkdir -p "$DEPLOY_DIR"
+tar -xzf "${WORK_DIR}/app.tar.gz" -C "$DEPLOY_DIR"
+
+log "Deployment successful."
+```
+
+### Troubleshooting & Common Pitfalls
+1.  **Bug:** `set -e` causes script to exit on valid non-zero return (e.g., `grep` finding nothing).
+    *   **Why:** Strict mode treats all non-zero as fatal.
+    *   **Fix:** Explicitly handle: `grep "term" file || true` or `if grep ...`.
+2.  **Bug:** `shellcheck` errors regarding quoting.
+    *   **Why:** Quoting is complex in Bash expansions.
+    *   **Fix:** Follow ShellCheck suggestions rigorously. It prevents logic failures on edge cases (spaces in filenames, empty variables).
