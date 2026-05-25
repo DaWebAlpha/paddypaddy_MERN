@@ -117,10 +117,27 @@ echo "$variable"
 ```bash
 #!/bin/bash
 
-echo "Enter your name:"
+echo "Enter your name: " 
 read name
 
-echo "Hello $name"
+if [ -z "$name" ]; then
+    echo "You did not enter a name."
+else
+    echo "Hello $name!"
+fi
+
+or 
+
+#!/bin/bash
+
+echo "Enter your name: " 
+read name
+
+if [ ${#name} -gt 0 ]; then
+    echo "Hello, $name!"
+else
+    echo "You did not enter a name."
+fi
 ```
 
 ---
@@ -374,6 +391,126 @@ echo "text" >> file
 ## Solution
 
 ```bash
+#!/bin/bash
+
+dir="record"
+
+# Ensure directory exists
+if [[ -d "$dir" ]]; then
+    echo "Directory \"$dir\" already exists."
+else
+    mkdir "$dir"
+    echo "Directory \"$dir\" created."
+fi
+
+file="$dir/record.txt"
+
+# Ensure file exists
+if [[ -f "$file" ]]; then
+    echo "File $file already exists."
+else
+    touch "$file"
+    echo "File $file created."
+fi
+
+# Loop until a valid name is entered
+while true; do
+    read -p "Enter your name: " name
+    
+    if [[ -z "$name" ]]; then
+        echo "Error: Name cannot be empty. Try again."
+        echo "" # Blank line for readability
+        continue
+    fi
+    
+    if [[ ! "$name" =~ ^[a-zA-Z\ ]+$ ]]; then
+        echo "Error: Name must contain letters and spaces only. Try again."
+        echo ""
+        continue
+    fi
+    
+    # If it passes both checks, break out of the loop
+    break
+done
+
+# Loop until a valid age is entered
+while true; do
+    read -p "Enter your age: " age
+    
+    if [[ ! "$age" =~ ^[0-9]+$ ]]; then
+        echo "Error: Age must be a valid number. Try again."
+        echo ""
+        continue
+    fi
+    
+    # If it passes the check, break out of the loop
+    break
+done
+
+# Save data safely
+echo "Name: $name, Age: $age" >> "$file"
+echo "Registered successfully!"
+
+
+
+
+
+
+OR
+
+
+#!/bin/bash
+
+dir="record"
+
+# Check if directory exists
+if [[ -d "$dir" ]]; then
+    echo "Directory \"$dir\" already exists."
+else
+    mkdir "$dir"
+    echo "Directory \"$dir\" created."
+fi
+
+file="$dir/record.txt"
+
+# Check if file exists
+if [[ -f "$file" ]]; then
+    echo "File $file already exists."
+else
+    touch "$file"
+    echo "File $file created."
+fi
+
+# Get and validate Name
+read -p "Enter your name: " name
+
+if [[ -z "$name" ]]; then
+    echo "Error: Name cannot be empty."
+    exit 1
+fi
+
+if [[ ! "$name" =~ ^[a-zA-Z\ ]+$ ]]; then
+    echo "Error: Please enter a valid name (letters only)."
+    exit 1
+fi
+
+# Get and validate Age
+read -p "Enter your age: " age
+
+if [[ ! "$age" =~ ^[0-9]+$ ]]; then
+    echo "Error: Please enter a valid age (numbers only)."
+    exit 1
+fi
+
+# Save data only if all inputs are valid
+echo "Name: $name, Age: $age" >> "$file"
+echo "Registered successfully!"
+
+
+
+OR
+
+
 #!/bin/bash
 
 mkdir -p records
