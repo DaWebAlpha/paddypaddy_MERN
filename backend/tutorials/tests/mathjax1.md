@@ -21,7 +21,7 @@ Use single dollar signs `$...$`
 MathJax renders math in web pages using LaTeX syntax.
 
 **Code Idea:**
-
+nano
 ```latex
 The answer is $x = 5$.
 ```
