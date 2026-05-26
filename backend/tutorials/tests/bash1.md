@@ -1,1364 +1,4378 @@
-# 200 Bash Scripting Practice Questions
+Here is the expanded version of **PART 1 (Q1–Q50)**. I have kept every original detail (Task, Hint, Master Guide, Code) exactly as it was and added a detailed **Explanation** section for each code block to describe exactly what the script is doing.
 
-Covers: Bash syntax, variables, expansions, arrays, conditions, loops, functions, regex, grep/sed/awk, process management, networking, debugging, traps, signals, cron, system administration, advanced scripting, and projects.
+---
 
-# Bash Basics
+# 🔥 BASH MASTER SERIES — 200 HARD QUESTIONS
 
-## Question 1
-Task: Practice an exercise related to **Bash Basics**.
+## PART 1 (Q1–Q50)
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+# 🔹 FILE SYSTEM & VALIDATION (Q1–Q10)
 
-## Question 2
-Task: Practice an exercise related to **Bash Basics**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q1. Check if a file exists and is not empty
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Task:**
+Write a script that checks if `data.txt` exists and is not empty.
 
-## Question 3
-Task: Practice an exercise related to **Bash Basics**.
+**Hint:**
+Use `-f` and `-s`
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Master Guide:**
+Always validate files before processing.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 4
-Task: Practice an exercise related to **Bash Basics**.
+```bash
+file="data.txt"
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+if [ -f "$file" ] && [ -s "$file" ]; then
+  echo "File exists and is not empty"
+else
+  echo "Invalid file"
+fi
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `file="data.txt"`: Sets the variable `file` to the target filename.
+- `[ -f "$file" ]`: This condition checks if the file exists and is a regular file (not a directory or device).
+- `[ -s "$file" ]`: This condition checks if the file size is greater than zero (not empty).
+- `&&`: This is a logical AND operator. Both conditions must be true for the block to execute.
+- If both checks pass, it prints "File exists and is not empty". Otherwise, it prints "Invalid file".
 
-## Question 5
-Task: Practice an exercise related to **Bash Basics**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q2. Create a file if it does not exist
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Task:**
+Create `log.txt` only if it does not exist.
 
-## Question 6
-Task: Practice an exercise related to **Bash Basics**.
+**Hint:**
+Use `-f`
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Master Guide:**
+Avoid overwriting existing data.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 7
-Task: Practice an exercise related to **Bash Basics**.
+```bash
+file="log.txt"
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+if [ ! -f "$file" ]; then
+  echo "Created at $(date)" > "$file"
+fi
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `[ ! -f "$file" ]`: The `!` negates the condition. So this reads: "If it is NOT true that the file exists..."
+- `echo "Created at $(date)" > "$file"`: If the file is missing, this command writes a timestamp into a new file named `log.txt`. The single `>` operator creates the file (or overwrites if it existed, but the `if` statement prevents overwriting).
 
-## Question 8
-Task: Practice an exercise related to **Bash Basics**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q3. Backup all .txt files
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Task:**
+Copy all `.txt` files into backup folder.
 
-## Question 9
-Task: Practice an exercise related to **Bash Basics**.
+**Hint:**
+Use wildcard.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Master Guide:**
+Batch operations improve automation.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 10
-Task: Practice an exercise related to **Bash Basics**.
+```bash
+mkdir -p backup
+cp *.txt backup/
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `mkdir -p backup`: Creates a directory named `backup`. The `-p` flag ensures no error is thrown if the directory already exists and creates parent directories if needed.
+- `cp *.txt backup/`: The `*` is a wildcard that matches any character string ending in `.txt`. `cp` copies all matched files into the `backup/` directory.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 11
-Task: Practice an exercise related to **Bash Basics**.
+## Q4. Safe delete confirmation
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Task:**
+Ask user before deleting file.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 12
-Task: Practice an exercise related to **Bash Basics**.
+```bash
+read -p "File name: " file
+read -p "Delete? (yes/no): " ans
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+if [ "$ans" = "yes" ]; then
+  rm "$file"
+fi
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `read -p "File name: " file`: Prompts the user to type a filename and stores the input in the variable `$file`.
+- `read -p "Delete? (yes/no): " ans`: Prompts the user for confirmation and stores the input in `$ans`.
+- `if [ "$ans" = "yes" ]`: Checks if the user typed exactly "yes".
+- `rm "$file"`: If the condition is true, the `rm` command removes the specified file.
 
-## Question 13
-Task: Practice an exercise related to **Bash Basics**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q5. Count error lines
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 14
-Task: Practice an exercise related to **Bash Basics**.
+```bash
+grep -c "error" log.txt
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `grep`: A command used for searching text.
+- `-c`: This flag tells grep to count the number of matching lines instead of printing the lines themselves.
+- `"error"`: The pattern to search for.
+- `log.txt`: The file to search within. The output is simply a number representing how many lines contain "error".
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 15
-Task: Practice an exercise related to **Bash Basics**.
+## Q6. File size check (>1MB)
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+file="data.txt"
+size=$(stat -c%s "$file")
 
-## Question 16
-Task: Practice an exercise related to **Bash Basics**.
+if (( size > 1048576 )); then
+  echo "Large file"
+fi
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `stat -c%s "$file"`: The `stat` command displays file status. `-c%s` formats the output to show only the file size in bytes.
+- `size=$(...)`: This captures the output of the stat command into the variable `size`.
+- `(( size > 1048576 ))`: This is an arithmetic comparison. 1048576 bytes equals 1 Megabyte (1024 * 1024). If the file size exceeds this number, it prints "Large file".
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 17
-Task: Practice an exercise related to **Bash Basics**.
+## Q7. List directories only
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+for d in */; do
+  echo "$d"
+done
+```
 
-## Question 18
-Task: Practice an exercise related to **Bash Basics**.
+**Explanation:**
+- `for d in */; do`: The pattern `*/` matches only directories in the current location (the trailing slash is specific to directories).
+- `echo "$d"`: Prints the name of each directory found.
+- `done`: Marks the end of the loop.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q8. Find empty files
 
-## Question 19
-Task: Practice an exercise related to **Bash Basics**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+find . -type f -empty
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `find .`: Starts a search in the current directory (`.`).
+- `-type f`: Restricts the search to only files (ignoring directories).
+- `-empty`: Matches files that have zero bytes in size.
 
-## Question 20
-Task: Practice an exercise related to **Bash Basics**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q9. Delete all logs
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-# Variables and Expansion
+```bash
+rm -f *.log
+```
 
-## Question 21
-Task: Practice an exercise related to **Variables and Expansion**.
+**Explanation:**
+- `rm`: The remove command.
+- `-f`: Stands for "force". It ignores nonexistent files and arguments and never prompts for confirmation.
+- `*.log`: Matches every file in the current directory ending with the `.log` extension.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q10. Rename files with prefix
 
-## Question 22
-Task: Practice an exercise related to **Variables and Expansion**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+for f in *.txt; do
+  mv "$f" "new_$f"
+done
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `for f in *.txt; do`: Loops through every file ending in `.txt`.
+- `mv "$f" "new_$f"`: Renames (moves) the file. The new name concatenates the string "new_" with the original filename (`$f`). For example, `file.txt` becomes `new_file.txt`.
 
-## Question 23
-Task: Practice an exercise related to **Variables and Expansion**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+# 🔹 INPUT VALIDATION (Q11–Q20)
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 24
-Task: Practice an exercise related to **Variables and Expansion**.
+## Q11. Check empty input
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+read input
 
-## Question 25
-Task: Practice an exercise related to **Variables and Expansion**.
+if [ -z "$input" ]; then
+  echo "Empty input"
+fi
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `read input`: Pauses the script to wait for user input and stores it in the variable `input`.
+- `[ -z "$input" ]`: The `-z` flag checks if the length of the string is zero (empty).
+- If the user pressed Enter without typing anything, it prints "Empty input".
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 26
-Task: Practice an exercise related to **Variables and Expansion**.
+## Q12. Password check
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+read -s pass
 
-## Question 27
-Task: Practice an exercise related to **Variables and Expansion**.
+if [ "$pass" = "1234" ]; then
+  echo "Access granted"
+fi
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `read -s pass`: The `-s` flag stands for "silent" (secure). It prevents the password from being displayed on the screen as the user types.
+- `[ "$pass" = "1234" ]`: Compares the input stored in `$pass` against the string "1234".
+- If they match, it prints "Access granted".
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 28
-Task: Practice an exercise related to **Variables and Expansion**.
+## Q13. Numeric validation
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+read n
 
-## Question 29
-Task: Practice an exercise related to **Variables and Expansion**.
+if [[ "$n" =~ ^[0-9]+$ ]]; then
+  echo "Valid number"
+fi
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `[[ ... ]]`: This is an extended test command in Bash which supports regular expressions.
+- `=~`: The regex match operator.
+- `^[0-9]+$`: This regex means "start of string (`^`), followed by one or more digits (`[0-9]+`), followed by end of string (`$`)". It ensures the input contains only numbers.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 30
-Task: Practice an exercise related to **Variables and Expansion**.
+## Q14. Range check (1–100)
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+read n
 
-## Question 31
-Task: Practice an exercise related to **Variables and Expansion**.
+if (( n >= 1 && n <= 100 )); then
+  echo "Valid range"
+fi
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `(( ... ))`: This denotes an arithmetic context in Bash.
+- `n >= 1 && n <= 100`: Checks if the number `n` is greater than or equal to 1 AND less than or equal to 100.
+- If the number falls within this range, it prints "Valid range".
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 32
-Task: Practice an exercise related to **Variables and Expansion**.
+## Q15. Loop until valid input
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+while true; do
+  read n
+  [[ "$n" =~ ^[0-9]+$ ]] && break
+done
+```
 
-## Question 33
-Task: Practice an exercise related to **Variables and Expansion**.
+**Explanation:**
+- `while true; do`: Creates an infinite loop.
+- `read n`: Asks for input repeatedly inside the loop.
+- `[[ "$n" =~ ^[0-9]+$ ]]`: Checks if input is numeric (regex).
+- `&& break`: If the regex matches (input is valid), the `break` command executes, stopping the loop. If not, the loop repeats.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q16. Confirm action
 
-## Question 34
-Task: Practice an exercise related to **Variables and Expansion**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+read -p "Continue? (y/n): " ans
+[[ "$ans" == "y" ]] && echo "Proceed"
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `read -p`: Prompts the user with a question inline.
+- `[[ "$ans" == "y" ]]`: Checks if the answer is strictly "y".
+- `&&`: A logical AND operator used here for a shorthand `if` statement. If the condition is true, `echo "Proceed"` runs.
 
-## Question 35
-Task: Practice an exercise related to **Variables and Expansion**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q17. Two number validation
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-# Input and Output
+```bash
+read a b
 
-## Question 36
-Task: Practice an exercise related to **Input and Output**.
+if [[ "$a" =~ ^[0-9]+$ && "$b" =~ ^[0-9]+$ ]]; then
+  echo "Valid"
+fi
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `read a b`: Reads two words from the user input, assigning the first to `a` and the second to `b`.
+- The `if` statement checks if *both* variables match the numeric regex `^[0-9]+$`.
+- Only if both inputs are numbers does it print "Valid".
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 37
-Task: Practice an exercise related to **Input and Output**.
+## Q18. Default value
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+read name
+name=${name:-Guest}
+echo $name
+```
 
-## Question 38
-Task: Practice an exercise related to **Input and Output**.
+**Explanation:**
+- `read name`: Accepts user input.
+- `${name:-Guest}`: This is parameter expansion. It means: "If `name` is unset or null, use the default value 'Guest' instead."
+- If the user presses Enter without typing, `$name` becomes "Guest".
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q19. Hidden password input
 
-## Question 39
-Task: Practice an exercise related to **Input and Output**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+read -s password
+echo "Saved"
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `read -s password`: Takes user input silently (characters are not displayed on screen), which is standard for password entry.
+- `echo "Saved"`: Confirms the action to the user after input is complete.
 
-## Question 40
-Task: Practice an exercise related to **Input and Output**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q20. Username validation
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 41
-Task: Practice an exercise related to **Input and Output**.
+```bash
+read user
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+if [ -n "$user" ]; then
+  echo "Valid user"
+fi
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `[ -n "$user" ]`: The `-n` flag checks if the length of the string is non-zero.
+- This ensures the user actually typed something (the username is not empty).
 
-## Question 42
-Task: Practice an exercise related to **Input and Output**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+# 🔹 LOOPS (Q21–Q30)
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 43
-Task: Practice an exercise related to **Input and Output**.
+## Q21. Print even numbers
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+for i in {1..20}; do
+  (( i % 2 == 0 )) && echo $i
+done
+```
 
-## Question 44
-Task: Practice an exercise related to **Input and Output**.
+**Explanation:**
+- `{1..20}`: Generates a sequence of numbers from 1 to 20.
+- `(( i % 2 == 0 ))`: The modulo operator `%` returns the remainder of division by 2. If the remainder is 0, the number is even.
+- `&& echo $i`: If the condition is true, the number is printed.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q22. Sum numbers 1–10
 
-## Question 45
-Task: Practice an exercise related to **Input and Output**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+sum=0
+for i in {1..10}; do
+  sum=$((sum + i))
+done
+echo $sum
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `sum=0`: Initializes the accumulator variable.
+- `sum=$((sum + i))`: Adds the current value of `i` to the existing `sum`. `$((...))` is used for arithmetic expansion.
+- The loop runs 10 times, adding 1, then 2, etc., to `sum`.
+- Finally, the total `sum` (55) is printed.
 
-# Conditions and Tests
+---
 
-## Question 46
-Task: Practice an exercise related to **Conditions and Tests**.
+## Q23. Count file lines
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+count=0
+while read line; do
+  ((count++))
+done < file.txt
 
-## Question 47
-Task: Practice an exercise related to **Conditions and Tests**.
+echo $count
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `done < file.txt`: Redirects the content of `file.txt` into the loop.
+- `while read line`: Reads the file one line at a time.
+- `((count++))`: Increments the counter variable by 1 for every line read.
+- This effectively counts the total lines in the file manually.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 48
-Task: Practice an exercise related to **Conditions and Tests**.
+## Q24. Countdown
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+for i in {10..1}; do
+  echo $i
+  sleep 1
+done
+```
 
-## Question 49
-Task: Practice an exercise related to **Conditions and Tests**.
+**Explanation:**
+- `{10..1}`: Creates a range counting backwards from 10 to 1.
+- `echo $i`: Displays the current number.
+- `sleep 1`: Pauses the script execution for 1 second between each number.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q25. Infinite loop
 
-## Question 50
-Task: Practice an exercise related to **Conditions and Tests**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+while true; do
+  date
+  sleep 2
+done
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `while true; do`: The condition is always `true`, so this loop runs forever until manually stopped (Ctrl+C).
+- `date`: Prints the current date and time.
+- `sleep 2`: Waits 2 seconds before repeating.
 
-## Question 51
-Task: Practice an exercise related to **Conditions and Tests**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q26. Loop arguments
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 52
-Task: Practice an exercise related to **Conditions and Tests**.
+```bash
+for arg in "$@"; do
+  echo $arg
+done
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `"$@"`: A special variable that holds all command-line arguments passed to the script.
+- The loop iterates through each argument one by one and prints it.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 53
-Task: Practice an exercise related to **Conditions and Tests**.
+## Q27. Process files
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+for f in *.txt; do
+  echo "Processing $f"
+done
+```
 
-## Question 54
-Task: Practice an exercise related to **Conditions and Tests**.
+**Explanation:**
+- `for f in *.txt`: Iterates over every file ending in `.txt` in the current directory.
+- `echo "Processing $f"`: Simulates an action on the file by printing its name.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q28. Find max
 
-## Question 55
-Task: Practice an exercise related to **Conditions and Tests**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+max=0
+for i in 3 7 2 9; do
+  (( i > max )) && max=$i
+done
+echo $max
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `max=0`: Starts the maximum value assumption at 0.
+- `for i in 3 7 2 9`: Loops through this specific list of numbers.
+- `(( i > max )) && max=$i`: If the current number `i` is greater than the stored `max`, update `max` to equal `i`.
+- Result: It eventually finds and prints 9.
 
-## Question 56
-Task: Practice an exercise related to **Conditions and Tests**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q29. Skip iteration
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 57
-Task: Practice an exercise related to **Conditions and Tests**.
+```bash
+for i in {1..10}; do
+  [[ $i == 5 ]] && continue
+  echo $i
+done
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `[[ $i == 5 ]]`: Checks if `i` is equal to 5.
+- `continue`: When this command runs, it stops the current iteration immediately and jumps to the next iteration of the loop.
+- Therefore, "5" is never printed, but the loop continues with 6, 7, etc.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 58
-Task: Practice an exercise related to **Conditions and Tests**.
+## Q30. Break loop
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+for i in {1..10}; do
+  [[ $i == 6 ]] && break
+  echo $i
+done
+```
 
-## Question 59
-Task: Practice an exercise related to **Conditions and Tests**.
+**Explanation:**
+- `[[ $i == 6 ]]`: Checks if `i` is 6.
+- `break`: This command terminates the loop entirely.
+- The numbers 1 through 5 print. When `i` becomes 6, the loop stops immediately, and no further numbers are processed.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+# 🔹 FUNCTIONS (Q31–Q40)
 
-## Question 60
-Task: Practice an exercise related to **Conditions and Tests**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q31. Simple function
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-# Loops
+```bash
+hello() {
+  echo "Hello"
+}
+hello
+```
 
-## Question 61
-Task: Practice an exercise related to **Loops**.
+**Explanation:**
+- `hello() { ... }`: Defines a function named `hello`.
+- `echo "Hello"`: The body of the function contains the code to run.
+- `hello`: This line "calls" or executes the function.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q32. Function with args
 
-## Question 62
-Task: Practice an exercise related to **Loops**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+greet() {
+  echo "Hi $1"
+}
+greet Kwame
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `greet()`: Defines the function.
+- `$1`: Inside a function, `$1` refers to the first argument passed to that specific function.
+- `greet Kwame`: Calls the function and passes "Kwame" as the first argument. The output is "Hi Kwame".
 
-## Question 63
-Task: Practice an exercise related to **Loops**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q33. Add function
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 64
-Task: Practice an exercise related to **Loops**.
+```bash
+add() {
+  echo $(( $1 + $2 ))
+}
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `add()`: Defines a function to perform addition.
+- `$(( $1 + $2 ))`: Performs arithmetic on the first and second arguments passed to the function.
+- `echo`: Prints the result. (Note: To use this, you would call it like `add 5 3`).
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 65
-Task: Practice an exercise related to **Loops**.
+## Q34. File check function
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+exists() {
+  [ -f "$1" ] && echo "Exists"
+}
+```
 
-## Question 66
-Task: Practice an exercise related to **Loops**.
+**Explanation:**
+- `exists()`: Defines a utility function to check file existence.
+- `[ -f "$1" ]`: Tests if the first argument provided is a valid file.
+- `&& echo "Exists"`: If the test passes, it prints "Exists".
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q35. Logging function
 
-## Question 67
-Task: Practice an exercise related to **Loops**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+log() {
+  echo "[$(date)] $1"
+}
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `log()`: A function designed to format log messages.
+- `[$(date)]`: Captures the current date/time and wraps it in brackets.
+- `$1`: Appends the message passed as the first argument.
+- Example usage: `log "System starting"` results in `[Mon Oct 30 ...] System starting`.
 
-## Question 68
-Task: Practice an exercise related to **Loops**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q36. Loop in function
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 69
-Task: Practice an exercise related to **Loops**.
+```bash
+print() {
+  for i in {1..3}; do echo $i; done
+}
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `print()`: Defines a function containing a loop.
+- The logic inside is a standard `for` loop printing 1, 2, and 3.
+- Calling `print` executes the entire loop sequence.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 70
-Task: Practice an exercise related to **Loops**.
+## Q37. Nested function
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+a() { echo "A"; }
+b() { a; echo "B"; }
+b
+```
 
-## Question 71
-Task: Practice an exercise related to **Loops**.
+**Explanation:**
+- `a()`: Defines a helper function that prints "A".
+- `b()`: Defines a second function that calls `a` first, then prints "B".
+- When `b` is called, it runs `a` (printing "A"), then runs its own print command (printing "B").
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q38. Calculator function
 
-## Question 72
-Task: Practice an exercise related to **Loops**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+calc() {
+  echo $(( $1 + $2 ))
+}
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- Similar to Q33, this creates a reusable calculator component.
+- It takes two numbers as arguments (`$1`, `$2`), adds them, and outputs the result.
 
-## Question 73
-Task: Practice an exercise related to **Loops**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q39. Exit function
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 74
-Task: Practice an exercise related to **Loops**.
+```bash
+fail() {
+  echo "Error"
+  exit 1
+}
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `fail()`: A function designed to handle fatal errors.
+- `echo "Error"`: Informs the user of the failure.
+- `exit 1`: Terminates the entire script immediately with a status code of 1 (standard convention for an error).
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 75
-Task: Practice an exercise related to **Loops**.
+## Q40. Multi function system
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+start() { echo "Start"; }
+stop() { echo "Stop"; }
 
-# Functions
+start
+stop
+```
 
-## Question 76
-Task: Practice an exercise related to **Functions**.
+**Explanation:**
+- Defines two separate functions, `start` and `stop`.
+- The script calls them sequentially: `start` runs first, then `stop` runs. This mimics a basic service control structure.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+# 🔹 SYSTEM TOOLS (Q41–Q50)
 
-## Question 77
-Task: Practice an exercise related to **Functions**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q41. Process check
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 78
-Task: Practice an exercise related to **Functions**.
+```bash
+ps aux | grep bash
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `ps`: Reports a snapshot of current processes.
+- `aux`: `a` shows processes for all users, `u` displays the process's user/owner, `x` shows processes not attached to a terminal.
+- `| grep bash`: Filters the output to show only lines containing the word "bash".
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 79
-Task: Practice an exercise related to **Functions**.
+## Q42. Disk usage
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+df -h
+```
 
-## Question 80
-Task: Practice an exercise related to **Functions**.
+**Explanation:**
+- `df`: "Disk Free" – reports file system disk space usage.
+- `-h`: "Human-readable" – prints sizes in powers of 1024 (e.g., 12G, 500M) instead of raw blocks.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q43. Memory usage
 
-## Question 81
-Task: Practice an exercise related to **Functions**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+free -m
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `free`: Displays the total amount of free and used physical and swap memory.
+- `-m`: Shows the output in megabytes (MiB).
 
-## Question 82
-Task: Practice an exercise related to **Functions**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q44. Internet check
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 83
-Task: Practice an exercise related to **Functions**.
+```bash
+ping -c 1 google.com
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `ping`: Sends ICMP ECHO_REQUEST packets to network hosts.
+- `-c 1`: Limits the count to 1 packet. Without this, `ping` runs indefinitely.
+- Useful in scripts to check if the machine has an active internet connection.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 84
-Task: Practice an exercise related to **Functions**.
+## Q45. Sort file
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+sort file.txt
+```
 
-## Question 85
-Task: Practice an exercise related to **Functions**.
+**Explanation:**
+- `sort`: Writes sorted concatenation of files to standard output.
+- It reads `file.txt` and prints all lines in alphabetical/numerical order.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q46. Unique values
 
-# Arrays
+**Code Idea:**
 
-## Question 86
-Task: Practice an exercise related to **Arrays**.
+```bash
+sort file.txt | uniq
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `sort file.txt`: Sorts the file first (required for `uniq` to work correctly on adjacent lines).
+- `uniq`: Filters out repeated lines that are adjacent.
+- Combined, this prints the file content with duplicates removed.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 87
-Task: Practice an exercise related to **Arrays**.
+## Q47. Word count
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+wc -w file.txt
+```
 
-## Question 88
-Task: Practice an exercise related to **Arrays**.
+**Explanation:**
+- `wc`: "Word Count".
+- `-w`: Instructs `wc` to count only words (newline counts as a word delimiter).
+- It prints the total number of words in the file.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q48. First lines
 
-## Question 89
-Task: Practice an exercise related to **Arrays**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+head -n 5 file.txt
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `head`: Outputs the first part of files.
+- `-n 5`: Specifies the number of lines to display (5 lines).
+- Useful for previewing the top of a large log file.
 
-## Question 90
-Task: Practice an exercise related to **Arrays**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q49. Live monitoring
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 91
-Task: Practice an exercise related to **Arrays**.
+```bash
+tail -f file.txt
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `tail`: Outputs the last part of files.
+- `-f`: "Follow" mode. As the file grows, `tail` appends new data to the output in real-time.
+- Standard tool for watching active log files.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 92
-Task: Practice an exercise related to **Arrays**.
+## Q50. System summary
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+uptime
+free -m
+df -h
+```
 
-## Question 93
-Task: Practice an exercise related to **Arrays**.
+**Explanation:**
+- `uptime`: Shows how long the system has been running and the load average.
+- `free -m`: Shows memory usage.
+- `df -h`: Shows disk space.
+- Running these three commands sequentially provides a quick health snapshot of the server.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+# ✔ PART 1 COMPLETE (Q1–Q50)
 
-## Question 94
-Task: Practice an exercise related to **Arrays**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 95
-Task: Practice an exercise related to **Arrays**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-# String Processing
 
-## Question 96
-Task: Practice an exercise related to **String Processing**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 97
-Task: Practice an exercise related to **String Processing**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 98
-Task: Practice an exercise related to **String Processing**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 99
-Task: Practice an exercise related to **String Processing**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 100
-Task: Practice an exercise related to **String Processing**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 101
-Task: Practice an exercise related to **String Processing**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 102
-Task: Practice an exercise related to **String Processing**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 103
-Task: Practice an exercise related to **String Processing**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 104
-Task: Practice an exercise related to **String Processing**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 105
-Task: Practice an exercise related to **String Processing**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-# Files and Directories
 
-## Question 106
-Task: Practice an exercise related to **Files and Directories**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 107
-Task: Practice an exercise related to **Files and Directories**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 108
-Task: Practice an exercise related to **Files and Directories**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 109
-Task: Practice an exercise related to **Files and Directories**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 110
-Task: Practice an exercise related to **Files and Directories**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 111
-Task: Practice an exercise related to **Files and Directories**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 112
-Task: Practice an exercise related to **Files and Directories**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
 
-## Question 113
-Task: Practice an exercise related to **Files and Directories**.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+Here is the expanded version of **PART 2 (Q51–Q100)**. All original content has been preserved, and detailed explanations have been added to every code block.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 114
-Task: Practice an exercise related to **Files and Directories**.
+# 💪 BASH MASTER SERIES — 200 HARD QUESTIONS
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## PART 2 (Q51–Q100)
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 115
-Task: Practice an exercise related to **Files and Directories**.
+# 🔹 CONDITIONAL STATEMENTS (Q51–Q70)
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q51. Check if number is positive
 
-# Sed Awk Grep Regex
+**Task:**
+Write a script that checks if a number is positive.
 
-## Question 116
-Task: Practice an exercise related to **Sed Awk Grep Regex**.
+**Hint:**
+Use `(( ))` comparison.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Master Guide:**
+Conditions control program flow.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 117
-Task: Practice an exercise related to **Sed Awk Grep Regex**.
+```bash
+read n
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+if (( n > 0 )); then
+  echo "Positive number"
+fi
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `read n`: Accepts user input and stores it in variable `n`.
+- `(( n > 0 ))`: Uses arithmetic evaluation to check if `n` is greater than zero.
+- If the condition is true, it prints "Positive number". No action is taken for zero or negative numbers.
 
-## Question 118
-Task: Practice an exercise related to **Sed Awk Grep Regex**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q52. Check if number is negative
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 119
-Task: Practice an exercise related to **Sed Awk Grep Regex**.
+```bash
+read n
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+if (( n < 0 )); then
+  echo "Negative number"
+fi
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `(( n < 0 ))`: Checks if the number is strictly less than zero.
+- This logic identifies negative integers.
 
-## Question 120
-Task: Practice an exercise related to **Sed Awk Grep Regex**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q53. Check even or odd
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 121
-Task: Practice an exercise related to **Sed Awk Grep Regex**.
+```bash
+read n
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+if (( n % 2 == 0 )); then
+  echo "Even"
+else
+  echo "Odd"
+fi
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `n % 2`: The modulo operator calculates the remainder when `n` is divided by 2.
+- If the remainder is 0, the number is Even. Otherwise, it flows to the `else` block and prints "Odd".
 
-## Question 122
-Task: Practice an exercise related to **Sed Awk Grep Regex**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q54. Compare two numbers
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 123
-Task: Practice an exercise related to **Sed Awk Grep Regex**.
+```bash
+read a b
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+if (( a > b )); then
+  echo "A is greater"
+elif (( a < b )); then
+  echo "B is greater"
+else
+  echo "Equal"
+fi
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `read a b`: Reads two inputs simultaneously.
+- `elif`: Stands for "else if". It checks a second condition if the first one fails.
+- The logic covers three possibilities: A is larger, B is larger, or they are equal.
 
-## Question 124
-Task: Practice an exercise related to **Sed Awk Grep Regex**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q55. Check if file exists
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 125
-Task: Practice an exercise related to **Sed Awk Grep Regex**.
+```bash
+read file
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+if [ -f "$file" ]; then
+  echo "File exists"
+fi
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `[ -f "$file" ]`: The `-f` flag tests if the provided path exists and is a regular file (not a directory).
+- It returns true only if the file is found.
 
-## Question 126
-Task: Practice an exercise related to **Sed Awk Grep Regex**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q56. Check directory exists
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 127
-Task: Practice an exercise related to **Sed Awk Grep Regex**.
+```bash
+read dir
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+if [ -d "$dir" ]; then
+  echo "Directory exists"
+fi
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `[ -d "$dir" ]`: The `-d` flag specifically tests for the existence of a directory.
+- It distinguishes folders from files.
 
-## Question 128
-Task: Practice an exercise related to **Sed Awk Grep Regex**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q57. Check empty string
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 129
-Task: Practice an exercise related to **Sed Awk Grep Regex**.
+```bash
+read str
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+if [ -z "$str" ]; then
+  echo "Empty string"
+fi
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `[ -z "$str" ]`: Returns true if the length of the string `str` is zero.
+- This is the standard way to check if a user pressed Enter without typing input.
 
-## Question 130
-Task: Practice an exercise related to **Sed Awk Grep Regex**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q58. Password validation
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-# Processes and Jobs
+```bash
+read pass
 
-## Question 131
-Task: Practice an exercise related to **Processes and Jobs**.
+if [ "$pass" = "admin" ]; then
+  echo "Access granted"
+fi
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `[ "$pass" = "admin" ]`: Performs a string comparison.
+- It checks if the user input exactly matches the string "admin".
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 132
-Task: Practice an exercise related to **Processes and Jobs**.
+## Q59. Check file writable
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+read file
 
-## Question 133
-Task: Practice an exercise related to **Processes and Jobs**.
+if [ -w "$file" ]; then
+  echo "Writable"
+fi
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `[ -w "$file" ]`: Checks if the file exists **and** if the current user has write permissions for it.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 134
-Task: Practice an exercise related to **Processes and Jobs**.
+## Q60. Check file readable
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+read file
 
-## Question 135
-Task: Practice an exercise related to **Processes and Jobs**.
+if [ -r "$file" ]; then
+  echo "Readable"
+fi
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `[ -r "$file" ]`: Checks if the file exists **and** if the current user has read permissions.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 136
-Task: Practice an exercise related to **Processes and Jobs**.
+## Q61. Nested if example
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+read n
 
-## Question 137
-Task: Practice an exercise related to **Processes and Jobs**.
+if (( n > 0 )); then
+  if (( n > 10 )); then
+    echo "Big positive number"
+  fi
+fi
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- The outer `if` checks if the number is positive.
+- Only if it is positive does it enter the inner `if`, which checks if it is greater than 10.
+- This logic filters for numbers in a specific subset (e.g., 11, 12, 100...).
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 138
-Task: Practice an exercise related to **Processes and Jobs**.
+## Q62. AND condition
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+read a b
 
-## Question 139
-Task: Practice an exercise related to **Processes and Jobs**.
+if (( a > 0 && b > 0 )); then
+  echo "Both positive"
+fi
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `&&`: The logical AND operator inside arithmetic brackets `(( ))`.
+- Both conditions (`a > 0` and `b > 0`) must be true for the echo command to run.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 140
-Task: Practice an exercise related to **Processes and Jobs**.
+## Q63. OR condition
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+read a b
 
-# Networking and System Admin
+if (( a > 0 || b > 0 )); then
+  echo "At least one positive"
+fi
+```
 
-## Question 141
-Task: Practice an exercise related to **Networking and System Admin**.
+**Explanation:**
+- `||`: The logical OR operator.
+- The condition is true if *either* `a` is positive *or* `b` is positive (or both).
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q64. File size check
 
-## Question 142
-Task: Practice an exercise related to **Networking and System Admin**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+file="data.txt"
+size=$(stat -c%s "$file")
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+if (( size > 1000 )); then
+  echo "Large file"
+fi
+```
 
-## Question 143
-Task: Practice an exercise related to **Networking and System Admin**.
+**Explanation:**
+- `stat -c%s "$file"`: Retrieves the file size in bytes.
+- `(( size > 1000 ))`: Checks if the size exceeds 1000 bytes.
+- This is useful for filtering out small or empty files.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q65. Username validation
 
-## Question 144
-Task: Practice an exercise related to **Networking and System Admin**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+read user
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+if [ -n "$user" ]; then
+  echo "Valid user"
+fi
+```
 
-## Question 145
-Task: Practice an exercise related to **Networking and System Admin**.
+**Explanation:**
+- `[ -n "$user" ]`: The `-n` flag checks if the string length is non-zero.
+- It ensures the user did not submit an empty username.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q66. Multiple condition check
 
-## Question 146
-Task: Practice an exercise related to **Networking and System Admin**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+read n
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+if (( n >= 1 && n <= 100 )); then
+  echo "Valid range"
+fi
+```
 
-## Question 147
-Task: Practice an exercise related to **Networking and System Admin**.
+**Explanation:**
+- Combines two comparisons with `&&`.
+- Checks if `n` is between 1 and 100 inclusive.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q67. Check file is empty
 
-## Question 148
-Task: Practice an exercise related to **Networking and System Admin**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+read file
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+if [ ! -s "$file" ]; then
+  echo "File is empty"
+fi
+```
 
-## Question 149
-Task: Practice an exercise related to **Networking and System Admin**.
+**Explanation:**
+- `-s "$file"`: Returns true if the file size is greater than zero.
+- `!`: Negates the condition.
+- So, `[ ! -s "$file" ]` means "If it is NOT true that the file has size > 0", i.e., the file is empty.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q68. Compare strings
 
-## Question 150
-Task: Practice an exercise related to **Networking and System Admin**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+read a b
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+if [ "$a" = "$b" ]; then
+  echo "Equal"
+fi
+```
 
-# Error Handling and Debugging
+**Explanation:**
+- Uses the single `=` sign for string equality inside single brackets `[ ]`.
+- Checks if the two input strings are identical.
 
-## Question 151
-Task: Practice an exercise related to **Error Handling and Debugging**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q69. Case sensitive check
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 152
-Task: Practice an exercise related to **Error Handling and Debugging**.
+```bash
+read str
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+if [[ "$str" == "Hello" ]]; then
+  echo "Matched"
+fi
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `[[ ... ]]`: Double brackets are used for more advanced pattern matching.
+- `==`: Performs a string comparison. It is case-sensitive, so "hello" or "HELLO" would not match "Hello".
 
-## Question 153
-Task: Practice an exercise related to **Error Handling and Debugging**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q70. File type check
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 154
-Task: Practice an exercise related to **Error Handling and Debugging**.
+```bash
+read file
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+if [ -f "$file" ]; then
+  echo "Regular file"
+elif [ -d "$file" ]; then
+  echo "Directory"
+fi
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- Checks the file type using `elif`.
+- If `-f` is true, it's a regular file. If not, it checks `-d` to see if it's a directory.
 
-## Question 155
-Task: Practice an exercise related to **Error Handling and Debugging**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+# 🔹 LOOPS ADVANCED (Q71–Q90)
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 156
-Task: Practice an exercise related to **Error Handling and Debugging**.
+## Q71. Print numbers 1–100
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+for i in {1..100}; do
+  echo $i
+done
+```
 
-## Question 157
-Task: Practice an exercise related to **Error Handling and Debugging**.
+**Explanation:**
+- `{1..100}`: Bash brace expansion that generates a sequence from 1 to 100.
+- The loop iterates through every number in that sequence.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q72. Sum even numbers
 
-## Question 158
-Task: Practice an exercise related to **Error Handling and Debugging**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+sum=0
+for i in {1..20}; do
+  (( i % 2 == 0 )) && sum=$((sum + i))
+done
+echo $sum
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- Iterates 1 to 20.
+- `(( i % 2 == 0 ))`: Checks if the number is even.
+- `sum=$((sum + i))`: Adds the even number to the running total.
+- Calculates the sum of 2+4+6...+20.
 
-## Question 159
-Task: Practice an exercise related to **Error Handling and Debugging**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q73. Print multiplication table
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 160
-Task: Practice an exercise related to **Error Handling and Debugging**.
+```bash
+read n
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+for i in {1..10}; do
+  echo $((n * i))
+done
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- Takes a number `n` as input.
+- Loops from 1 to 10.
+- `$((n * i))`: Multiplies the input number by the loop counter, effectively printing the multiplication table for that number.
 
-# Advanced Bash
+---
 
-## Question 161
-Task: Practice an exercise related to **Advanced Bash**.
+## Q74. Countdown loop
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+for i in {10..1}; do
+  echo $i
+done
+```
 
-## Question 162
-Task: Practice an exercise related to **Advanced Bash**.
+**Explanation:**
+- `{10..1}`: Generates a sequence in reverse order.
+- Prints numbers starting from 10 down to 1.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q75. While loop counter
 
-## Question 163
-Task: Practice an exercise related to **Advanced Bash**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+i=1
+while (( i <= 10 )); do
+  echo $i
+  ((i++))
+done
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `i=1`: Initializes the counter variable.
+- `while (( i <= 10 ))`: Runs the loop as long as `i` is less than or equal to 10.
+- `((i++))`: Increments `i` by 1 in every iteration. This is the C-style increment operator.
 
-## Question 164
-Task: Practice an exercise related to **Advanced Bash**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q76. Until loop
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 165
-Task: Practice an exercise related to **Advanced Bash**.
+```bash
+i=1
+until (( i > 5 )); do
+  echo $i
+  ((i++))
+done
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `until`: This loop is the opposite of `while`. It runs *until* the condition becomes true.
+- It keeps running while `i` is NOT greater than 5. Once `i` becomes 6, the condition `i > 5` is true, and the loop stops.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 166
-Task: Practice an exercise related to **Advanced Bash**.
+## Q77. Infinite loop safe stop
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+while true; do
+  echo "Running..."
+  sleep 1
+done
+```
 
-## Question 167
-Task: Practice an exercise related to **Advanced Bash**.
+**Explanation:**
+- `while true`: Creates an infinite loop.
+- `sleep 1`: Pauses execution for 1 second between prints to avoid consuming 100% CPU.
+- (Note: To stop this script, you must manually interrupt it with Ctrl+C).
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q78. Skip number 5
 
-## Question 168
-Task: Practice an exercise related to **Advanced Bash**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+for i in {1..10}; do
+  [[ $i == 5 ]] && continue
+  echo $i
+done
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `[[ $i == 5 ]]`: Checks if the iterator is 5.
+- `continue`: Skips the rest of the current iteration code and jumps immediately to the next iteration.
+- Number 5 is never printed.
 
-## Question 169
-Task: Practice an exercise related to **Advanced Bash**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q79. Break at 7
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 170
-Task: Practice an exercise related to **Advanced Bash**.
+```bash
+for i in {1..10}; do
+  [[ $i == 7 ]] && break
+  echo $i
+done
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- Loops 1 through 10.
+- When `i` reaches 7, `break` executes.
+- `break` terminates the loop entirely. Numbers 7, 8, 9, and 10 are never reached or printed.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 171
-Task: Practice an exercise related to **Advanced Bash**.
+## Q80. Loop through arguments
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+for arg in "$@"; do
+  echo $arg
+done
+```
 
-## Question 172
-Task: Practice an exercise related to **Advanced Bash**.
+**Explanation:**
+- `"$@"`: Represents all command-line arguments passed to the script.
+- The loop iterates through each argument one by one.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q81. File loop
 
-## Question 173
-Task: Practice an exercise related to **Advanced Bash**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+for f in *.txt; do
+  echo "$f"
+done
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `*.txt`: A glob pattern matching all files ending in `.txt`.
+- The loop iterates through the filenames found in the current directory.
 
-## Question 174
-Task: Practice an exercise related to **Advanced Bash**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q82. Count files
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 175
-Task: Practice an exercise related to **Advanced Bash**.
+```bash
+count=0
+for f in *; do
+  ((count++))
+done
+echo $count
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- `for f in *`: Loops through every item (file and directory) in the current folder.
+- `((count++))`: Adds 1 to the counter for every item found.
+- Finally prints the total count.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-# Projects
+## Q83. Find max number
 
-## Question 176
-Task: Practice an exercise related to **Projects**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+max=0
+for i in 3 8 2 9; do
+  (( i > max )) && max=$i
+done
+echo $max
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- Loops through the specific list: 3, 8, 2, 9.
+- Compares the current number `i` with the stored `max`.
+- If `i` is bigger, it becomes the new `max`. Finally prints 9.
 
-## Question 177
-Task: Practice an exercise related to **Projects**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q84. Nested loop
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 178
-Task: Practice an exercise related to **Projects**.
+```bash
+for i in 1 2; do
+  for j in 1 2; do
+    echo "$i,$j"
+  done
+done
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- The outer loop runs for `i=1` and `i=2`.
+- For every iteration of the outer loop, the inner loop runs completely for `j=1` and `j=2`.
+- Output will be: 1,1; 1,2; 2,1; 2,2.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 179
-Task: Practice an exercise related to **Projects**.
+## Q85. Loop with step
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+for i in {0..10..2}; do
+  echo $i
+done
+```
 
-## Question 180
-Task: Practice an exercise related to **Projects**.
+**Explanation:**
+- `{0..10..2}`: This brace expansion syntax means "start at 0, end at 10, increment by 2".
+- Output will be: 0, 2, 4, 6, 8, 10.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q86. File line reader
 
-## Question 181
-Task: Practice an exercise related to **Projects**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+while read line; do
+  echo $line
+done < file.txt
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- `done < file.txt`: Redirects the file into the loop.
+- `while read line`: Reads the file line by line.
+- This is the standard, memory-efficient way to process text files in Bash.
 
-## Question 182
-Task: Practice an exercise related to **Projects**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q87. Process file lines
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 183
-Task: Practice an exercise related to **Projects**.
+```bash
+count=0
+while read line; do
+  ((count++))
+done < file.txt
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+echo $count
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- Combines file redirection with a counter.
+- Increments `count` for every line read from `file.txt`.
+- Effectively counts the total number of lines in the file.
 
-## Question 184
-Task: Practice an exercise related to **Projects**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+## Q88. Loop with condition
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Code Idea:**
 
-## Question 185
-Task: Practice an exercise related to **Projects**.
+```bash
+for i in {1..10}; do
+  if (( i % 3 == 0 )); then
+    echo $i
+  fi
+done
+```
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Explanation:**
+- Loops 1 to 10.
+- The `if` statement checks if the number is divisible by 3 (`i % 3 == 0`).
+- Only prints numbers 3, 6, and 9.
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 186
-Task: Practice an exercise related to **Projects**.
+## Q89. Reverse loop
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+for ((i=10;i>=1;i--)); do
+  echo $i
+done
+```
 
-## Question 187
-Task: Practice an exercise related to **Projects**.
+**Explanation:**
+- `for ((i=10;i>=1;i--))`: This is C-style syntax for a for loop.
+- `i=10`: Initialization.
+- `i>=1`: Condition (run while true).
+- `i--`: Decrement operator (decreases `i` by 1 each time).
+- Prints 10 down to 1.
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+---
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+## Q90. Parallel loop simulation
 
-## Question 188
-Task: Practice an exercise related to **Projects**.
+**Code Idea:**
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+```bash
+for i in 1 2 3; do
+  echo "Task $i running"
+done
+```
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+**Explanation:**
+- A simple loop simulating the start of multiple tasks.
+- In a real scenario, the body of the loop might trigger background processes (using `&`), but here it just logs the activity sequentially.
 
-## Question 189
-Task: Practice an exercise related to **Projects**.
+---
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+# 🔹 FUNCTIONS (Q91–Q100)
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+---
 
-## Question 190
-Task: Practice an exercise related to **Projects**.
+## Q91. Basic function
 
-**Hint:** Break the task into smaller scripts and test incrementally.
+**Code Idea:**
 
-**Code Idea:** Start with `#!/bin/bash`, add comments, then implement step by step.
+```bash
+hello() {
+  echo "Hello World"
+}
+hello
+```
 
+**Explanation:**
+- `hello() { ... }`: Defines a function named `hello`.
+- `hello`: The command that calls/executes the function.
+
+---
+
+## Q92. Function with parameter
+
+**Code Idea:**
+
+```bash
+greet() {
+  echo "Hi $1"
+}
+greet John
+```
+
+**Explanation:**
+- `$1`: Inside a function, this refers to the first argument passed *to the function*, not the script.
+- `greet John`: Calls the function and passes "John" as the first argument. Output: "Hi John".
+
+---
+
+## Q93. Add function
+
+**Code Idea:**
+
+```bash
+add() {
+  echo $(( $1 + $2 ))
+}
+```
+
+**Explanation:**
+- Accepts two arguments (`$1`, `$2`).
+- Performs arithmetic addition and prints the result.
+- Usage: `add 5 3` would output `8`.
+
+---
+
+## Q94. Subtract function
+
+**Code Idea:**
+
+```bash
+sub() {
+  echo $(( $1 - $2 ))
+}
+```
+
+**Explanation:**
+- Performs arithmetic subtraction.
+- Usage: `sub 10 4` would output `6`.
+
+---
+
+## Q95. Multiply function
+
+**Code Idea:**
+
+```bash
+mul() {
+  echo $(( $1 * $2 ))
+}
+```
+
+**Explanation:**
+- Performs arithmetic multiplication using the `*` operator inside `$(( ))`.
+
+---
+
+## Q96. Divide function
+
+**Code Idea:**
+
+```bash
+div() {
+  echo $(( $1 / $2 ))
+}
+```
+
+**Explanation:**
+- Performs integer division.
+- Usage: `div 10 3` would output `3` (decimals are truncated in Bash arithmetic).
+
+---
+
+## Q97. File check function
+
+**Code Idea:**
+
+```bash
+check() {
+  [ -f "$1" ] && echo "Exists"
+}
+```
+
+**Explanation:**
+- A reusable function to test if a file exists.
+- It uses the `-f` test on the first argument passed to it.
+
+---
+
+## Q98. Logging function
+
+**Code Idea:**
+
+```bash
+log() {
+  echo "[$(date)] $1"
+}
+```
+
+**Explanation:**
+- Formats a message with a timestamp.
+- `$(date)` executes the date command and inserts the output.
+- Usage: `log "System boot"` -> `[Mon Oct 30 10:00:00 UTC 2023] System boot`.
+
+---
+
+## Q99. Exit function
+
+**Code Idea:**
+
+```bash
+fail() {
+  echo "Error"
+  exit 1
+}
+```
+
+**Explanation:**
+- Designed for error handling.
+- Prints "Error" to stdout.
+- `exit 1`: Terminates the script immediately with an exit status of 1 (indicating failure).
+
+---
+
+## Q100. Multi-function system
+
+**Code Idea:**
+
+```bash
+start() { echo "Start"; }
+stop() { echo "Stop"; }
+
+start
+stop
+```
+
+**Explanation:**
+- Defines two distinct functions.
+- The script calls them in sequence, creating a simple "start then stop" workflow.
+- Demonstrates how scripts can be modularized into different actions.
+
+---
+
+# ✔ PART 2 COMPLETE (Q51–Q100)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Here is the expanded version of **PART 3 (Q101–Q150)**. All original content has been preserved, and detailed explanations have been added to every code block.
+
+---
+
+# 💪 BASH MASTER SERIES — 200 HARD QUESTIONS
+
+## PART 3 (Q101–Q150)
+
+---
+
+# 🔹 FILE OPERATIONS & MANAGEMENT (Q101–Q120)
+
+---
+
+## Q101. Create multiple files at once
+
+**Task:**
+Create files `file1.txt` to `file5.txt`.
+
+**Hint:**
+Use loop and `touch`
+
+**Master Guide:**
+Batch file creation is common in automation.
+
+**Code Idea:**
+
+```bash
+for i in {1..5}; do
+  touch "file$i.txt"
+done
+```
+
+**Explanation:**
+- `for i in {1..5}`: Loops with `$i` taking values 1, 2, 3, 4, 5.
+- `touch "file$i.txt"`: The `touch` command updates the timestamp of a file or creates it if it doesn't exist.
+- This loop creates `file1.txt`, `file2.txt`, etc., efficiently.
+
+---
+
+## Q102. Delete files by pattern
+
+**Task:**
+Delete all `.tmp` files.
+
+**Hint:**
+Use wildcard `*`
+
+**Master Guide:**
+Always filter before deleting.
+
+**Code Idea:**
+
+```bash
+rm -f *.tmp
+```
+
+**Explanation:**
+- `rm`: The remove command.
+- `-f`: Force flag; it does not prompt for confirmation and ignores nonexistent files.
+- `*.tmp`: A glob pattern that matches every file ending in `.tmp` in the current directory.
+
+---
+
+## Q103. Move files to folder
+
+**Code Idea:**
+
+```bash
+mkdir -p archive
+mv *.txt archive/
+```
+
+**Explanation:**
+- `mkdir -p archive`: Creates the destination directory. `-p` prevents errors if it already exists.
+- `mv *.txt archive/`: Moves all text files from the current directory into the `archive` folder.
+
+---
+
+## Q104. Copy files with condition
+
+**Task:**
+Copy only `.txt` files larger than 1KB.
+
+**Code Idea:**
+
+```bash
+find . -type f -name "*.txt" -size +1k -exec cp {} backup/ \;
+```
+
+**Explanation:**
+- `find .`: Start searching in the current directory.
+- `-type f -name "*.txt"`: Look only for regular files ending in `.txt`.
+- `-size +1k`: Filter for files larger than 1 kilobyte.
+- `-exec cp {} backup/ \;`: Executes the `cp` command on every file found. `{}` is a placeholder replaced by the filename.
+
+---
+
+## Q105. Find largest file
+
+**Code Idea:**
+
+```bash
+ls -S | head -n 1
+```
+
+**Explanation:**
+- `ls -S`: Lists files sorted by size (largest first).
+- `| head -n 1`: Pipes the output to `head`, which displays only the first line (the largest file).
+
+---
+
+## Q106. Find smallest file
+
+**Code Idea:**
+
+```bash
+ls -S | tail -n 1
+```
+
+**Explanation:**
+- `ls -S`: Lists files sorted by size (largest to smallest).
+- `| tail -n 1`: Takes the last line of that output, which represents the smallest file.
+
+---
+
+## Q107. Show file permissions
+
+**Code Idea:**
+
+```bash
+ls -l
+```
+
+**Explanation:**
+- `ls`: List directory contents.
+- `-l`: Use long listing format. This displays permissions (e.g., `-rwxr-xr-x`), owner, group, size, and modification time.
+
+---
+
+## Q108. Change file permissions
+
+**Code Idea:**
+
+```bash
+chmod 755 script.sh
+```
+
+**Explanation:**
+- `chmod`: Change mode (permissions).
+- `755`: An octal code. `7` (Owner: Read/Write/Execute), `5` (Group: Read/Execute), `5` (Others: Read/Execute). This is standard for executable scripts.
+
+---
+
+## Q109. Make script executable
+
+**Code Idea:**
+
+```bash
+chmod +x script.sh
+```
+
+**Explanation:**
+- `+x`: A symbolic mode that adds the execute permission for everyone (User, Group, Others).
+- A simpler way to make a script runnable without setting specific read/write numbers.
+
+---
+
+## Q110. Change ownership (simulated)
+
+**Code Idea:**
+
+```bash
+ls -l file.txt
+```
+
+**Explanation:**
+- (Note: The code here simulates checking the current owner).
+- `ls -l file.txt`: Displays the owner and group of the specific file. To actually change ownership, the command `chown user:group file.txt` would be used.
+
+---
+
+## Q111. Count files in directory
+
+**Code Idea:**
+
+```bash
+ls | wc -l
+```
+
+**Explanation:**
+- `ls`: Lists all non-hidden files.
+- `| wc -l`: Pipes the list to `wc` (word count) with the `-l` flag, which counts the number of lines (items).
+
+---
+
+## Q112. Find hidden files
+
+**Code Idea:**
+
+```bash
+ls -a
+```
+
+**Explanation:**
+- `ls`: List command.
+- `-a`: "All" flag. It shows hidden files (those starting with a dot `.`) which are normally suppressed.
+
+---
+
+## Q113. Create nested directories
+
+**Code Idea:**
+
+```bash
+mkdir -p a/b/c
+```
+
+**Explanation:**
+- `mkdir`: Make directory.
+- `-p`: "Parents" flag. It creates parent directories `a` and `a/b` if they don't exist, allowing the creation of the full tree `a/b/c` in one command.
+
+---
+
+## Q114. Remove directory tree
+
+**Code Idea:**
+
+```bash
+rm -rf folder
+```
+
+**Explanation:**
+- `rm`: Remove command.
+- `-r`: Recursive. Deletes the folder and all its contents (sub-folders/files).
+- `-f`: Force. Suppresses warnings for non-existent files or write-protected files.
+- **Warning**: This is irreversible and powerful.
+
+---
+
+## Q115. Rename directory
+
+**Code Idea:**
+
+```bash
+mv olddir newdir
+```
+
+**Explanation:**
+- `mv`: The move command, which doubles as the rename command.
+- It moves `olddir` to the name `newdir` effectively renaming it if they are in the same location.
+
+---
+
+## Q116. List files with details
+
+**Code Idea:**
+
+```bash
+ls -lh
+```
+
+**Explanation:**
+- `-l`: Long format.
+- `-h`: Human-readable sizes (e.g., 4.0K, 12M instead of raw bytes).
+- Combining them gives a detailed, easy-to-read list.
+
+---
+
+## Q117. Sort files by time
+
+**Code Idea:**
+
+```bash
+ls -lt
+```
+
+**Explanation:**
+- `-l`: Long format.
+- `-t`: Sort by modification time (newest first). Useful for seeing what was recently changed.
+
+---
+
+## Q118. Find files by extension
+
+**Code Idea:**
+
+```bash
+find . -name "*.sh"
+```
+
+**Explanation:**
+- `find .`: Search current directory recursively.
+- `-name "*.sh"`: Matches filenames ending in `.sh`.
+
+---
+
+## Q119. Find empty directories
+
+**Code Idea:**
+
+```bash
+find . -type d -empty
+```
+
+**Explanation:**
+- `-type d`: Look only for directories.
+- `-empty`: Match only directories that contain no files.
+
+---
+
+## Q120. Backup system folder
+
+**Code Idea:**
+
+```bash
+tar -czf backup.tar.gz myfolder/
+```
+
+**Explanation:**
+- `tar`: Tape archive command.
+- `-c`: Create a new archive.
+- `-z`: Compress with gzip.
+- `-f`: Filename of the archive (`backup.tar.gz`).
+- This bundles `myfolder` into a single compressed file.
+
+---
+
+# 🔹 TEXT PROCESSING (Q121–Q140)
+
+---
+
+## Q121. Search word in file
+
+**Code Idea:**
+
+```bash
+grep "error" file.txt
+```
+
+**Explanation:**
+- `grep`: Global Regular Expression Print.
+- Searches `file.txt` for the string "error" and prints every line that contains it.
+
+---
+
+## Q122. Case-insensitive search
+
+**Code Idea:**
+
+```bash
+grep -i "error" file.txt
+```
+
+**Explanation:**
+- `-i`: Ignore case.
+- Matches "error", "ERROR", "Error", etc.
+
+---
+
+## Q123. Count matches
+
+**Code Idea:**
+
+```bash
+grep -c "error" file.txt
+```
+
+**Explanation:**
+- `-c`: Count.
+- Instead of printing the lines, it outputs the total number of lines matching "error".
+
+---
+
+## Q124. Show line numbers
+
+**Code Idea:**
+
+```bash
+grep -n "error" file.txt
+```
+
+**Explanation:**
+- `-n`: Number.
+- Prepends each output line with its line number in the original file (e.g., `14:error found`).
+
+---
+
+## Q125. Replace text (sed)
+
+**Code Idea:**
+
+```bash
+sed 's/linux/bash/' file.txt
+```
+
+**Explanation:**
+- `sed`: Stream Editor.
+- `s/linux/bash/`: The substitution command. It replaces the *first* occurrence of "linux" with "bash" on every line.
+- Output goes to screen; the file is not modified unless `-i` is used.
+
+---
+
+## Q126. Replace all occurrences
+
+**Code Idea:**
+
+```bash
+sed 's/linux/bash/g' file.txt
+```
+
+**Explanation:**
+- `g`: Global flag.
+- Replaces *all* occurrences of "linux" with "bash" on every line, not just the first one.
+
+---
+
+## Q127. Extract column
+
+**Code Idea:**
+
+```bash
+cut -d":" -f1 file.txt
+```
+
+**Explanation:**
+- `cut`: Cuts out sections from each line of files.
+- `-d":"`: Sets the delimiter to a colon.
+- `-f1`: Selects the first field (column) based on that delimiter. Commonly used to parse `/etc/passwd`.
+
+---
+
+## Q128. Sort file
+
+**Code Idea:**
+
+```bash
+sort file.txt
+```
+
+**Explanation:**
+- Reads the file and outputs the lines in sorted order (alphabetical by default).
+
+---
+
+## Q129. Remove duplicates
+
+**Code Idea:**
+
+```bash
+sort file.txt | uniq
+```
+
+**Explanation:**
+- `sort`: Sorts the file (required because `uniq` only detects adjacent duplicates).
+- `uniq`: Removes repeated lines.
+- The pipe `|` passes sorted data to `uniq`.
+
+---
+
+## Q130. Count unique lines
+
+**Code Idea:**
+
+```bash
+sort file.txt | uniq -c
+```
+
+**Explanation:**
+- `uniq -c`: Counts how many times each line appears.
+- Output example: `   5 Error 404` (meaning "Error 404" appeared 5 times).
+
+---
+
+## Q131. Word count
+
+**Code Idea:**
+
+```bash
+wc -w file.txt
+```
+
+**Explanation:**
+- `wc`: Word count.
+- `-w`: Prints the number of words in the file.
+
+---
+
+## Q132. Line count
+
+**Code Idea:**
+
+```bash
+wc -l file.txt
+```
+
+**Explanation:**
+- `wc -l`: Prints the number of lines in the file.
+
+---
+
+## Q133. Character count
+
+**Code Idea:**
+
+```bash
+wc -m file.txt
+```
+
+**Explanation:**
+- `-m`: Prints the character count (including spaces and newlines).
+
+---
+
+## Q134. First 10 lines
+
+**Code Idea:**
+
+```bash
+head file.txt
+```
+
+**Explanation:**
+- `head`: Prints the top of the file.
+- By default, it prints the first 10 lines.
+
+---
+
+## Q135. Last 10 lines
+
+**Code Idea:**
+
+```bash
+tail file.txt
+```
+
+**Explanation:**
+- `tail`: Prints the end of the file.
+- By default, it prints the last 10 lines.
+
+---
+
+## Q136. Live file monitoring
+
+**Code Idea:**
+
+```bash
+tail -f file.txt
+```
+
+**Explanation:**
+- `-f`: Follow mode.
+- As the file grows (like a log file), `tail` continues to display new lines written to it in real-time.
+
+---
+
+## Q137. Search multiple files
+
+**Code Idea:**
+
+```bash
+grep "error" *.txt
+```
+
+**Explanation:**
+- `*.txt`: A glob matching all text files.
+- `grep` searches for "error" in every matched file and labels the output with the filename.
+
+---
+
+## Q138. Combine grep + sort
+
+**Code Idea:**
+
+```bash
+grep "bash" file.txt | sort
+```
+
+**Explanation:**
+- `grep`: Filters lines containing "bash".
+- `| sort`: Takes those specific lines and sorts them alphabetically.
+
+---
+
+## Q139. Extract specific field with awk
+
+**Code Idea:**
+
+```bash
+awk '{print $1}' file.txt
+```
+
+**Explanation:**
+- `awk`: A powerful text processing tool.
+- `$1`: Represents the first column (default separated by whitespace).
+- This prints only the first word/column of every line.
+
+---
+
+## Q140. Filter rows using awk
+
+**Code Idea:**
+
+```bash
+awk '$2 > 50' file.txt
+```
+
+**Explanation:**
+- `awk` checks a condition: If the second column (`$2`) is greater than 50.
+- It implicitly prints the entire line if the condition is true. This acts like a row filter based on numerical value.
+
+---
+
+# 🔹 PIPELINES & LOG ANALYSIS (Q141–Q150)
+
+---
+
+## Q141. Basic pipeline usage
+
+**Code Idea:**
+
+```bash
+cat file.txt | grep "error"
+```
+
+**Explanation:**
+- `cat file.txt`: Dumps the file content to standard output.
+- `|`: The pipe operator passes that output to the next command.
+- `grep "error"`: Filters the incoming stream for lines with "error".
+- (Note: `grep "error" file.txt` is more efficient, but this demonstrates piping).
+
+---
+
+## Q142. Chain multiple commands
+
+**Code Idea:**
+
+```bash
+cat file.txt | grep "error" | sort
+```
+
+**Explanation:**
+- Demonstrates chaining more than two commands.
+- 1. Read file.
+- 2. Filter for "error".
+- 3. Sort the error lines alphabetically.
+
+---
+
+## Q143. Find errors and count
+
+**Code Idea:**
+
+```bash
+grep "error" file.txt | wc -l
+```
+
+**Explanation:**
+- `grep`: Extracts lines with "error".
+- `wc -l`: Counts the lines.
+- Result: Total number of errors.
+
+---
+
+## Q144. Show top results
+
+**Code Idea:**
+
+```bash
+cat file.txt | head -n 5
+```
+
+**Explanation:**
+- Reads the file and extracts only the first 5 lines using `head`.
+
+---
+
+## Q145. Show last results
+
+**Code Idea:**
+
+```bash
+cat file.txt | tail -n 5
+```
+
+**Explanation:**
+- Reads the file and extracts only the last 5 lines using `tail`.
+
+---
+
+## Q146. Live log error tracking
+
+**Code Idea:**
+
+```bash
+tail -f log.txt | grep "error"
+```
+
+**Explanation:**
+- `tail -f`: Monitors the log file as it grows.
+- `| grep "error"`: Filters the live stream, printing only new lines that contain "error". This is crucial for real-time debugging.
+
+---
+
+## Q147. Extract and sort logs
+
+**Code Idea:**
+
+```bash
+cat log.txt | grep "fail" | sort
+```
+
+**Explanation:**
+- Finds all lines with "fail" in the log and sorts them alphabetically.
+- Useful for grouping similar failure messages together.
+
+---
+
+## Q148. Unique error list
+
+**Code Idea:**
+
+```bash
+grep "error" log.txt | sort | uniq
+```
+
+**Explanation:**
+- `grep`: Get error lines.
+- `sort`: Sort them (required for `uniq`).
+- `uniq`: Remove duplicates.
+- Result: A list of distinct error messages found in the log.
+
+---
+
+## Q149. Count errors per file
+
+**Code Idea:**
+
+```bash
+grep -c "error" log.txt
+```
+
+**Explanation:**
+- Uses `grep`'s built-in count flag.
+- Returns a single integer representing how many lines in `log.txt` contain "error".
+
+---
+
+## Q150. Log analyzer mini system
+
+**Code Idea:**
+
+```bash
+echo "Error Report"
+grep "error" log.txt | wc -l
+echo "Done"
+```
+
+**Explanation:**
+- A simple script to generate a report.
+- `echo`: Prints a header.
+- `grep ... | wc -l`: Calculates the count.
+- Prints "Done" at the end. This simulates a basic automated status check script.
+
+---
+
+# ✔ PART 3 COMPLETE (Q101–Q150)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Here is the expanded version of the **FINAL PART (Q151–Q200)**. All original content has been preserved, and detailed explanations have been added to every code block to ensure full understanding of these advanced concepts.
+
+---
+
+# 💪 BASH MASTER SERIES — 200 HARD QUESTIONS
+
+## PART 4 (Q151–Q200)
+
+---
+
+# 🔹 SYSTEM MONITORING (Q151–Q170)
+
+---
+
+## Q151. Check system uptime
+
+**Task:**
+Display how long the system has been running.
+
+**Hint:**
+Use `uptime`
+
+**Master Guide:**
+System monitoring starts with uptime.
+
+**Code Idea:**
+
+```bash
+uptime
+```
+
+**Explanation:**
+- `uptime`: This command displays the current time, how long the system has been running, how many users are currently logged in, and the system load averages for the past 1, 5, and 15 minutes. It is the quickest way to check server health stability.
+
+---
+
+## Q152. Show CPU usage snapshot
+
+**Code Idea:**
+
+```bash
+top -bn1 | head
+```
+
+**Explanation:**
+- `top`: A dynamic real-time viewer for system processes.
+- `-b`: "Batch mode" – allows sending output to a file or pipe.
+- `-n1`: Limits the output to exactly 1 iteration (snapshot) instead of updating continuously.
+- `| head`: Displays only the top portion (summary and leading processes), providing a quick CPU status.
+
+---
+
+## Q153. Show memory usage
+
+**Code Idea:**
+
+```bash
+free -m
+```
+
+**Explanation:**
+- `free`: Displays the total amount of free and used physical and swap memory.
+- `-m`: Shows the output in megabytes (MiB). Without flags, it defaults to kilobytes.
+
+---
+
+## Q154. Show disk usage
+
+**Code Idea:**
+
+```bash
+df -h
+```
+
+**Explanation:**
+- `df`: "Disk Free" – reports file system disk space usage.
+- `-h`: "Human-readable" – prints sizes in powers of 1024 (e.g., 15G, 2.5M) making it easier to read than raw blocks.
+
+---
+
+## Q155. Monitor running processes
+
+**Code Idea:**
+
+```bash
+ps aux
+```
+
+**Explanation:**
+- `ps`: Process status.
+- `a`: Show processes for all users.
+- `u`: Display the process's user/owner.
+- `x`: Show processes not attached to a terminal (like daemons).
+- This gives a complete snapshot of every process running on the system.
+
+---
+
+## Q156. Find specific process
+
+**Code Idea:**
+
+```bash
+ps aux | grep bash
+```
+
+**Explanation:**
+- `ps aux`: Lists all processes.
+- `| grep bash`: Filters the list to show only lines containing the word "bash".
+- This is the standard way to verify if a specific service or script is currently running.
+
+---
+
+## Q157. Kill process by PID
+
+**Code Idea:**
+
+```bash
+kill -9 1234
+```
+
+**Explanation:**
+- `kill`: A command to send a signal to a process.
+- `1234`: The Process ID (PID) to target.
+- `-9`: The signal number for `SIGKILL`. This forces the process to terminate immediately without allowing it to clean up (use as a last resort).
+
+---
+
+## Q158. Background process
+
+**Code Idea:**
+
+```bash
+sleep 30 &
+```
+
+**Explanation:**
+- `sleep 30`: Pauses execution for 30 seconds.
+- `&`: The ampersand placed at the end of a command pushes it to the background.
+- This frees up your terminal so you can run other commands while `sleep` counts down in the background.
+
+---
+
+## Q159. List jobs
+
+**Code Idea:**
+
+```bash
+jobs
+```
+
+**Explanation:**
+- `jobs`: Lists the active jobs currently running in the background or stopped for the current shell session.
+- It shows the job number and status (e.g., Running, Stopped).
+
+---
+
+## Q160. Bring job to foreground
+
+**Code Idea:**
+
+```bash
+fg
+```
+
+**Explanation:**
+- `fg`: "Foreground".
+- Moves a background job into the foreground so it becomes the active process on your terminal. If multiple jobs exist, you can specify `%1`, `%2`, etc.
+
+---
+
+## Q161. Send job to background
+
+**Code Idea:**
+
+```bash
+bg
+```
+
+**Explanation:**
+- `bg`: "Background".
+- Resumes a suspended (stopped) job in the background.
+- Commonly used after pausing a process with `Ctrl+Z`.
+
+---
+
+## Q162. Check internet connection
+
+**Code Idea:**
+
+```bash
+ping -c 1 google.com
+```
+
+**Explanation:**
+- `ping`: Sends ICMP packets to a network host to check connectivity.
+- `-c 1`: Limits the count to 1 packet. Without this, `ping` runs indefinitely.
+- Useful in scripts to check if a server is online before attempting a download.
+
+---
+
+## Q163. Download file with wget
+
+**Code Idea:**
+
+```bash
+wget https://example.com/file.txt
+```
+
+**Explanation:**
+- `wget`: A non-interactive network downloader.
+- It downloads the file from the URL to the current directory.
+- It is robust and handles resuming downloads automatically if interrupted.
+
+---
+
+## Q164. Download file with curl
+
+**Code Idea:**
+
+```bash
+curl -O https://example.com/file.txt
+```
+
+**Explanation:**
+- `curl`: Transfer data to or from a server.
+- `-O` (Capital O): Saves the file with the same name as it has on the remote server.
+- Without `-O`, `curl` would dump the file content to the screen (stdout).
+
+---
+
+## Q165. System load check
+
+**Code Idea:**
+
+```bash
+uptime
+```
+
+**Explanation:**
+- This repeats the uptime command (Q151).
+- The specific focus here is the "load average" section. Load averages under 1.0 (per CPU core) typically indicate a healthy system. High numbers suggest the CPU is overloaded.
+
+---
+
+## Q166. Show logged users
+
+**Code Idea:**
+
+```bash
+who
+```
+
+**Explanation:**
+- `who`: Shows who is currently logged into the system.
+- It displays the username, terminal line, login time, and remote host IP.
+
+---
+
+## Q167. Show system date
+
+**Code Idea:**
+
+```bash
+date
+```
+
+**Explanation:**
+- `date`: Prints the current system date and time.
+- Highly customizable with format strings (e.g., `date +%Y-%m-%d`) for use in log filenames.
+
+---
+
+## Q168. Show hardware info
+
+**Code Idea:**
+
+```bash
+lscpu
+```
+
+**Explanation:**
+- `lscpu`: Displays information about the CPU architecture.
+- Includes cores, threads, model name, and cache size. Critical for performance tuning.
+
+---
+
+## Q169. Show memory details
+
+**Code Idea:**
+
+```bash
+cat /proc/meminfo
+```
+
+**Explanation:**
+- `/proc/meminfo`: A special virtual file containing detailed statistics about memory usage.
+- `cat` dumps this file.
+- It provides much more granular detail than the `free` command (e.g., buffers, cache, active/inactive memory).
+
+---
+
+## Q170. System health summary
+
+**Code Idea:**
+
+```bash
+uptime
+free -m
+df -h
+```
+
+**Explanation:**
+- Runs three commands sequentially.
+- Provides a quick, holistic snapshot of Load (uptime), RAM (free), and Disk (df).
+- A standard combination for a "first glance" at server health.
+
+---
+
+# 🔹 ADVANCED FILE AUTOMATION (Q171–Q185)
+
+---
+
+## Q171. Create backup archive
+
+**Code Idea:**
+
+```bash
+tar -czf backup.tar.gz folder/
+```
+
+**Explanation:**
+- `tar`: Tape archiver.
+- `-c`: Create a new archive.
+- `-z`: Compress with gzip (reduces file size).
+- `-f`: Specify the filename (`backup.tar.gz`).
+- Bundles `folder/` into a single compressed file, ideal for backups.
+
+---
+
+## Q172. Extract archive
+
+**Code Idea:**
+
+```bash
+tar -xzf backup.tar.gz
+```
+
+**Explanation:**
+- `-x`: Extract from an archive.
+- `-z`: Handle the gzip compression (unzip).
+- `-f`: Specify the filename to extract.
+- Reconstructs the original files from the archive in the current directory.
+
+---
+
+## Q173. Delete temporary files
+
+**Code Idea:**
+
+```bash
+rm -rf /tmp/*
+```
+
+**Explanation:**
+- `rm -rf`: Remove recursively and forcefully.
+- `/tmp/*`: Targets all files inside the `/tmp` directory.
+- **Warning**: This deletes system temporary files; should be used with caution in production scripts.
+
+---
+
+## Q174. Log error handler
+
+**Code Idea:**
+
+```bash
+command || echo "Failed" >> error.log
+```
+
+**Explanation:**
+- `||`: The "OR" logical operator. It executes the command on the right ONLY if the command on the left fails (returns a non-zero exit status).
+- `>> error.log`: Appends the error message to a log file.
+- This is a simple yet powerful error handling pattern.
+
+---
+
+## Q175. Auto log creation
+
+**Code Idea:**
+
+```bash
+echo "$(date) System check" >> log.txt
+```
+
+**Explanation:**
+- `$(date)`: Embeds the current timestamp.
+- `>> log.txt`: Appends the string to `log.txt`. If the file doesn't exist, it creates it.
+- Perfect for adding timestamped entries to a maintenance log.
+
+---
+
+## Q176. Script execution log
+
+**Code Idea:**
+
+```bash
+bash script.sh >> output.log
+```
+
+**Explanation:**
+- Runs `script.sh`.
+- `>> output.log`: Redirects the standard output (stdout) of the script into a log file.
+- This prevents output from cluttering the console and creates a record of the execution.
+
+---
+
+## Q177. Find large files
+
+**Code Idea:**
+
+```bash
+find . -size +10M
+```
+
+**Explanation:**
+- `find .`: Search current directory.
+- `-size +10M`: Matches files larger than 10 Megabytes.
+- Useful for finding space hogs on a server.
+
+---
+
+## Q178. Find recent files
+
+**Code Idea:**
+
+```bash
+find . -mtime -1
+```
+
+**Explanation:**
+- `-mtime -1`: Filters for files modified less than 1 day ago (within the last 24 hours).
+- Great for checking what work was done today or verifying recent uploads.
+
+---
+
+## Q179. Delete old files
+
+**Code Idea:**
+
+```bash
+find . -mtime +7 -delete
+```
+
+**Explanation:**
+- `-mtime +7`: Matches files modified more than 7 days ago.
+- `-delete`: Performs the delete action on the found files.
+- Automates cleanup of old logs or backups (a common cron job).
+
+---
+
+## Q180. File permissions report
+
+**Code Idea:**
+
+```bash
+ls -l
+```
+
+**Explanation:**
+- Lists files in long format.
+- Displays permissions, owner, group, size, and date.
+- Essential for auditing security access on sensitive files.
+
+---
+
+## Q181. Change permissions recursively
+
+**Code Idea:**
+
+```bash
+chmod -R 755 folder/
+```
+
+**Explanation:**
+- `chmod`: Change mode.
+- `-R`: Recursive. Applies the change to the folder and everything inside it.
+- `755`: Sets full access for the owner, and read/execute for everyone else. Common for web directories.
+
+---
+
+## Q182. Create project structure
+
+**Code Idea:**
+
+```bash
+mkdir -p project/{src,bin,logs}
+```
+
+**Explanation:**
+- `mkdir -p`: Creates parents as needed.
+- `{src,bin,logs}`: Brace expansion. This creates three directories (`src`, `bin`, `logs`) inside `project/` in a single command.
+- Efficient way to scaffold a standard project layout.
+
+---
+
+## Q183. Copy folder safely
+
+**Code Idea:**
+
+```bash
+cp -r project backup/
+```
+
+**Explanation:**
+- `cp`: Copy.
+- `-r`: Recursive. Copies the directory and all its contents (sub-folders/files).
+- Creates a duplicate of the entire project structure.
+
+---
+
+## Q184. Move files by type
+
+**Code Idea:**
+
+```bash
+mv *.txt textfiles/
+```
+
+**Explanation:**
+- `mv`: Move.
+- `*.txt`: Wildcard matching all text files.
+- Moves all text files from the current directory into the `textfiles` directory. Used for organizing messy directories.
+
+---
+
+## Q185. Compress logs folder
+
+**Code Idea:**
+
+```bash
+tar -czf logs.tar.gz logs/
+```
+
+**Explanation:**
+- Creates a compressed archive of the `logs` folder.
+- Combines bundling and compression into one standard operation for archiving old data.
+
+---
+
+# 🔹 FINAL DEVOPS PROJECTS (Q186–Q200)
+
+---
+
+## Q186. System monitoring script
+
+**Code Idea:**
+
+```bash
+echo "UPTIME"
+uptime
+
+echo "MEMORY"
+free -m
+
+echo "DISK"
+df -h
+```
+
+**Explanation:**
+- A script that combines multiple basic commands with labeled output (`echo`).
+- Provides a structured, readable dashboard when logged into a server.
+- Simple but effective for manual checks.
+
+---
+
+## Q187. Log analyzer system
+
+**Code Idea:**
+
+```bash
+grep "error" log.txt | wc -l
+```
+
+**Explanation:**
+- Filters `log.txt` for lines containing "error".
+- `wc -l`: Counts those lines.
+- Outputs a single number: the total count of errors. Useful for quick health checks.
+
+---
+
+## Q188. Auto backup system
+
+**Code Idea:**
+
+```bash
+tar -czf backup_$(date +%F).tar.gz project/
+```
+
+**Explanation:**
+- `$(date +%F)`: Command substitution. Inserts the date in YYYY-MM-DD format (e.g., `2023-10-27`).
+- Filename becomes `backup_2023-10-27.tar.gz`.
+- Ensures backups never overwrite each other and are sortable by date.
+
+---
+
+## Q189. Cleanup system script
+
+**Code Idea:**
+
+```bash
+rm -f *.log
+echo "Logs cleaned"
+```
+
+**Explanation:**
+- `rm -f *.log`: Forcibly deletes all log files.
+- `echo`: Provides user feedback confirming the action.
+- A common maintenance script, though in production one usually archives logs rather than deleting them.
+
+---
+
+## Q190. Process watchdog
+
+**Code Idea:**
+
+```bash
+ps aux | grep nginx
+```
+
+**Explanation:**
+- Checks if the `nginx` web server process is running.
+- If the output shows lines of nginx processes, the server is up.
+- Often used in "if" statements to restart a service if it is found missing.
+
+---
+
+## Q191. Auto restart simulation
+
+**Code Idea:**
+
+```bash
+echo "Restarting service..."
+```
+
+**Explanation:**
+- Simulates a restart command.
+- In a real scenario, this line would be `systemctl restart nginx` or similar.
+- Demonstrates the logic placeholder for service management.
+
+---
+
+## Q192. File integrity check
+
+**Code Idea:**
+
+```bash
+md5sum file.txt
+```
+
+**Explanation:**
+- `md5sum`: Calculates and prints a 128-bit MD5 hash (checksum).
+- If the file content changes even slightly, the hash changes completely.
+- Used to verify that a file has not been corrupted or tampered with during transfer.
+
+---
+
+## Q193. Disk alert system
+
+**Code Idea:**
+
+```bash
+df -h | grep "/dev"
+```
+
+**Explanation:**
+- `df -h`: Shows disk usage.
+- `grep "/dev"`: Filters to show only actual storage devices (ignoring virtual filesystems like tmpfs).
+- The first step in creating an alert (e.g., checking if usage is > 90%).
+
+---
+
+## Q194. CPU monitor script
+
+**Code Idea:**
+
+```bash
+top -bn1 | head
+```
+
+**Explanation:**
+- Takes a snapshot of `top` (CPU processes).
+- `head` limits the output.
+- Allows a script to "see" the top processes consuming resources at that moment.
+
+---
+
+## Q195. Memory alert system
+
+**Code Idea:**
+
+```bash
+free -m
+```
+
+**Explanation:**
+- Outputs memory stats.
+- A script would parse this output (using `awk`) to trigger an alert if "Available" memory drops below a threshold.
+
+---
+
+## Q196. Simple deployment script
+
+**Code Idea:**
+
+```bash
+cp -r app/ /var/www/html/
+```
+
+**Explanation:**
+- Simulates a basic deployment strategy.
+- Copies the local `app` directory to the web server root (`/var/www/html`).
+- Automates the transfer of code to the production environment.
+
+---
+
+## Q197. Environment setup script
+
+**Code Idea:**
+
+```bash
+mkdir -p app/{src,config,logs}
+```
+
+**Explanation:**
+- Automates the creation of a standard project skeleton.
+- Uses brace expansion to create three necessary folders in one line.
+- Ensures consistency across developer environments.
+
+---
+
+## Q198. Cron job example
+
+**Code Idea:**
+
+```bash
+* * * * * /home/user/script.sh
+```
+
+**Explanation:**
+- This is a line format for the `crontab` file (scheduler).
+- The 5 asterisks (`* * * * *`) represent: Minute, Hour, Day of Month, Month, Day of Week.
+- This specific example runs `script.sh` **every minute**.
+- Essential for automating backups, monitoring, and cleanup.
+
+---
+
+## Q199. Full system report generator
+
+**Code Idea:**
+
+```bash
+echo "REPORT $(date)" > report.txt
+uptime >> report.txt
+free -m >> report.txt
+df -h >> report.txt
+```
+
+**Explanation:**
+- `>`: Creates/Overwrites `report.txt` with the header.
+- `>>`: Appends subsequent command outputs to the file.
+- Generates a text file summary of system health. This can be emailed to an admin.
+
+---
+
+## Q200. FINAL MASTER PROJECT — FULL AUTOMATION SYSTEM
+
+**Code Idea:**
+
+```bash
+echo "SYSTEM REPORT - $(date)" > system_report.txt
+
+echo "UPTIME" >> system_report.txt
+uptime >> system_report.txt
+
+echo "MEMORY" >> system_report.txt
+free -m >> system_report.txt
+
+echo "DISK" >> system_report.txt
+df -h >> system_report.txt
+
+echo "PROCESSES" >> system_report.txt
+ps aux >> system_report.txt
+
+echo "REPORT COMPLETE"
+```
+
+**Explanation:**
+- Combines file redirection, command substitution, and system monitoring tools.
+- Builds a comprehensive text file (`system_report.txt`) containing a labeled, timestamped snapshot of the entire system state.
+- This represents a "Capstone" script: it automates data collection, formats it, and saves it to a file, which is the core purpose of many DevOps Bash scripts.
+
+---
+
+# 🎉 FULL 200 BASH PRACTICE QUESTIONS COMPLETED
+
+You now have:
+
+✔ Beginner → Advanced progression
+✔ Real DevOps scripts
+✔ File systems + automation
+✔ Text processing mastery
+✔ System monitoring tools
+✔ Real-world production scripts
+
+
+
+
+
+
+
+
+Here is the expanded version of the **50 BASH INTERVIEW TRICK QUESTIONS**. I have kept the original questions, traps, and answer ideas, and added a **Detailed Explanation** for each to clarify the underlying Bash mechanics.
+
+---
+
+# 💣 50 BASH INTERVIEW TRICK QUESTIONS (HARD TRAPS)
+
+These questions test your understanding of *why* Bash behaves the way it does, exposing common pitfalls in word splitting, globbing, and syntax parsing.
+
+---
+
+## Q1. Why does this fail?
+```bash
+if [ $name = "John" ]; then
+```
+
+**Trap:**
+Unquoted variable → word splitting errors.
+
+**Answer Idea:**
+Always use:
+```bash
+if [ "$name" = "John" ]; then
+```
+
+**Detailed Explanation:**
+If `$name` is empty or contains spaces, the shell expands this line incorrectly.
+- If `name` is empty: It becomes `[ = "John" ]`. This is a syntax error because the `[` command expects an argument before the `=`.
+- If `name` is "John Doe": It becomes `[ John Doe = "John" ]`. This arguments list is too long for the `[` command.
+Quoting `"$name"` ensures it is treated as a single argument, even if it is empty or contains spaces.
+
+---
+
+## Q2. What happens if file name has spaces?
+```bash
+rm my file.txt
+```
+
+**Trap:**
+Splits into 2 arguments.
+
+**Detailed Explanation:**
+Bash splits arguments based on whitespace (unless quoted).
+- This command passes two arguments to `rm`: `my` and `file.txt`.
+- It will delete a file named `my` and a file named `file.txt`, rather than the single file "my file.txt".
+- **Fix:** Use quotes: `rm "my file.txt"`.
+
+---
+
+## Q3. Why does this always return true?
+```bash
+[ $var = "test" ]
+```
+
+**Trap:**
+Empty `$var` breaks condition.
+
+**Detailed Explanation:**
+Technically, this causes a syntax error if `$var` is empty, not "true".
+- If `var` is empty, it expands to `[ = "test" ]`, which errors out: `unary operator expected`.
+- If `var` is just a space ` `, word splitting might result in empty arguments leading to confusing logic.
+- The "always true" trap is often associated with `[ -n $var ]` (where empty var becomes `[ -n ]`, which is true because `-n` is a non-empty string). In both cases, **quoting is the fix**.
+
+---
+
+## Q4. Difference between = and == in [ ]?
+
+**Trap:**
+`==` is not POSIX standard in single brackets.
+
+**Detailed Explanation:**
+- Inside single brackets `[ ]`: `=` is the POSIX standard for string comparison. `==` is a Bash extension (builtin). Using `==` inside `[ ]` works in Bash but fails in strict POSIX `sh`.
+- Inside double brackets `[[ ]]`: `==` is the standard for pattern matching.
+- **Best Practice:** Use `=` inside `[ ]` for portability, or use `[[ ]]` for Bash-specific scripts.
+
+---
+
+## Q5. What is wrong here?
+```bash
+if (( $a = 5 )); then
+```
+
+**Trap:**
+Assignment instead of comparison.
+
+**Detailed Explanation:**
+- Inside arithmetic context `(( ))`, the single `=` is an **assignment** operator.
+- This code assigns `5` to `a`. The result of the expression is 5 (non-zero), so the condition evaluates to "true" (success).
+- **Fix:** Use `==` for comparison: `if (( $a == 5 )); then`.
+
+---
+
+## Q6. Why does this loop break early?
+```bash
+for i in $(ls)
+```
+
+**Trap:**
+Word splitting + unsafe parsing.
+
+**Detailed Explanation:**
+- `$(ls)` executes `ls`, and Bash performs word splitting on the output based on spaces, tabs, and newlines.
+- If a file is named `my file.txt`, the loop iterates once for `my` and once for `file.txt`.
+- **Fix:** Use globbing: `for i in *; do`.
+
+---
+
+## Q7. What happens if file does not exist?
+```bash
+cat file.txt | grep "test"
+```
+
+**Trap:**
+`cat` error ignored in pipeline.
+
+**Detailed Explanation:**
+- If `file.txt` does not exist, `cat` prints an error to stderr.
+- However, the pipe `|` passes the stdout (which is empty) to `grep`.
+- `grep` searches empty input and finds nothing, exiting with status 0 (usually).
+- The script might appear to succeed (exit code 0) despite the file missing, unless `set -o pipefail` is enabled.
+- **Fix:** `grep "test" file.txt` (grep will report error if file missing).
+
+---
+
+## Q8. Why is this unsafe?
+```bash
+rm -rf $dir/*
+```
+
+**Trap:**
+Unquoted variable expansion.
+
+**Detailed Explanation:**
+- If `$dir` contains spaces, the expansion breaks (e.g., `rm -rf my dir/*` deletes `my`).
+- **Critical Danger:** If `$dir` is empty, it expands to `rm -rf /*` (deleting root). This is because `/*` is evaluated.
+- **Fix:** Always quote: `rm -rf "$dir"/*` (and check if variable is empty first).
+
+---
+
+## Q9. What does this return?
+```bash
+echo "a b c" | while read x; do echo $x; done
+```
+
+**Trap:**
+Only first word processed.
+
+**Detailed Explanation:**
+- `read x` reads a line of text.
+- Since only one variable `x` is provided, `read` assigns the **first word** ("a") to `x`, and the **rest of the line** ("b c") is discarded (or put in `$REPLY` depending on implementation, but not in `x`).
+- Result: It prints "a".
+- **Fix:** Use `read x rest` to capture the remainder, or just `read line` to capture the whole line.
+
+---
+
+## Q10. Why does this fail?
+```bash
+count=0
+count = $count + 1
+```
+
+**Trap:**
+Spaces break assignment.
+
+**Detailed Explanation:**
+- Variable assignment in Bash (`var=value`) **cannot** have spaces around the `=`.
+- `count = ...` is interpreted as running a command named `count` with arguments `=` and `...`.
+- **Fix:** `count=$((count + 1))` or `((count++))`.
+
+---
+
+## Q11. What is wrong?
+```bash
+if [ $a -gt $b ]
+```
+
+**Trap:**
+Unquoted variables.
+
+**Detailed Explanation:**
+- If `$a` or `$b` is empty or non-numeric, the `[` command will throw a syntax error or perform incorrect logic.
+- **Fix:** Quote variables: `if [ "$a" -gt "$b" ]`.
+
+---
+
+## Q12. Why is this dangerous?
+```bash
+eval $input
+```
+
+**Trap:**
+Command injection.
+
+**Detailed Explanation:**
+- `eval` executes the string contained in `$input` as a command.
+- If `$input` comes from a user and contains `rm -rf /` or `; cat /etc/passwd`, it will execute that code.
+- **Fix:** Never use `eval` on untrusted input.
+
+---
+
+## Q13. What does this print?
+```bash
+x=10
+((x++))
+echo $x
+```
+
+**Trap:**
+Post-increment behavior.
+
+**Detailed Explanation:**
+- `((x++))` uses the C-style post-increment.
+- It returns the value *before* incrementing (10), but it **increments the variable** `x` to 11.
+- `echo $x` prints `11`.
+
+---
+
+## Q14. Why does this not work?
+```bash
+read file
+cat $file
+```
+
+**Trap:**
+Spaces in filename.
+
+**Detailed Explanation:**
+- If the user inputs "my file.txt", `$file` becomes "my file.txt".
+- `cat $file` performs word splitting: `cat my file.txt`.
+- `cat` tries to open two files: `my` and `file.txt`.
+- **Fix:** Quote the variable: `cat "$file"`.
+
+---
+
+## Q15. What happens here?
+```bash
+ls | grep "txt" | rm
+```
+
+**Trap:**
+`rm` doesn't accept stdin.
+
+**Detailed Explanation:**
+- Pipes pass the output of the left command to the Standard Input (stdin) of the right command.
+- `rm` deletes files provided as **arguments**, not via stdin.
+- This command will likely hang or do nothing (or wait for input depending on version).
+- **Fix:** Use `xargs`: `ls | grep "txt" | xargs rm`.
+
+---
+
+## Q16. Why is this wrong?
+```bash
+for i in `cat file`
+```
+
+**Trap:**
+Word splitting + whitespace loss.
+
+**Detailed Explanation:**
+- Similar to Q6, this reads the file content and splits it by whitespace (newlines, spaces).
+- You lose the structure of the file lines.
+- **Fix:** `while read line; do ...; done < file`.
+
+---
+
+## Q17. Difference between $* and $@?
+
+**Trap:**
+Argument splitting behavior.
+
+**Detailed Explanation:**
+- `$*`: All arguments combine into a single string (`"$1 $2 ..."`).
+- `$@`: Arguments remain separate (`"$1" "$2" ...`).
+- **Crucial:** Always quote them (`"$@"`) to preserve arguments containing spaces.
+
+---
+
+## Q18. What happens here?
+```bash
+[ 1 = 01 ]
+```
+
+**Trap:**
+String comparison, not numeric.
+
+**Detailed Explanation:**
+- `[ ]` performs string (lexicographical) comparison.
+- "1" and "01" are different strings.
+- It returns False.
+- **Fix:** Use numeric comparison: `[ 1 -eq 01 ]`.
+
+---
+
+## Q19. Why does this fail in script?
+```bash
+echo $((1/0))
+```
+
+**Trap:**
+Division by zero.
+
+**Detailed Explanation:**
+- Bash arithmetic cannot divide by zero.
+- This generates an error message "division by 0" and usually returns exit code 1. It does not print "infinity" or "null".
+
+---
+
+## Q20. What is wrong?
+```bash
+if grep "test" file.txt; then echo yes; fi
+```
+
+**Trap:**
+Actually valid but exit status misunderstanding.
+
+**Detailed Explanation:**
+- This is actually **correct syntax**. `grep` returns exit status 0 if found (True).
+- The trap is thinking it needs `[ ]`. `if` works directly on command exit codes.
+
+---
+
+## Q21. Why does this loop break?
+```bash
+while read line; do
+done < file.txt | sort
+```
+
+**Trap:**
+Pipeline vs input redirection confusion.
+
+**Detailed Explanation:**
+- The pipe `|` creates a subshell for the `while` loop.
+- The input redirection `< file.txt` applies to the `while` loop.
+- However, the `sort` command receives the output of the loop. If the loop prints nothing, `sort` gets nothing.
+- If the trap is about variables: Variables modified inside a pipeline loop are lost when the pipeline finishes (subshell scope).
+
+---
+
+## Q22. What happens here?
+```bash
+var=$(ls *.txt)
+```
+
+**Trap:**
+Too many arguments error.
+
+**Detailed Explanation:**
+- `ls *.txt` expands filenames. If there are many files, the output is a long string with newlines.
+- It doesn't cause a syntax error, but `var` becomes a single string containing all filenames separated by spaces/newlines.
+- Using `$var` later will invoke word splitting again.
+
+---
+
+## Q23. Why is this unsafe?
+```bash
+cp $file /backup
+```
+
+**Trap:**
+Unquoted variable expansion.
+
+**Detailed Explanation:**
+- If `$file` is empty, `cp` sees `cp /backup`.
+- Depending on implementation, this might try to copy `/backup` to current directory or throw an error.
+- If `$file` has spaces, it breaks.
+- **Fix:** `cp "$file" /backup`.
+
+---
+
+## Q24. What does this return?
+```bash
+[ 0 ]
+```
+
+**Trap:**
+Always true (0 is non-empty string).
+
+**Detailed Explanation:**
+- Inside `[ ]`, a single argument is tested for non-emptiness.
+- The string "0" is not empty.
+- Therefore, it returns True (exit code 0).
+- It does NOT check if the number equals zero.
+
+---
+
+## Q25. Why does this not increment?
+```bash
+x=5
+x+1
+```
+
+**Trap:**
+No arithmetic context.
+
+**Detailed Explanation:**
+- Bash treats `x+1` as a command name.
+- It looks for a program named `x+1` in your PATH.
+- **Fix:** Use arithmetic expansion: `x=$((x+1))`.
+
+---
+
+## Q26. What is wrong?
+```bash
+echo "file is $file"
+```
+
+**Trap:**
+Nothing wrong → trick question.
+
+**Detailed Explanation:**
+- This is valid syntax.
+- It demonstrates that quoting is correctly used, preventing word splitting on `$file` inside the string.
+
+---
+
+## Q27. Why is this broken?
+```bash
+for i in $(seq 1 10)
+```
+
+**Trap:**
+Command substitution overhead.
+
+**Detailed Explanation:**
+- It works, but it's slower and uses an external command (`seq`).
+- **Optimization:** Use Bash built-in brace expansion: `for i in {1..10}`.
+
+---
+
+## Q28. What happens?
+```bash
+rm -rf /*
+```
+
+**Trap:**
+Dangerous system destruction.
+
+**Detailed Explanation:**
+- `/*` matches every file and directory in the root.
+- It attempts to delete the entire operating system.
+- **DO NOT RUN.**
+
+---
+
+## Q29. Why does this fail?
+```bash
+if test $a -eq 5
+```
+
+**Trap:**
+Unquoted variable.
+
+**Detailed Explanation:**
+- `test` is the command equivalent to `[`.
+- If `$a` is empty, it becomes `test -eq 5`, which is a syntax error.
+- **Fix:** Quote it: `if test "$a" -eq 5`.
+
+---
+
+## Q30. What is output?
+```bash
+echo $((2+3*4))
+```
+
+**Trap:**
+Operator precedence.
+
+**Detailed Explanation:**
+- Bash arithmetic follows standard math rules (PEMDAS).
+- Multiplication (`*`) happens before addition (`+`).
+- `3 * 4` = 12. `2 + 12` = 14.
+- Output: `14`.
+
+---
+
+## Q31. Why is this wrong?
+```bash
+[ $a -eq $b ]
+```
+
+**Trap:**
+String vs numeric confusion.
+
+**Detailed Explanation:**
+- While `-eq` handles numeric comparison, unquoted variables are dangerous.
+- If variables are empty, syntax errors occur.
+- If variables contain strings (e.g., "abc"), errors occur.
+- **Fix:** Quote variables: `[ "$a" -eq "$b" ]`.
+
+---
+
+## Q32. What happens?
+```bash
+echo "Hello" > file.txt > file2.txt
+```
+
+**Trap:**
+Second redirection overwrites first.
+
+**Detailed Explanation:**
+- Bash processes redirections from left to right.
+- It opens `file.txt` for writing.
+- Then it opens `file2.txt` for writing.
+- "Hello" is written to the last file redirected (`file2.txt`).
+- `file.txt` will be truncated (emptied) but empty.
+
+---
+
+## Q33. Why does this fail?
+```bash
+var= hello
+```
+
+**Trap:**
+Space invalid assignment.
+
+**Detailed Explanation:**
+- Bash interprets this as: Set `var` to empty string, then run command `hello`.
+- The space disallows assignment in that manner.
+- **Fix:** `var="hello"` or `var=hello` (no spaces).
+
+---
+
+## Q34. What is wrong?
+```bash
+if [ "$a" = "$b" ]
+then echo yes
+```
+
+**Trap:**
+Missing `fi`.
+
+**Detailed Explanation:**
+- Every `if` statement must be closed with `fi`.
+- This code results in a syntax error "unexpected end of file".
+
+---
+
+## Q35. Why is this slow?
+```bash
+cat file | while read line
+```
+
+**Trap:**
+Useless cat.
+
+**Detailed Explanation:**
+- `cat` creates a subprocess just to feed the file to the pipe.
+- It is slower and uses more resources.
+- **Fix:** Redirect directly: `while read line; do ...; done < file`.
+
+---
+
+## Q36. What happens?
+```bash
+echo *
+```
+
+**Trap:**
+Filename expansion (globbing).
+
+**Detailed Explanation:**
+- `*` is a wildcard that expands to all filenames in the current directory.
+- `echo *` prints all filenames as a space-separated string.
+- If no files exist, it prints literal `*` (unless specific options are set).
+
+---
+
+## Q37. Why is this dangerous?
+```bash
+chmod -R 777 /
+```
+
+**Trap:**
+Full system permission exposure.
+
+**Detailed Explanation:**
+- Recursively sets world-read-write-execute permissions on the entire filesystem.
+- This destroys security, allowing any user to modify system files.
+- **DO NOT RUN.**
+
+---
+
+## Q38. What is wrong?
+```bash
+find . -name *.txt
+```
+
+**Trap:**
+Globbing expands before find runs.
+
+**Detailed Explanation:**
+- The shell expands `*.txt` *before* passing arguments to `find`.
+- If files exist (e.g., `a.txt`, `b.txt`), the command becomes `find . -name a.txt b.txt`.
+- This is invalid syntax for `find`.
+- **Fix:** Quote the pattern: `find . -name "*.txt"`.
+
+---
+
+## Q39. Why does this fail?
+```bash
+read -p "Enter: " $var
+```
+
+**Trap:**
+Wrong variable usage.
+
+**Detailed Explanation:**
+- `read` expects the **name** of the variable, not the variable expansion.
+- `$var` expands to the *value* inside var.
+- **Fix:** `read -p "Enter: " var` (no `$`).
+
+---
+
+## Q40. What happens?
+```bash
+x=5; x=$x+1
+```
+
+**Trap:**
+String concatenation not arithmetic.
+
+**Detailed Explanation:**
+- `$x+1` performs string concatenation.
+- `x` becomes "5+1" (the literal string).
+- **Fix:** Use arithmetic: `x=$((x+1))`.
+
+---
+
+## Q41. Why is this wrong?
+```bash
+if [ 1 < 2 ]
+```
+
+**Trap:**
+Redirect symbol interpreted.
+
+**Detailed Explanation:**
+- Inside `[ ]`, `<` is treated as a file redirection operator.
+- It tries to read input from a file named `2`.
+- **Fix:** Escape it `[ 1 \< 2 ]` or use `[[ 1 < 2 ]]`.
+
+---
+
+## Q42. What is output?
+```bash
+echo "a\nb"
+```
+
+**Trap:**
+No newline interpretation.
+
+**Detailed Explanation:**
+- By default, `echo` treats `\n` as literal characters, not a newline.
+- Output: `a\nb`.
+- **Fix:** Use `echo -e "a\nb"` or `printf "a\nb\n"`.
+
+---
+
+## Q43. Why does this fail?
+```bash
+for i in $(cat file.txt)
+```
+
+**Trap:**
+Word splitting.
+
+**Detailed Explanation:**
+- Splits content by spaces/newlines.
+- If lines contain spaces, the loop iterates over words, not lines.
+
+---
+
+## Q44. What happens?
+```bash
+: > file.txt
+```
+
+**Trap:**
+Truncates file silently.
+
+**Detailed Explanation:**
+- `:` is a "no-op" command (does nothing, returns true).
+- `> file.txt` redirects output to the file, truncating it (emptying it).
+- This is a standard way to empty a file without deleting it.
+
+---
+
+## Q45. Why is this unsafe?
+```bash
+rm -rf $1
+```
+
+**Trap:**
+Missing quotes = disaster.
+
+**Detailed Explanation:**
+- If the script argument `$1` is empty, it runs `rm -rf` (which fails safely usually).
+- If `$1` is a path with spaces, it breaks.
+- **Fix:** `rm -rf "$1"`.
+
+---
+
+## Q46. What does this do?
+```bash
+set -e
+```
+
+**Trap:**
+Script exits on any error.
+
+**Detailed Explanation:**
+- This setting makes the script exit immediately if any command returns a non-zero status (fails).
+- It is best practice for preventing scripts from continuing in a broken state.
+
+---
+
+## Q47. Why is this confusing?
+```bash
+[ ! $var ]
+```
+
+**Trap:**
+Negation logic unclear.
+
+**Detailed Explanation:**
+- If `$var` is empty, this expands to `[ ! ]`. `[ ! ]` checks if string "!" is non-empty (True).
+- This logic is inverted from what is expected (checking if var is empty).
+- **Fix:** `[ -z "$var" ]` (is empty) or properly quote/construct logic.
+
+---
+
+## Q48. What happens?
+```bash
+echo $((10/3))
+```
+
+**Trap:**
+Integer division truncation.
+
+**Detailed Explanation:**
+- Bash arithmetic is integer-only.
+- 10 divided by 3 is 3.333...
+- Bash truncates the decimal.
+- Output: `3`.
+
+---
+
+## Q49. Why is this broken?
+```bash
+if [[ $a > $b ]]
+```
+
+**Trap:**
+String comparison not numeric.
+
+**Detailed Explanation:**
+- Inside `[[ ]]`, `>` sorts lexicographically (like a dictionary).
+- If `a=5` and `b=10`, it checks if "5" comes after "10" (False, because "5" char > "1" char).
+- **Fix:** Use arithmetic: `if (( a > b ))` or `-gt`.
+
+---
+
+## Q50. Final trap
+```bash
+rm -rf $HOME/*
+```
+
+**Trap:**
+Danger if HOME is unset or wrong.
+
+**Detailed Explanation:**
+- If `$HOME` is accidentally unset or empty, this becomes `rm -rf /*` (delete system).
+- **Fix:** Quote variables and verify variables before running destructive commands.
+
+---
