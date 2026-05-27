@@ -675,6 +675,16 @@ Here are 20 Python projects mapped to your Q1–Q20 basics, with hints and step-
 
 
 
+
+
+
+
+
+
+
+
+
+
 ---
 
 # 🔹 DATA TYPES & COLLECTIONS (Q21–Q40)
@@ -1476,6 +1486,816 @@ while True:
 **Explanation:** `while True` creates an infinite loop. `break` is required to exit. Common pattern in servers or menus.
 
 ---
+
+Here are 30 Python projects mapped to your Q21–Q80, with headings, concepts, hints, and steps (no code).
+
+---
+
+# 🐍 30 PYTHON PROJECTS FOR Q21–Q80 MASTERY
+
+---
+
+## PROJECT 1: Shopping List Manager (Q21 + Q22 + Q23 + Q24 + Q25 + Q26)
+
+**Concept:** Create and manage a grocery shopping list.
+
+**Hints:**
+- Use a list to store items.
+- Use indexing to access specific items.
+- Use `.append()` to add new items.
+- Use `.remove()` to delete purchased items.
+- Use `len()` to count total items.
+
+**Steps:**
+1. Create an empty shopping list.
+2. Add five grocery items to the list.
+3. Print the total number of items.
+4. Access and print the third item.
+5. Change the second item to a different product.
+6. Remove an item that you no longer need.
+7. Print the final list and confirm the count updated.
+
+---
+
+## PROJECT 2: Classroom Roster (Q21 + Q27 + Q73)
+
+**Concept:** Manage a list of student names and iterate through them.
+
+**Hints:**
+- Store names in a list.
+- Use a for loop to process each name.
+- Use `len()` to report class size.
+
+**Steps:**
+1. Create a list with ten student names.
+2. Print the total number of students enrolled.
+3. Loop through the list and print each name with a greeting.
+4. Add two new students who joined late.
+5. Remove one student who transferred out.
+6. Print the updated roster and new count.
+
+---
+
+## PROJECT 3: Top Scores Tracker (Q21 + Q74 + Q75 + Q76)
+
+**Concept:** Track game scores and find statistics.
+
+**Hints:**
+- Use a list to store numeric scores.
+- Use `max()`, `min()`, and `sum()` for analysis.
+- Calculate average manually.
+
+**Steps:**
+1. Create a list of ten game scores.
+2. Find and print the highest score.
+3. Find and print the lowest score.
+4. Calculate and print the total sum of all scores.
+5. Calculate and print the average score.
+6. Add a new high score to the list.
+7. Recalculate and display updated statistics.
+
+---
+
+## PROJECT 4: Coordinate Pairs (Q28 + Q29)
+
+**Concept:** Store and access fixed geographic coordinates.
+
+**Hints:**
+- Use tuples for immutable coordinate data.
+- Use indexing to access latitude and longitude.
+
+**Steps:**
+1. Create three tuples representing city coordinates.
+2. Print the latitude of the second city.
+3. Print the longitude of the first city.
+4. Attempt to modify a coordinate and observe the error.
+5. Explain why tuples are appropriate for this data.
+
+---
+
+## PROJECT 5: Student Profile Card (Q30 + Q31 + Q32)
+
+**Concept:** Build a student profile using key-value pairs.
+
+**Hints:**
+- Use a dictionary to store profile data.
+- Access values using keys.
+- Add new fields dynamically.
+
+**Steps:**
+1. Create a dictionary with name, age, and grade.
+2. Print the student's name using key access.
+3. Add a new key for favorite subject.
+4. Update the grade to a new value.
+5. Print the complete profile.
+
+---
+
+## PROJECT 6: Country Capitals Quiz (Q30 + Q33 + Q34)
+
+**Concept:** Build a capitals database and query it.
+
+**Hints:**
+- Use a dictionary mapping countries to capitals.
+- Loop through keys to display all entries.
+- Use `in` to check if a country exists before querying.
+
+**Steps:**
+1. Create a dictionary of ten countries and their capitals.
+2. Ask the user for a country name.
+3. Check if the country exists in your dictionary.
+4. If yes, print the capital. If no, print a not-found message.
+5. Loop through all entries and print them formatted nicely.
+
+---
+
+## PROJECT 7: Unique Visitor Log (Q35 + Q36 + Q37 + Q38)
+
+**Concept:** Track unique website visitors by IP address.
+
+**Hints:**
+- Use a set for automatic duplicate removal.
+- Use `.add()` to register visits.
+- Use `.remove()` to block an IP.
+- Use `len()` to count unique visitors.
+
+**Steps:**
+1. Create an empty set for visitor IPs.
+2. Add ten IP addresses, including three duplicates.
+3. Print the total unique visitor count.
+4. Remove a specific IP that was flagged as malicious.
+5. Attempt to add a duplicate IP and confirm it is ignored.
+6. Print the final clean set.
+
+---
+
+## PROJECT 8: Duplicate Remover Tool (Q39)
+
+**Concept:** Clean a list by removing duplicates while preserving order.
+
+**Hints:**
+- Convert a list to a set to remove duplicates.
+- Convert back to a list if order matters.
+- Compare before and after counts.
+
+**Steps:**
+1. Create a list with twenty items including multiple duplicates.
+2. Print the original list and its length.
+3. Convert to a set to remove duplicates.
+4. Convert back to a list.
+5. Print the cleaned list and new length.
+6. Calculate and display how many duplicates were removed.
+
+---
+
+## PROJECT 9: Membership Checker (Q40)
+
+**Concept:** Verify if items exist in various collections.
+
+**Hints:**
+- Use `in` operator on lists, sets, and dictionaries.
+- Compare speed of membership testing across types.
+
+**Steps:**
+1. Create a list, a set, and a dictionary with the same items.
+2. Check if a specific item exists in each collection.
+3. Print the results.
+4. Test with an item that does not exist.
+5. Observe and note which collection type is fastest for lookups.
+
+---
+
+## PROJECT 10: Inventory Manager (Q21–Q40 Combined)
+
+**Concept:** Combine lists, dictionaries, and sets for a store inventory.
+
+**Hints:**
+- Use a list for item categories.
+- Use a dictionary for item details and quantities.
+- Use a set for out-of-stock items.
+
+**Steps:**
+1. Create a list of product categories.
+2. Create a dictionary mapping product names to quantities.
+3. Create a set of products that need restocking.
+4. Add a new product to the dictionary.
+5. Update quantity when a sale occurs.
+6. Move a product to the restocking set when quantity hits zero.
+7. Print a complete inventory report.
+
+---
+
+## PROJECT 11: Number Classifier (Q41 + Q42 + Q43)
+
+**Concept:** Classify numbers as positive, negative, even, or odd.
+
+**Hints:**
+- Use `if`, `elif`, and `else` chains.
+- Use modulo operator for even or odd check.
+- Handle zero as a special case.
+
+**Steps:**
+1. Ask the user for a number.
+2. Check if the number is positive, negative, or zero.
+3. If not zero, check if it is even or odd.
+4. Print a complete classification like "Positive even" or "Negative odd".
+5. Loop to allow checking multiple numbers.
+
+---
+
+## PROJECT 12: Smart Thermostat (Q44 + Q45 + Q48)
+
+**Concept:** Control temperature based on multiple conditions.
+
+**Hints:**
+- Use chained comparisons for temperature ranges.
+- Use `elif` for different comfort zones.
+- Combine with user age for special handling.
+
+**Steps:**
+1. Ask for current temperature and occupant age.
+2. If temperature is below 18, print "Heating on".
+3. If temperature is between 18 and 24, print "Comfortable".
+4. If temperature is above 24, print "Cooling on".
+5. If occupant is over 65, adjust comfort range by 2 degrees.
+6. Print the final thermostat decision.
+
+---
+
+## PROJECT 13: Exam Grader (Q46)
+
+**Concept:** Assign letter grades based on numeric scores.
+
+**Hints:**
+- Use cascading `elif` conditions.
+- Ensure ranges do not overlap.
+- Handle invalid scores below zero or above 100.
+
+**Steps:**
+1. Ask for a numeric score between 0 and 100.
+2. Validate the score is within valid range.
+3. Assign A for 90 and above, B for 80 to 89, C for 70 to 79, D for 60 to 69, F for below 60.
+4. Print the letter grade.
+5. Add a message based on the grade level.
+
+---
+
+## PROJECT 14: Secure Vault (Q47 + Q49)
+
+**Concept:** Multi-level password protection with nested conditions.
+
+**Hints:**
+- Use nested `if` statements for multiple security layers.
+- Check password length before content.
+- Use a secret code for admin override.
+
+**Steps:**
+1. Ask for a username and password.
+2. Check if username exists in authorized list.
+3. If yes, check if password matches.
+4. If password matches, check if user has admin flag.
+5. If admin, grant full access. If regular user, grant limited access.
+6. Log all failed attempts.
+
+---
+
+## PROJECT 15: Number Validator (Q48 + Q50 + Q51)
+
+**Concept:** Validate user input against multiple rules.
+
+**Hints:**
+- Use `and` for rules that must all pass.
+- Use `or` for alternative acceptable values.
+- Use chained comparisons for range checks.
+
+**Steps:**
+1. Ask the user for a number.
+2. Check if it is between 1 and 100 inclusive.
+3. Check if it is divisible by both 3 and 5.
+4. Check if it is either even or a prime number under 20.
+5. Print which conditions passed and which failed.
+
+---
+
+## PROJECT 16: Calendar Helper (Q52 + Q53)
+
+**Concept:** Determine special dates and properties of years.
+
+**Hints:**
+- Use modulo for divisibility checks.
+- Combine multiple conditions with parentheses.
+- Create a menu for different checks.
+
+**Steps:**
+1. Ask the user for a year.
+2. Check if it is a leap year using the full rule.
+3. Check if the year number is divisible by 3 and 5.
+4. Check if the century is divisible by 400.
+5. Print all findings about that year.
+
+---
+
+## PROJECT 17: Text Validator (Q54 + Q55 + Q56 + Q57 + Q58 + Q59)
+
+**Concept:** Analyze and validate text input for a registration form.
+
+**Hints:**
+- Use string methods like `.isalpha()`, `.isdigit()`, `.isupper()`, `.islower()`.
+- Check for empty strings before other tests.
+- Compare strings for exact matches.
+
+**Steps:**
+1. Ask for a username, password, and confirmation password.
+2. Check username is not empty and contains only letters.
+3. Check password is not empty and contains at least one uppercase, one lowercase, and one digit.
+4. Check password matches confirmation.
+5. Print which validations passed or failed.
+
+---
+
+## PROJECT 18: File Guard (Q60)
+
+**Concept:** Protect operations by verifying file existence first.
+
+**Hints:**
+- Use `os.path.exists()` before file operations.
+- Check if path is a file or directory.
+- Provide helpful error messages.
+
+**Steps:**
+1. Ask the user for a filename.
+2. Check if the file exists.
+3. If yes, check if it is a regular file or directory.
+4. If regular file, print its size and last modified time.
+5. If it does not exist, offer to create it.
+6. Handle permission errors gracefully.
+
+---
+
+## PROJECT 19: Multiplication Practice (Q61 + Q65)
+
+**Concept:** Generate multiplication problems for practice.
+
+**Hints:**
+- Use `range()` to generate number sequences.
+- Use nested loops for table generation.
+- Track correct answers.
+
+**Steps:**
+1. Ask which multiplication table to practice.
+2. Generate ten problems using a loop.
+3. For each problem, show the question and get user answer.
+4. Check if answer is correct.
+5. Print score at the end.
+
+---
+
+## PROJECT 20: Number Aggregator (Q62 + Q76)
+
+**Concept:** Calculate sums and averages for custom ranges.
+
+**Hints:**
+- Use accumulation variables in loops.
+- Use `sum()` as a shortcut for verification.
+- Calculate average by dividing sum by count.
+
+**Steps:**
+1. Ask user for start and end numbers.
+2. Validate that start is less than end.
+3. Calculate sum using a loop.
+4. Verify with built-in `sum()` and `range()`.
+5. Calculate and print average.
+6. Also print count of even and odd numbers in range.
+
+---
+
+## PROJECT 21: Even Odd Separator (Q63 + Q64)
+
+**Concept:** Split a range of numbers into even and odd lists.
+
+**Hints:**
+- Use modulo to test divisibility.
+- Append to separate lists based on result.
+- Use list comprehensions as an alternative.
+
+**Steps:**
+1. Ask for a range of numbers.
+2. Loop through the range.
+3. Add even numbers to one list, odd to another.
+4. Print both lists with their counts.
+5. Print the sum of each list.
+
+---
+
+## PROJECT 22: Countdown Timer (Q66 + Q67)
+
+**Concept:** Create a countdown with user-defined start and interval.
+
+**Hints:**
+- Use `while` loop with decrement.
+- Use `time.sleep()` for realistic delays.
+- Handle invalid inputs.
+
+**Steps:**
+1. Ask user for countdown start number.
+2. Validate it is a positive integer.
+3. Count down to zero, printing each number.
+4. Wait one second between each number.
+5. Print a final message when reaching zero.
+6. Ask if user wants another countdown.
+
+---
+
+## PROJECT 23: Search and Stop (Q68)
+
+**Concept:** Search a list for a target value and stop when found.
+
+**Hints:**
+- Use `break` to exit loop early.
+- Report the position where found.
+- Handle case where target is not found.
+
+**Steps:**
+1. Create a list of twenty random numbers.
+2. Ask user for a target number.
+3. Loop through the list searching for the target.
+4. If found, print position and break immediately.
+5. If loop completes without finding, print not found.
+
+---
+
+## PROJECT 24: Skip the Multiples (Q69)
+
+**Concept:** Process numbers but skip specific multiples.
+
+**Hints:**
+- Use `continue` to skip iterations.
+- Combine multiple skip conditions.
+- Track how many were skipped.
+
+**Steps:**
+1. Ask for a number range.
+2. Loop through all numbers.
+3. Skip multiples of 3.
+4. Skip multiples of 5.
+5. Print only numbers that pass both checks.
+6. Print total skipped count at the end.
+
+---
+
+## PROJECT 25: Pattern Printer (Q70)
+
+**Concept:** Print various patterns using nested loops.
+
+**Hints:**
+- Outer loop controls rows.
+- Inner loop controls columns.
+- Use print with `end` parameter for formatting.
+
+**Steps:**
+1. Ask user for pattern size.
+2. Print a square of asterisks.
+3. Print a right triangle of numbers.
+4. Print a pyramid pattern.
+5. Print a multiplication table grid.
+
+---
+
+## PROJECT 26: Gradebook Processor (Q71 + Q77)
+
+**Concept:** Process student grades with indices and values.
+
+**Hints:**
+- Use `range(len())` when index is needed.
+- Use direct iteration when only values matter.
+- Calculate statistics per student.
+
+**Steps:**
+1. Create a list of student grade lists.
+2. Print each student's grades with their position.
+3. Calculate average for each student.
+4. Find the highest grade in the class.
+5. Find which student has the highest average.
+
+---
+
+## PROJECT 27: Character Analyzer (Q72)
+
+**Concept:** Analyze frequency and types of characters in text.
+
+**Hints:**
+- Loop through string directly for characters.
+- Use character methods for classification.
+- Use a dictionary to count frequencies.
+
+**Steps:**
+1. Ask user for a sentence.
+2. Count total characters.
+3. Count vowels and consonants separately.
+4. Count digits and special characters.
+5. Print frequency of each character type.
+6. Print the most frequent character.
+
+---
+
+## PROJECT 28: Reverse Everything (Q78)
+
+**Concept:** Reverse lists, strings, and number sequences.
+
+**Hints:**
+- Use `range()` with negative step.
+- Use slicing `[::-1]` as alternative.
+- Apply to different data types.
+
+**Steps:**
+1. Create a list of numbers.
+2. Print the list in reverse using a loop.
+3. Create a string and print it in reverse.
+4. Count down from 100 to 0 by fives.
+5. Compare loop method versus slicing method.
+
+---
+
+## PROJECT 29: Step Counter (Q79)
+
+**Concept:** Generate sequences with custom steps and analyze them.
+
+**Hints:**
+- Use `range(start, stop, step)`.
+- Handle negative and positive steps.
+- Calculate properties of the sequence.
+
+**Steps:**
+1. Ask for start, stop, and step values.
+2. Validate step is not zero.
+3. Generate and print the sequence.
+4. Calculate sum, average, max, and min.
+5. Count how many are even and odd.
+
+---
+
+## PROJECT 30: Menu-Driven Application (Q80 + Combined)
+
+**Concept:** Build a complete menu system using all concepts.
+
+**Hints:**
+- Use `while True` for main loop.
+- Use `break` to exit.
+- Combine lists, dictionaries, loops, and conditionals.
+
+**Steps:**
+1. Display a menu with five options.
+2. Option 1: Add item to a list.
+3. Option 2: Remove item from list.
+4. Option 3: Display list statistics.
+5. Option 4: Search for an item.
+6. Option 5: Exit the program.
+7. Validate all menu choices.
+8. Loop until user chooses exit.
+
+---
+
+# 📋 QUICK REFERENCE MAP
+
+| Project | Topics Covered |
+|---------|---------------|
+| 1. Shopping List Manager | Q21, Q22, Q23, Q24, Q25, Q26 |
+| 2. Classroom Roster | Q21, Q27, Q73 |
+| 3. Top Scores Tracker | Q21, Q74, Q75, Q76 |
+| 4. Coordinate Pairs | Q28, Q29 |
+| 5. Student Profile Card | Q30, Q31, Q32 |
+| 6. Country Capitals Quiz | Q30, Q33, Q34 |
+| 7. Unique Visitor Log | Q35, Q36, Q37, Q38 |
+| 8. Duplicate Remover Tool | Q39 |
+| 9. Membership Checker | Q40 |
+| 10. Inventory Manager | Q21–Q40 Combined |
+| 11. Number Classifier | Q41, Q42, Q43 |
+| 12. Smart Thermostat | Q44, Q45, Q48 |
+| 13. Exam Grader | Q46 |
+| 14. Secure Vault | Q47, Q49 |
+| 15. Number Validator | Q48, Q50, Q51 |
+| 16. Calendar Helper | Q52, Q53 |
+| 17. Text Validator | Q54, Q55, Q56, Q57, Q58, Q59 |
+| 18. File Guard | Q60 |
+| 19. Multiplication Practice | Q61, Q65 |
+| 20. Number Aggregator | Q62, Q76 |
+| 21. Even Odd Separator | Q63, Q64 |
+| 22. Countdown Timer | Q66, Q67 |
+| 23. Search and Stop | Q68 |
+| 24. Skip the Multiples | Q69 |
+| 25. Pattern Printer | Q70 |
+| 26. Gradebook Processor | Q71, Q77 |
+| 27. Character Analyzer | Q72 |
+| 28. Reverse Everything | Q78 |
+| 29. Step Counter | Q79 |
+| 30. Menu-Driven Application | Q80 + All Combined |
+
+---
+
+## 🎯 Mastery Checklist
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # 🐍 PYTHON MASTERY SERIES — PART 3 (Q81–Q120)
 

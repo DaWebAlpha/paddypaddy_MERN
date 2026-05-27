@@ -1,4 +1,161 @@
-Here is the expanded version of **PART 1 (Q1–Q50)**. I have kept every original detail (Task, Hint, Master Guide, Code) exactly as it was and added a detailed **Explanation** section for each code block to describe exactly what the script is doing.
+Here is the grep flags information without tables:
+
+---
+
+**-i** (ignore-case)
+Case-insensitive matching. `grep -i "error"` matches ERROR, Error, error, ErRoR.
+
+**-v** (invert-match)
+Show lines that do NOT match. `grep -v "ERROR"` shows everything except lines containing ERROR.
+
+**-c** (count)
+Count matching lines only, returns a number. `grep -c "ERROR"` outputs `7`.
+
+**-n** (line-number)
+Show line numbers with each match. `grep -n "ERROR"` outputs something like `3:2026-05-26 10:17:12 ERROR Connection timeout...`
+
+**-l** (files-with-matches)
+Only print filenames that contain at least one match. `grep -l "error" *.txt` lists matching files.
+
+**-L** (files-without-match)
+Only print filenames that contain NO matches. `grep -L "error" *.txt` lists files without the pattern.
+
+**-r** or **-R** (recursive)
+Search directories recursively. `grep -r "error" /var/log/` searches all files under /var/log.
+
+**-w** (word-regexp)
+Match whole words only. `grep -w "error"` matches "error" but not "errors" or "errorHandler".
+
+**-x** (line-regexp)
+Match entire lines only. `grep -x "ERROR"` matches a line that is exactly "ERROR", not "ERROR: failed".
+
+**-o** (only-matching)
+Print only the matching part, not the whole line. `grep -o "ERROR.*"` prints just the error message portion.
+
+**-A n** (after-context)
+Show n lines after each match. `grep -A 2 "ERROR"` shows the matching line plus 2 lines below it.
+
+**-B n** (before-context)
+Show n lines before each match. `grep -B 1 "ERROR"` shows 1 line above plus the matching line.
+
+**-C n** (context)
+Show n lines before and after each match. `grep -C 2 "ERROR"` shows 2 lines above, the match, and 2 lines below.
+
+**-E** (extended-regexp)
+Use extended regular expressions. No need to escape `|`, `+`, `?`, `()`, `{}`. `grep -E "ERROR|WARNING"` matches either word.
+
+**-F** (fixed-strings)
+Treat pattern as a literal string, not a regex. `grep -F "a.b"` matches the exact string "a.b", not "a followed by any character followed by b".
+
+**-e** (regexp)
+Specify multiple patterns. `grep -e "ERROR" -e "FATAL"` matches lines with either ERROR or FATAL.
+
+**-f** (file)
+Read patterns from a file. `grep -f patterns.txt log.txt` where patterns.txt contains one pattern per line.
+
+**-h** (no-filename)
+Do not show the filename prefix when searching multiple files. `grep -h "error" *.txt` shows only matching lines.
+
+**-H** (with-filename)
+Always show the filename, even with only one file. `grep -H "error" file.txt` outputs `file.txt:matching line`.
+
+**-s** (no-messages)
+Suppress error messages about missing or unreadable files. `grep -s "error" missing.txt` stays silent.
+
+**-q** (quiet or silent)
+No output at all, just exit code. Exit code 0 means found, 1 means not found. `grep -q "error" log.txt && echo "found"` prints "found" only if the pattern exists.
+
+**-m n** (max-count)
+Stop reading after n matches. `grep -m 5 "ERROR"` finds the first 5 errors and stops.
+
+**-b** (byte-offset)
+Show the byte offset of each match within the file. `grep -b "ERROR"` outputs something like `128:2026-05-26 10:17:12 ERROR...`
+
+**--color**
+Highlight matching text in color. `grep --color "ERROR"` makes ERROR appear in red (or your terminal's highlight color).
+
+---
+
+## Combining Flags Examples
+
+Case-insensitive, show line numbers, 2 lines of context:
+`grep -inC 2 "error" log.txt`
+
+Count warnings and errors together using extended regex:
+`grep -cE "ERROR|WARNING" log.txt`
+
+Recursive search, only filenames, case-insensitive:
+`grep -ril "error" /var/log/`
+
+Quiet check in a script:
+`if grep -q "FATAL" log.txt; then echo "Critical errors found!"; fi`
+
+---
+
+## Quick Reference by Task
+
+Find something regardless of case: use `-i`
+
+Count occurrences: use `-c`
+
+See line numbers: use `-n`
+
+See surrounding lines: use `-A`, `-B`, or `-C`
+
+Exclude matching lines: use `-v`
+
+Search folders recursively: use `-r`
+
+Match exact word only: use `-w`
+
+Use complex patterns with `|` or `+`: use `-E`
+
+Check silently in scripts: use `-q`
+
+Search multiple terms: use `-e` or `-E` with `\|`
+
+---
+
+## Regular Expression Basics with grep
+
+`.` matches any single character
+
+`*` matches zero or more of the preceding character
+
+`+` matches one or more (requires `-E`)
+
+`?` matches zero or one (requires `-E`)
+
+`^` anchors to start of line
+
+`$` anchors to end of line
+
+`[abc]` matches any character in the set
+
+`[^abc]` matches any character NOT in the set
+
+`\(a\|b\)` matches a or b (basic regex, needs escaping)
+
+`(a|b)` matches a or b (extended regex with `-E`)
+
+---
+
+## Example grep Commands
+
+Find all lines starting with ERROR:
+`grep "^ERROR" log.txt`
+
+Find all lines ending with a number:
+`grep "[0-9]$" log.txt`
+
+Find lines with IP addresses:
+`grep -E "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" log.txt`
+
+Find empty lines:
+`grep "^$" log.txt`
+
+Find lines with exactly 3 digits:
+`grep -E "^[0-9]{3}$" log.txt`
 
 ---
 
@@ -109,6 +266,44 @@ read -p "Delete? (yes/no): " ans
 if [ "$ans" = "yes" ]; then
   rm "$file"
 fi
+
+
+
+OR
+
+
+#!/bin/bash
+
+
+
+while true; do
+        read -p "Enter file to delete: " filename
+
+        if [[ "$filename" == "q" ]] || [[ "$filename" == "quit" ]]; then
+                echo "Exiting ....."
+                exit 0
+        fi
+
+        if [[ -z "$filename" ]]; then
+                echo "Input cannot be empty"
+                echo ""
+                continue
+        fi
+
+
+        if [[ ! -f "$filename" ]]; then
+                echo "File $filename does not exist"
+                echo ""
+                continue
+        fi
+
+
+        break
+done
+
+
+rm "$filename"
+echo "$filename has been deleted"
 ```
 
 **Explanation:**
@@ -127,6 +322,8 @@ fi
 grep -c "error" log.txt
 ```
 
+
+EXAMPLE OF A log.txt
 **Explanation:**
 - `grep`: A command used for searching text.
 - `-c`: This flag tells grep to count the number of matching lines instead of printing the lines themselves.
@@ -983,9 +1180,502 @@ df -h
 
 
 
-Here is the expanded version of **PART 2 (Q51–Q100)**. All original content has been preserved, and detailed explanations have been added to every code block.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Here are 20 Bash projects mapped to your Q1–Q50 Bash Master Series, with hints and step-by-step guides (no code solutions).
 
 ---
+
+# ⚡ 20 BASH PROJECTS FOR Q1–Q50 MASTERY
+
+---
+
+## PROJECT 1: File Guardian (Q1 + Q2)
+
+**Concept:** A script that checks if critical files exist and creates them with default content if missing.
+
+**Hints:**
+- Use `-f` to check file existence.
+- Use `-s` to verify the file is not empty.
+- Use `>` to create and write default content.
+
+**Steps:**
+1. Define a list of three critical files your application needs.
+2. Loop through each file name.
+3. Check if the file exists and is not empty.
+4. If missing or empty, create it and write a timestamped header line.
+5. Print a status message for each file checked.
+
+---
+
+## PROJECT 2: Smart Backup Tool (Q3 + Q10)
+
+**Concept:** Backup files with a timestamp and prefix, then verify the backup.
+
+**Hints:**
+- Use wildcards `*` to select files.
+- Use `mkdir -p` to ensure the backup directory exists.
+- Use a loop with `mv` and string concatenation for renaming.
+
+**Steps:**
+1. Ask the user for a file extension to backup (like txt or log).
+2. Create a backup directory named with today's date.
+3. Find all matching files in the current directory.
+4. Copy each file into the backup directory with a "bak_" prefix.
+5. List the backup directory to confirm success.
+
+---
+
+## PROJECT 3: Safe File Remover (Q4 + Q11 + Q16)
+
+**Concept:** Delete files only after multiple confirmations and validations.
+
+**Hints:**
+- Use `read` with prompts.
+- Use `-z` to check for empty input.
+- Use string comparison for yes/no validation.
+
+**Steps:**
+1. Prompt for a filename.
+2. Validate the input is not empty.
+3. Check if the file actually exists.
+4. Ask for confirmation with a yes/no prompt.
+5. If confirmed, delete the file and print success.
+6. If not confirmed, print cancellation and exit cleanly.
+
+---
+
+## PROJECT 4: Log Analyzer Dashboard (Q5 + Q41 + Q45 + Q46 + Q47 + Q48 + Q49)
+
+**Concept:** Analyze a log file and display a summary dashboard.
+
+**Hints:**
+- Use `grep -c` to count occurrences.
+- Use `sort` and `uniq` to find unique entries.
+- Use `wc` for counting lines and words.
+- Use `head` and `tail` for previews.
+
+**Steps:**
+1. Accept a log filename as an argument.
+2. Check if the file exists.
+3. Count total lines, words, and bytes.
+4. Count how many lines contain "ERROR", "WARNING", and "INFO".
+5. Show the first 5 and last 5 lines.
+6. Extract and list all unique IP addresses or timestamps.
+7. Display everything in a formatted summary.
+
+---
+
+## PROJECT 5: Storage Monitor (Q6 + Q42 + Q43)
+
+**Concept:** Monitor disk and file sizes, alert if thresholds are exceeded.
+
+**Hints:**
+- Use `stat -c%s` to get file size in bytes.
+- Use `df -h` for disk usage.
+- Use arithmetic comparison for threshold checks.
+
+**Steps:**
+1. Define a size threshold in bytes (like 1MB).
+2. Check a specific file's size.
+3. If it exceeds the threshold, print a warning.
+4. Check overall disk usage with `df`.
+5. If disk usage is above 90%, print a critical alert.
+6. Check memory usage with `free`.
+7. Log all findings to a status file.
+
+---
+
+## PROJECT 6: Directory Inspector (Q7 + Q8)
+
+**Concept:** Scan a directory and report on its contents.
+
+**Hints:**
+- Use `*/` pattern to match only directories.
+- Use `find` with `-type f -empty` for empty files.
+- Use loops to process findings.
+
+**Steps:**
+1. Ask the user for a target directory.
+2. Validate the directory exists.
+3. Count and list all subdirectories.
+4. Find and list all empty files.
+5. Count files by extension (how many .txt, .log, .py).
+6. Print a formatted report.
+
+---
+
+## PROJECT 7: Log Cleaner (Q9 + Q3)
+
+**Concept:** Safely clean up old log files after confirmation.
+
+**Hints:**
+- Use `rm -f` for force removal.
+- Use wildcards to target log files.
+- Use backup logic before deletion.
+
+**Steps:**
+1. Find all `.log` files in a directory.
+2. Show the user which files will be deleted.
+3. Ask for confirmation.
+4. If confirmed, backup the logs first to a timestamped folder.
+5. Delete the original log files.
+6. Report how many files were removed and where backups are stored.
+
+---
+
+## PROJECT 8: Batch Renamer (Q10)
+
+**Concept:** Rename multiple files with custom prefixes, suffixes, or numbering.
+
+**Hints:**
+- Use a `for` loop with wildcards.
+- Use string concatenation for new names.
+- Use `mv` for renaming.
+
+**Steps:**
+1. Ask the user for a file pattern (like *.jpg).
+2. Ask for a prefix to add.
+3. Loop through matching files.
+4. Construct a new name with the prefix.
+5. Rename each file and print old name vs new name.
+6. Handle edge cases like duplicate names.
+
+---
+
+## PROJECT 9: Input Validator Tool (Q11 + Q13 + Q14 + Q15 + Q17 + Q18 + Q20)
+
+**Concept:** A reusable validation module for user inputs.
+
+**Hints:**
+- Use `-z` for empty checks.
+- Use regex with `=~` for numeric validation.
+- Use parameter expansion `${var:-default}` for defaults.
+- Use arithmetic context for range checks.
+
+**Steps:**
+1. Create a function that validates if input is not empty.
+2. Create a function that validates if input is numeric.
+3. Create a function that validates if a number is within a range.
+4. Create a function that provides a default value if input is empty.
+5. Test all functions with various inputs.
+6. Combine them into a single validation pipeline.
+
+---
+
+## PROJECT 10: Secure Login Prompt (Q12 + Q19)
+
+**Concept:** A multi-attempt login system with hidden password entry.
+
+**Hints:**
+- Use `read -s` for silent password input.
+- Use a loop for multiple attempts.
+- Use string comparison for password checking.
+
+**Steps:**
+1. Set a hardcoded correct password.
+2. Allow the user 3 attempts.
+3. Each attempt prompts for password silently.
+4. If correct, grant access and exit.
+5. If wrong, decrement attempts and warn.
+6. After 3 failures, lock out and exit with error code.
+
+---
+
+## PROJECT 11: Number Processor (Q14 + Q15 + Q21 + Q22 + Q28)
+
+**Concept:** Process a list of numbers with various operations.
+
+**Hints:**
+- Use loops for iteration.
+- Use arithmetic context for calculations.
+- Use conditionals for filtering.
+
+**Steps:**
+1. Accept a space-separated list of numbers as input.
+2. Validate that all inputs are numeric.
+3. Calculate and print the sum.
+4. Calculate and print the average.
+5. Find and print the maximum and minimum.
+6. Print all even numbers from the list.
+7. Print all numbers within a user-defined range.
+
+---
+
+## PROJECT 12: File Line Counter (Q23)
+
+**Concept:** Count lines, words, and characters across multiple files.
+
+**Hints:**
+- Use `while read` loops for manual counting.
+- Use `wc` as a comparison.
+- Use redirection `<` to feed files into loops.
+
+**Steps:**
+1. Accept multiple filenames as arguments.
+2. For each file, check if it exists.
+3. Count lines manually using a while loop.
+4. Count words manually by splitting lines.
+5. Compare your manual counts with `wc` output.
+6. Print a formatted table of results.
+
+---
+
+## PROJECT 13: Timer and Alarm (Q24 + Q25)
+
+**Concept:** A countdown timer with optional alarm message.
+
+**Hints:**
+- Use `sleep` for delays.
+- Use `date` for timestamps.
+- Use infinite loops with break conditions.
+
+**Steps:**
+1. Ask the user for a countdown duration in seconds.
+2. Validate the input is a positive number.
+3. Loop from the duration down to zero.
+4. Print the remaining time each second.
+5. At zero, print a completion message.
+6. Optionally loop to allow multiple timers.
+
+---
+
+## PROJECT 14: Argument Processor (Q26 + Q30)
+
+**Concept:** A script that processes command-line arguments flexibly.
+
+**Hints:**
+- Use `"$@"` to access all arguments.
+- Use loops to iterate through them.
+- Use functions to handle different argument types.
+
+**Steps:**
+1. Print the total number of arguments received.
+2. Print each argument with its position number.
+3. Identify which arguments are filenames (check if they exist).
+4. Identify which arguments are numeric.
+5. Print a categorized summary.
+
+---
+
+## PROJECT 15: File Batch Processor (Q27)
+
+**Concept:** Process all files of a specific type with a custom action.
+
+**Hints:**
+- Use `for` loops with wildcards.
+- Use file tests to validate each file.
+- Use functions to encapsulate the processing logic.
+
+**Steps:**
+1. Ask the user for a file extension to process.
+2. Find all matching files in the current directory.
+3. For each file, print its name and size.
+4. Create a summary report listing all processed files.
+5. Count the total number of files and total size.
+
+---
+
+## PROJECT 16: Smart Skipper (Q29 + Q30)
+
+**Concept:** Process a range of numbers with custom skip and stop rules.
+
+**Hints:**
+- Use `continue` to skip iterations.
+- Use `break` to stop early.
+- Use conditional logic for rules.
+
+**Steps:**
+1. Define a range of numbers (like 1 to 50).
+2. Skip all multiples of 3 (use continue).
+3. Stop completely when reaching a multiple of 7 (use break).
+4. Print each number that is processed.
+5. Print a summary of how many were skipped and why the loop ended.
+
+---
+
+## PROJECT 17: Calculator Suite (Q31 + Q32 + Q33 + Q38)
+
+**Concept:** A modular calculator with multiple operations.
+
+**Hints:**
+- Define separate functions for each operation.
+- Pass arguments to functions.
+- Return results using echo.
+
+**Steps:**
+1. Create functions for add, subtract, multiply, divide.
+2. Each function takes two arguments and prints the result.
+3. Create a menu system to let the user choose an operation.
+4. Validate that inputs are numeric before calculation.
+5. Handle division by zero with an error message.
+6. Loop to allow multiple calculations.
+
+---
+
+## PROJECT 18: File Checker Utility (Q34 + Q35 + Q39)
+
+**Concept:** A reusable utility for checking files and logging results.
+
+**Hints:**
+- Use functions with file path arguments.
+- Use `date` for timestamps in logs.
+- Use `exit` for error handling.
+
+**Steps:**
+1. Create a function that checks if a file exists.
+2. Create a function that checks if a file is readable.
+3. Create a function that checks if a file is writable.
+4. Create a logging function that timestamps messages.
+5. Test all functions on various files.
+6. If any check fails, log the error and exit with code 1.
+
+---
+
+## PROJECT 19: Service Controller (Q36 + Q37 + Q40)
+
+**Concept:** A simple service controller with start, stop, and status commands.
+
+**Hints:**
+- Use nested functions.
+- Use sequential function calls.
+- Use status checks between operations.
+
+**Steps:**
+1. Create a start function that prints "Starting service..." and simulates a delay.
+2. Create a stop function that prints "Stopping service..." and simulates a delay.
+3. Create a status function that checks if a PID file exists.
+4. Create a main controller that accepts commands: start, stop, restart, status.
+5. For restart, call stop then start.
+6. Validate commands and print usage for invalid ones.
+
+---
+
+## PROJECT 20: System Health Reporter (Q41 + Q42 + Q43 + Q44 + Q50)
+
+**Concept:** A comprehensive system health check that generates a report.
+
+**Hints:**
+- Combine multiple system commands.
+- Use functions for each check category.
+- Redirect output to a report file.
+
+**Steps:**
+1. Check running processes for a specific service name using `ps`.
+2. Check disk usage with `df` and flag any partition over 80%.
+3. Check memory usage with `free`.
+4. Check internet connectivity with `ping`.
+5. Check system uptime.
+6. Compile all results into a formatted report.
+7. Save the report to a file with a timestamp in the filename.
+8. Print a summary to the screen.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # 💪 BASH MASTER SERIES — 200 HARD QUESTIONS
 
