@@ -3006,3 +3006,623 @@ Q111 to Q120: Classes, objects, methods, encapsulation, inheritance, polymorphis
 Practice by typing every example yourself. Build projects starting with a calculator, then a to-do list, then a mini banking system. Explore libraries like NumPy, Pandas, Flask, and Django. Solve problems on LeetCode, HackerRank, or Codewars.
 
 Master these 120 concepts and you have a solid foundation in Python programming.
+
+
+
+
+
+Here are 20 practice projects mapped to your Q81–Q120, with concepts, hints, and steps (no code).
+
+---
+
+# 🐍 20 PYTHON PROJECTS FOR Q81–Q120 MASTERY
+
+---
+
+## PROJECT 1: Personal Greeter Function (Q81 + Q82)
+
+**Concept:** Create a reusable greeting function with personalization.
+
+**Hints:**
+- Use `def` to define the function.
+- Accept a name parameter.
+- Call the function multiple times with different names.
+
+**Steps:**
+1. Define a function that accepts a name parameter.
+2. Print a personalized greeting inside the function.
+3. Call the function with your own name.
+4. Call the function with a friend's name.
+5. Call the function with an empty string and observe the output.
+
+---
+
+## PROJECT 2: Calculator with Return Values (Q83)
+
+**Concept:** Build a calculator where operations return results for further use.
+
+**Hints:**
+- Use `return` instead of printing inside the function.
+- Store returned values in variables.
+- Chain operations using returned results.
+
+**Steps:**
+1. Define an add function that returns the sum.
+2. Define a subtract function that returns the difference.
+3. Call add with two numbers and store the result.
+4. Use that result as input to the subtract function.
+5. Print the final chained result.
+
+---
+
+## PROJECT 3: Default Greeting System (Q84)
+
+**Concept:** Create a greeting system that works with or without a name provided.
+
+**Hints:**
+- Set a default parameter value like "Guest".
+- Call the function with and without arguments.
+- Demonstrate the default behavior.
+
+**Steps:**
+1. Define a greet function with a default name parameter.
+2. Call the function without any argument.
+3. Call the function with a specific name.
+4. Print both results to show the difference.
+5. Explain when default parameters are useful.
+
+---
+
+## PROJECT 4: Profile Builder (Q85 + Q86)
+
+**Concept:** Build a user profile using multiple parameters and keyword arguments.
+
+**Hints:**
+- Accept multiple ordered parameters.
+- Demonstrate calling with positional arguments.
+- Demonstrate calling with keyword arguments in different order.
+
+**Steps:**
+1. Define a function that accepts name, age, and country.
+2. Call it using positional arguments only.
+3. Call it using keyword arguments only.
+4. Call it mixing positional and keyword arguments.
+5. Print the profile information each time.
+
+---
+
+## PROJECT 5: Flexible Sum Calculator (Q87)
+
+**Concept:** Create a calculator that accepts any number of values to sum.
+
+**Hints:**
+- Use `*args` to collect variable arguments.
+- Loop through the tuple of arguments.
+- Handle the case of no arguments.
+
+**Steps:**
+1. Define a sum function using `*args`.
+2. Call it with two numbers.
+3. Call it with five numbers.
+4. Call it with no numbers and return zero.
+5. Print all results and verify correctness.
+
+
+
+
+---
+
+## PROJECT 6: Dynamic Profile Printer (Q88)
+
+**Concept:** Build a function that accepts any number of profile fields.
+
+**Hints:**
+- Use `**kwargs` to collect keyword arguments.
+- Loop through the dictionary items.
+- Format each key-value pair nicely.
+
+**Steps:**
+1. Define a function using `**kwargs`.
+2. Call it with name and age.
+3. Call it with name, age, country, and hobby.
+4. Print all fields in a formatted way.
+5. Show that new fields can be added without changing the function.
+
+---
+
+## PROJECT 7: Scope Explorer (Q89 + Q90)
+
+**Concept:** Demonstrate the difference between local and global variables.
+
+**Hints:**
+- Create a global variable.
+- Create a function that tries to modify it.
+- Show the local scope behavior first.
+- Then use the `global` keyword to allow modification.
+
+**Steps:**
+1. Define a global counter variable.
+2. Create a function that increments a local counter.
+3. Print the global counter before and after the function call.
+4. Modify the function to use the `global` keyword.
+5. Print the global counter again to show the change.
+
+---
+
+## PROJECT 8: Quick Math Operations (Q91 + Q92)
+
+**Concept:** Use lambda functions for simple math operations.
+
+**Hints:**
+- Create lambdas for square, cube, and multiply.
+- Assign lambdas to variables.
+- Call them like regular functions.
+
+**Steps:**
+1. Create a lambda for squaring a number.
+2. Create a lambda for multiplying two numbers.
+3. Test both with sample values.
+4. Explain when lambdas are preferable to full functions.
+5. Show a limitation of lambdas.
+
+---
+
+## PROJECT 9: Grade Transformer (Q93)
+
+**Concept:** Transform a list of numeric grades to letter grades using map.
+
+**Hints:**
+- Define a conversion function.
+- Use `map()` to apply it to a list.
+- Convert the result back to a list.
+
+**Steps:**
+1. Create a list of numeric grades.
+2. Define a function that converts a number to a letter grade.
+3. Use `map()` to apply the conversion to all grades.
+4. Print the original and transformed lists.
+5. Compare with a loop-based approach.
+
+---
+
+## PROJECT 10: Passing Grade Filter (Q94)
+
+**Concept:** Filter a list of grades to show only passing scores.
+
+**Hints:**
+- Define a predicate function that returns True or False.
+- Use `filter()` to keep only passing grades.
+- Convert the result to a list.
+
+**Steps:**
+1. Create a list of grades including failures.
+2. Define a function that checks if a grade is passing.
+3. Use `filter()` to extract passing grades only.
+4. Print both the original and filtered lists.
+5. Count how many students passed.
+
+---
+
+## PROJECT 11: Name Length Sorter (Q95)
+
+**Concept:** Sort a list of names by their length.
+
+**Hints:**
+- Use `sorted()` with a key function.
+- Use `len` as the key.
+- Show that the original list remains unchanged.
+
+**Steps:**
+1. Create a list of names of varying lengths.
+2. Sort them by length using `sorted()` with `key=len`.
+3. Print the sorted result.
+4. Print the original list to show it is unchanged.
+5. Sort in reverse order by length.
+
+---
+
+## PROJECT 12: Self-Documenting Calculator (Q96)
+
+**Concept:** Add documentation to functions and display it.
+
+**Hints:**
+- Write docstrings for each function.
+- Access docstrings using `.__doc__`.
+- Print documentation at runtime.
+
+**Steps:**
+1. Define a calculator function with a detailed docstring.
+2. Define another function with a docstring.
+3. Print the docstring of the first function.
+4. Print the docstring of the second function.
+5. Explain why documentation is important for teamwork.
+
+---
+
+## PROJECT 13: Type-Safe Calculator (Q97)
+
+**Concept:** Add type hints to a calculator for clarity.
+
+**Hints:**
+- Annotate parameters with expected types.
+- Annotate return type.
+- Explain that Python does not enforce types at runtime.
+
+**Steps:**
+1. Define an add function with type hints.
+2. Define a multiply function with type hints.
+3. Call them with correct types.
+4. Call them with incorrect types and observe that Python still runs.
+5. Explain the purpose of type hints for developers.
+
+---
+
+## PROJECT 14: Factorial Finder (Q98)
+
+**Concept:** Calculate factorial using recursion.
+
+**Hints:**
+- Define the base case first.
+- Make the function call itself with a smaller number.
+- Include error handling for negative inputs.
+
+**Steps:**
+1. Define a recursive factorial function.
+2. Test with 1 as the base case.
+3. Test with 5.
+4. Test with 0.
+5. Add a check for negative numbers and print an error.
+
+---
+
+## PROJECT 15: Nested Helper Functions (Q99)
+
+**Concept:** Build a function that contains specialized helper functions inside.
+
+**Hints:**
+- Define an outer function.
+- Define one or more inner functions.
+- Call inner functions from the outer function.
+- Show that inner functions are not accessible outside.
+
+**Steps:**
+1. Define an outer function for processing text.
+2. Inside it, define a helper to clean the text.
+3. Inside it, define another helper to format the text.
+4. Call both helpers from the outer function.
+5. Try to call a helper from outside and show the error.
+
+---
+
+## PROJECT 16: Operation Pipeline (Q100)
+
+**Concept:** Build a pipeline where functions are passed as arguments.
+
+**Hints:**
+- Define a pipeline function that accepts data and an operation.
+- Define multiple operation functions.
+- Pass different operations to the pipeline.
+
+**Steps:**
+1. Define a pipeline function that takes a number and an operation function.
+2. Define an operation that doubles a number.
+3. Define an operation that halves a number.
+4. Pass the double operation through the pipeline.
+5. Pass the halve operation through the pipeline.
+6. Print all results.
+
+---
+
+## PROJECT 17: Simple Diary Writer (Q101 + Q104)
+
+**Concept:** Write daily entries to a file with timestamps.
+
+**Hints:**
+- Use `open()` with write mode.
+- Use append mode to add without deleting.
+- Include newlines between entries.
+
+**Steps:**
+1. Ask the user for a diary entry.
+2. Open a file in append mode.
+3. Write the entry with the current date.
+4. Close the file properly.
+5. Run multiple times to build a history.
+
+---
+
+## PROJECT 18: Diary Reader (Q102 + Q103 + Q105)
+
+**Concept:** Read and display diary entries safely.
+
+**Hints:**
+- Use `with` statement for safe file handling.
+- Read the entire file or line by line.
+- Handle the case where the file does not exist.
+
+**Steps:**
+1. Try to open the diary file with `with`.
+2. Read all content and print it.
+3. Alternatively, read and print line by line.
+4. Handle FileNotFoundError gracefully.
+5. Print a friendly message if no entries exist yet.
+
+---
+
+## PROJECT 19: Safe Number Divider (Q106 + Q107 + Q108)
+
+**Concept:** Build a division tool with comprehensive error handling.
+
+**Hints:**
+- Use multiple except blocks for different errors.
+- Include a finally block for cleanup messages.
+- Handle ValueError and ZeroDivisionError separately.
+
+**Steps:**
+1. Ask for two numbers.
+2. Try to convert both to integers.
+3. Try to divide the first by the second.
+4. Catch ValueError for bad input.
+5. Catch ZeroDivisionError for division by zero.
+6. Use finally to print "Operation complete" every time.
+
+---
+
+## PROJECT 20: Custom Validation System (Q109 + Q110)
+
+**Concept:** Build a validation system with custom exceptions.
+
+**Hints:**
+- Define a custom exception class.
+- Raise it when validation fails.
+- Catch it and provide specific feedback.
+
+**Steps:**
+1. Define a custom exception for invalid age.
+2. Define a function that validates age is between 0 and 120.
+3. Raise the custom exception if age is invalid.
+4. Ask the user for their age.
+5. Try to validate it and catch the custom exception.
+6. Print a specific message based on the error.
+
+---
+
+## PROJECT 21: Bank Account Class (Q111 + Q112 + Q113)
+
+**Concept:** Model a simple bank account using a class.
+
+**Hints:**
+- Use `__init__` to set up initial balance.
+- Define methods for deposit and withdrawal.
+- Track the account holder's name.
+
+**Steps:**
+1. Define a BankAccount class with name and balance.
+2. Create a deposit method.
+3. Create a withdraw method.
+4. Create an account instance.
+5. Perform deposits and withdrawals.
+6. Print the final balance.
+
+---
+
+## PROJECT 22: Secure Bank Account (Q114 + Q115)
+
+**Concept:** Protect account data with encapsulation.
+
+**Hints:**
+- Make balance private with double underscore.
+- Provide getter methods.
+- Prevent direct modification from outside.
+
+**Steps:**
+1. Define a class with a private balance attribute.
+2. Create a method to get balance safely.
+3. Create methods to deposit and withdraw with validation.
+4. Try to access the private attribute directly and show it fails.
+5. Use the proper methods to modify balance.
+
+---
+
+## PROJECT 23: Animal Sound System (Q116 + Q117)
+
+**Concept:** Build an animal hierarchy with inheritance.
+
+**Hints:**
+- Create a base Animal class with a speak method.
+- Create Dog and Cat subclasses.
+- Override speak in each subclass.
+- Use super to access parent behavior.
+
+**Steps:**
+1. Define an Animal base class with a generic speak.
+2. Define a Dog class that inherits and overrides speak.
+3. Define a Cat class that inherits and overrides speak.
+4. Create instances of both.
+5. Call speak on each and observe the different outputs.
+6. Use super to include the parent message.
+
+---
+
+## PROJECT 24: Amphibious Vehicle (Q118)
+
+**Concept:** Create a class that inherits abilities from multiple parents.
+
+**Hints:**
+- Create a LandVehicle class with drive method.
+- Create a WaterVehicle class with sail method.
+- Create AmphibiousVehicle inheriting both.
+- Demonstrate all capabilities.
+
+**Steps:**
+1. Define LandVehicle with a drive method.
+2. Define WaterVehicle with a sail method.
+3. Define AmphibiousVehicle inheriting both.
+4. Create an instance.
+5. Call both drive and sail on the same object.
+6. Explain the concept of multiple inheritance.
+
+---
+
+## PROJECT 25: Math Utility Class (Q119)
+
+**Concept:** Build a utility class with static and class methods.
+
+**Hints:**
+- Use `@staticmethod` for operations needing no instance data.
+- Use `@classmethod` to report class information.
+- Call methods without creating instances.
+
+**Steps:**
+1. Define a MathUtils class.
+2. Add a static method for adding two numbers.
+3. Add a class method that prints the class name.
+4. Call the static method directly on the class.
+5. Call the class method directly on the class.
+6. Explain when static methods are preferable.
+
+---
+
+## PROJECT 26: Person Printer (Q120)
+
+**Concept:** Create a class with a readable string representation.
+
+**Hints:**
+- Define `__str__` to control print output.
+- Include multiple attributes in the string.
+- Test with print and str conversion.
+
+**Steps:**
+1. Define a Person class with name and age.
+2. Define `__str__` to return a formatted string.
+3. Create a person instance.
+4. Print the instance directly.
+5. Convert to string explicitly and print.
+6. Show how it improves debugging.
+
+---
+
+## PROJECT 27: Complete Banking System (Q111–Q120 Combined)
+
+**Concept:** Combine all OOP concepts into a mini banking system.
+
+**Hints:**
+- Use inheritance for different account types.
+- Use encapsulation for balance protection.
+- Use custom exceptions for business rules.
+- Use static methods for bank-wide settings.
+
+**Steps:**
+1. Define a base Account class with private balance.
+2. Define a SavingsAccount subclass with interest.
+3. Define a CheckingAccount subclass with overdraft.
+4. Add custom exceptions for overdraft and minimum balance.
+5. Add a class method to get bank name.
+6. Add a static method for shared interest rate.
+7. Create instances and demonstrate all features.
+
+---
+
+## PROJECT 28: Config File Manager (Q101–Q110 Combined)
+
+**Concept:** Build a configuration system with file handling and validation.
+
+**Hints:**
+- Read configuration from a file.
+- Validate each setting.
+- Write defaults if file is missing.
+- Use custom exceptions for invalid config.
+
+**Steps:**
+1. Try to read a config file.
+2. Parse key-value pairs.
+3. Validate that required keys exist.
+4. Validate that values are correct types.
+5. Write a default config if file is missing.
+6. Handle all errors gracefully.
+
+---
+
+## PROJECT 29: Function Toolkit (Q81–Q100 Combined)
+
+**Concept:** Build a toolkit demonstrating all function concepts.
+
+**Hints:**
+- Combine regular functions, lambdas, args, kwargs.
+- Use functions as arguments.
+- Include recursion.
+- Add documentation.
+
+**Steps:**
+1. Define a toolkit module with various functions.
+2. Include a simple greeting function.
+3. Include a flexible math function with *args.
+4. Include a profile builder with **kwargs.
+5. Include a recursive factorial.
+6. Include lambda-based operations.
+7. Include a function that accepts other functions.
+8. Document everything and print docs.
+
+---
+
+## PROJECT 30: Full Application (Q81–Q120 Combined)
+
+**Concept:** Build a complete command-line application using all concepts.
+
+**Hints:**
+- Use classes to model data.
+- Use functions for operations.
+- Use file handling for persistence.
+- Use exceptions for error handling.
+- Use inheritance for specialization.
+
+**Steps:**
+1. Define a base class for application entities.
+2. Define specialized subclasses.
+3. Create functions for CRUD operations.
+4. Save data to files.
+5. Load data from files.
+6. Validate all inputs.
+7. Handle all errors gracefully.
+8. Provide a menu-driven interface.
+9. Document the entire system.
+
+---
+
+# 📋 QUICK REFERENCE MAP
+
+| Project | Topics Covered |
+|---------|---------------|
+| 1. Personal Greeter Function | Q81, Q82 |
+| 2. Calculator with Return Values | Q83 |
+| 3. Default Greeting System | Q84 |
+| 4. Profile Builder | Q85, Q86 |
+| 5. Flexible Sum Calculator | Q87 |
+| 6. Dynamic Profile Printer | Q88 |
+| 7. Scope Explorer | Q89, Q90 |
+| 8. Quick Math Operations | Q91, Q92 |
+| 9. Grade Transformer | Q93 |
+| 10. Passing Grade Filter | Q94 |
+| 11. Name Length Sorter | Q95 |
+| 12. Self-Documenting Calculator | Q96 |
+| 13. Type-Safe Calculator | Q97 |
+| 14. Factorial Finder | Q98 |
+| 15. Nested Helper Functions | Q99 |
+| 16. Operation Pipeline | Q100 |
+| 17. Simple Diary Writer | Q101, Q104 |
+| 18. Diary Reader | Q102, Q103, Q105 |
+| 19. Safe Number Divider | Q106, Q107, Q108 |
+| 20. Custom Validation System | Q109, Q110 |
+| 21. Bank Account Class | Q111, Q112, Q113 |
+| 22. Secure Bank Account | Q114, Q115 |
+| 23. Animal Sound System | Q116, Q117 |
+| 24. Amphibious Vehicle | Q118 |
+| 25. Math Utility Class | Q119 |
+| 26. Person Printer | Q120 |
+| 27. Complete Banking System | Q111–Q120 Combined |
+| 28. Config File Manager | Q101–Q110 Combined |
+| 29. Function Toolkit | Q81–Q100 Combined |
+| 30. Full Application | Q81–Q120 Combined |
+
+---
+

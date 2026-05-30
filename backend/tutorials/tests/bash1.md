@@ -322,6 +322,21 @@ echo "$filename has been deleted"
 grep -c "error" log.txt
 ```
 
+TEXT O TEXT ON
+
+2026-05-28 10:00:01 INFO: Server started successfully
+2026-05-28 10:00:05 ERROR: Connection failed to database
+2026-05-28 10:00:10 error: retrying connection attempt 1
+2026-05-28 10:00:15 ERROR: Database timeout after 30s
+2026-05-28 10:00:20 INFO: Retry successful
+2026-05-28 10:00:25 MyError: custom exception thrown
+2026-05-28 10:00:30 error_handler function called
+2026-05-28 10:00:35 ERROR: Critical system failure
+2026-05-28 10:00:40 WARNING: High memory usage detected
+2026-05-28 10:00:45 errors found in batch processing
+2026-05-28 10:00:50 INFO: Job completed
+2026-05-28 10:00:55 DEBUG: Cleaning up temp files
+
 
 EXAMPLE OF A log.txt
 **Explanation:**
