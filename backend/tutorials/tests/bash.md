@@ -134,6 +134,32 @@ By the end of this project you will learn:
 
 ## Create file: `step1_shebang.sh`
 
+
+```bash
+#!/bin/bash
+
+set -eou pipefail
+
+echo "testing strict mode ..."
+
+#undefined variable test -u
+#echo $looka
+
+#Command failure test -e
+#ls logs/woda.txt
+
+#Pipefail -o
+#false | true
+#echo $?
+
+IFS=$'\n\t'
+
+touch "my file.txt"
+for file in $(ls); do
+        echo "$file"
+done
+
+```
 ```bash
 #!/bin/bash
 
@@ -211,37 +237,48 @@ The script stops immediately because of the typo.
 ```bash
 #!/bin/bash
 
-set -euo pipefail
+set -eou pipefail
 IFS=$'\n\t'
 
-# =============================================================================
-# STEP 2: CONFIGURATION VARIABLES
-# =============================================================================
-
+# Get the script's filename
 readonly SCRIPT_NAME="$(basename "$0")"
-echo "SCRIPT_NAME = $SCRIPT_NAME"
+echo "SCRIPT_NAME=$SCRIPT_NAME"
 
+# Get the absolute directory path of the current script
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-echo "SCRIPT_DIR = $SCRIPT_DIR"
+echo "SCRIPT_DIR=$SCRIPT_DIR"
 
+# Use the first command-line argument as the log directory, default to logs
 readonly LOG_DIR="${1:-logs}"
-echo "LOG_DIR = $LOG_DIR"
+echo "LOG_DIR=$LOG_DIR"
 
+# Base name for evidence collection directories
 readonly EVIDENCE_BASE="evidence"
 
-readonly EVIDENCE_DIR="${EVIDENCE_BASE}_$(date +%Y%m%d_%H%M%S)"
+# FIX 1: Capture the timestamp ONCE to ensure consistency across paths
+readonly RUN_TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
+
+# Create a unique evidence directory name
+readonly EVIDENCE_DIR="${EVIDENCE_BASE}_${RUN_TIMESTAMP}"
 echo "EVIDENCE_DIR = $EVIDENCE_DIR"
 
-readonly REPORT_FILE="${EVIDENCE_DIR}/reports/incident_report_$(date +%Y%m%d_%H%M%S).txt"
-echo "REPORT_FILE = $REPORT_FILE"
+# REPORT_FILE now uses the exact same timestamp as EVIDENCE_DIR
+readonly REPORT_FILE="${EVIDENCE_DIR}/reports/incident_report_${RUN_TIMESTAMP}.txt"
+echo "REPORT_FILE=$REPORT_FILE"
 
+# ATTACK_SIGNATURES
 readonly ATTACK_SIGNATURES="${LOG_DIR}/attack_signatures.txt"
 echo "ATTACK_SIGNATURES = $ATTACK_SIGNATURES"
 
+# TEMP_DIR
 readonly TEMP_DIR="${EVIDENCE_DIR}/tmp"
 echo "TEMP_DIR = $TEMP_DIR"
+
 ```
 
+REPORT_FILE=evidence_20260531_194532/reports/incident_report_20260531_194532.txt
+ATTACK_SIGNATURES = logs/attack_signatures.txt
+TEMP_DIR = evidence_20260531_194532/tmp
 ## How to test
 
 ```bash
@@ -294,40 +331,37 @@ Notice that `EVIDENCE_DIR` changes on every run.
 ```bash
 #!/bin/bash
 
-set -euo pipefail
+set -eou pipefail
 IFS=$'\n\t'
 
-# =============================================================================
-# STEP 3: FUNCTIONS
-# =============================================================================
-
-log() {
-    local level="$1"
-    shift
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] [${level}] $*"
+# Print a timestamp log message with a severity level
+log(){
+        local level="${1:-UNKNOWN}" # Fallback if level is missing
+        shift
+        # ${*:-} ensures set -u doesn't crash if no message is provided
+        echo "[$(date '+%Y%m%d %H%M%S')] [${level}] ${*:-}"
 }
 
-info() {
-    log "INFO" "$@"
+info(){
+        log "INFO" "${@:-}"
 }
 
 warn() {
-    log "WARN" "$@" >&2
+    log "WARN" "${@:-}" >&2
 }
 
 error() {
-    log "ERROR" "$@" >&2
+    log "ERROR" "${@:-}" >&2
 }
 
 fatal() {
-    log "FATAL" "$@" >&2
+    log "FATAL" "${@:-}" >&2
     exit 1
 }
 
 # =============================================================================
 # TEST THE FUNCTIONS
 # =============================================================================
-
 info "This is an info message"
 warn "This is a warning"
 error "This is an error"
@@ -335,7 +369,6 @@ error "This is an error"
 # Uncomment to test
 # fatal "This is fatal - script will stop here"
 
-info "If you see this, fatal() was not called"
 ```
 
 ## How to test
@@ -389,21 +422,19 @@ The last `info()` message never appears.
 ```bash
 #!/bin/bash
 
-set -euo pipefail
+set -eou pipefail
 IFS=$'\n\t'
-
-# =============================================================================
-# STEP 4: CHECK IF DIRECTORY EXISTS
-# =============================================================================
 
 LOG_DIR="logs"
 
+# Tests if folder LOG_DIR exists or does not exist
 if [[ ! -d "$LOG_DIR" ]]; then
-    echo "ERROR: Folder $LOG_DIR does not exist"
-    exit 1
+        echo "Error: Folder $LOG_DIR does not exist" >&2
+        exit 1
 fi
 
-echo "SUCCESS: Folder $LOG_DIR exists"
+echo "Success: Folder $LOG_DIR exists"
+
 ```
 
 ## How to test
@@ -458,6 +489,13 @@ Expected:
 1
 ```
 
+
+
+
+
+
+
+
 ---
 
 # Step 5: Loop Through Files and Check Properties
@@ -474,43 +512,46 @@ Expected:
 ```bash
 #!/bin/bash
 
-set -euo pipefail
+set -eou pipefail
 IFS=$'\n\t'
 
-# =============================================================================
-# STEP 5: CHECK FILES ARE READABLE AND NOT EMPTY
-# =============================================================================
-
-LOG_DIR="logs"
+LOG_DIR='logs'
 
 if [[ ! -d "$LOG_DIR" ]]; then
-    echo "ERROR: Folder $LOG_DIR does not exist"
-    exit 1
+        echo "Error folder $LOG_DIR does not exist" >&2
+        exit 1
 fi
 
-for file in "$LOG_DIR"/*.log; do
+# Enable nullglob to safely handle empty directories
+shopt -s nullglob
 
-    if [[ ! -e "$file" ]]; then
+# Store files in an array to comply with set -u
+files=("$LOG_DIR"/*.log)
+
+#Checks if folder is empty
+if (( ${#files[@]} == 0 )); then
         echo "No files found"
-        break
-    fi
+        exit 0
+fi
 
-    FILENAME=$(basename "$file")
+for file in "${files[@]}"; do
+        FILENAME=$(basename "$file")
 
-    if [[ ! -r "$file" ]]; then
-        echo "WARNING: $FILENAME is NOT readable"
-    else
+        if [[ ! -r "$file" ]]; then
+                echo "WARNING: $FILENAME is not readable" >&2
+                continue
+        fi
         echo "OK: $FILENAME is readable"
-    fi
 
-    if [[ ! -s "$file" ]]; then
-        echo "WARNING: $FILENAME is EMPTY"
-    else
-        echo "OK: $FILENAME has data"
-    fi
-
-    echo "---"
+        # FIXED: Added the missing $ to "file"
+        if [[ ! -s "$file" ]]; then
+                echo "WARNING: $FILENAME is empty"
+        else
+                echo "OK: $FILENAME is not empty"
+        fi
+        echo "-----------"
 done
+
 ```
 
 ## How to test
@@ -577,30 +618,35 @@ chmod 644 logs/auth.log
 - `| wc -l` counts the results.
 - `$(...)` captures command output into a variable.
 
+
+
+
+
+
+
+
+
 ## Create file: `step6_countfiles.sh`
 
 ```bash
 #!/bin/bash
 
-set -euo pipefail
+set -eou pipefail
 IFS=$'\n\t'
-
-# =============================================================================
-# STEP 6: COUNT LOG FILES
-# =============================================================================
 
 LOG_DIR="logs"
 
-# Check if folder exists
 if [[ ! -d "$LOG_DIR" ]]; then
-    echo "ERROR: Folder $LOG_DIR does not exist"
-    exit 1
+        echo "Error: Folder $LOG_DIR is not found" >&2
+        exit 1
 fi
+echo "SUCCESS: Folder $LOG_DIR exists"
 
-# Count .log files
-total_files=$(find "$LOG_DIR" -maxdepth 1 -type f -name "*.log" | wc -l)
+# Safely count files using a null-delimited stream to handle spaces/newlines
+total_files=$(find "$LOG_DIR" -maxdepth 1 -type f -name "*.log" -print0 | grep -cz .)
 
-echo "Total log files found: $total_files"
+echo "Total log files: $total_files"
+
 ```
 
 ## How to test
@@ -654,23 +700,52 @@ rm logs/new.log
 ```bash
 #!/bin/bash
 
-set -euo pipefail
+set -eou pipefail
 IFS=$'\n\t'
 
-# =============================================================================
-# STEP 7: SEARCH CASE-INSENSITIVELY
-# =============================================================================
-
 LOG_DIR="logs"
-FILE="$LOG_DIR/auth.log"
 
-if [[ ! -f "$FILE" ]]; then
-    echo "ERROR: File $FILE does not exist"
-    exit 1
+if [[ ! -d "$LOG_DIR" ]]; then
+        echo "ERROR: Folder $LOG_DIR does not exist" >&2
+        exit 1
 fi
 
-echo "=== Searching for 'error' (case-insensitive) ==="
-grep -i "error" "$FILE"
+echo "Success: Folder $LOG_DIR exists"
+echo ""
+
+# Enable nullglob so empty directories don't cause loop errors
+shopt -s nullglob
+
+# Store files in an array to safely handle set -u
+files=("$LOG_DIR"/*.log)
+
+if (( ${#files[@]} == 0 )); then
+        echo "No files found"
+        exit 0
+fi
+
+for file in "${files[@]}"; do
+        FILENAME=$(basename "$file")
+
+        if [[ ! -r "$file" ]]; then
+                echo "File $file is not readable" >&2
+                continue
+        fi
+
+        if [[ ! -s "$file" ]]; then
+                echo "File $file is empty"
+                continue
+        fi
+
+        echo "====== Searching for error in $FILENAME ======"
+        
+        # Added || true to prevent set -e from crashing when grep finds nothing
+        grep -i "error" "$file" || true
+        
+        echo "--------"
+        echo ""
+done
+
 ```
 
 ## How to test
@@ -683,7 +758,7 @@ chmod +x step7_grep_i.sh
 ### Count Matches
 
 ```bash
-grep -ci "error" logs/auth.log
+grep -ci "error" logs/auth.lo
 ```
 
 Expected:
