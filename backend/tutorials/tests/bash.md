@@ -203,7 +203,7 @@ echo "=== Line counts ==="
 wc -l logs/*
 ```
 
-**What it does:**
+**What it does :**
 - `ls -lh logs/` lists all files in the logs directory with human-readable sizes
 - `wc -l logs/*` counts lines in each file, verifying data was written correctly
 
@@ -242,6 +242,36 @@ logs/
 
 Below is the complete, production-ready script with detailed comments explaining every single line.
 
+
+```bash
+#!/bin/bash
+
+#comment this line out to see how standard Bash silently fails
+set -eou pipefail
+
+echo "====DEMONSTRATION STARTED ===="
+
+#1. Demonstrating -u (nounset)
+echo "Testing -u: Accessing a variable that does not exist..."
+
+#if -u is active, the script stops here
+echo "My name is $UNSET_VARIABLE"
+
+
+# 2. Demonstrating -e (errexist)
+echo "Testing -e: Running a failing command..."
+#This command does not exist. If -e is active, the script stops here
+non_existent_command
+
+
+# 3 Demonstrating -o pipefail
+echo "Testing -o pipefail: pipeline failure..."
+# ls fails but 'wc' succeeds
+# Without pipefail, the overall status is 0 (success) and the script continues
+# With pipefail, the overall status is non-zero, and the script stops
+ls non_existent_folder | wc -l
+```
+
 ```bash
 #!/bin/bash
 # =============================================================================
@@ -271,12 +301,47 @@ LOG_DIR="logs"
 # Check if the logs directory exists
 # NOTE: The original script had a bug here - it checked if directory EXISTS
 # but printed "does not exist". The corrected version below uses proper logic.
+LOG_DIR="logs"
+
+# METHOD 1 (MOST COMMON - BASH)
 if [[ ! -d "$LOG_DIR" ]]; then
-        echo "ERROR: Folder $LOG_DIR does not exist" >&2
+        echo "Directory $LOG_DIR does not exist" >&2
         exit 1
 fi
 
-echo "SUCCESS: Folder $LOG_DIR exists"
+echo "Directory $LOG_DIR exists"
+echo ""
+
+#METHOD 2 (POSIX STYLE)
+if [ ! -d "$LOG_DIR" ]; then
+        echo "Directory $LOG_DIR does not exist" >&2
+        exit 1
+fi
+echo "Directory $LOG_DIR exists"
+echo ""
+
+
+#METHOD 3 REVERSE LOGIC
+if [[ -d "$LOG_DIR" ]]; then
+        echo "SUCCESS: Folder  $LOG_DIR exists"
+
+else
+        echo "ERROR: Folder $LOG_DIR does not exists" >&2
+        exit 1
+fi
+
+
+#METHOD 4 (USING ||) COMMON PROFESSIONAL SCRIPTS
+[[ -d "$LOG_DIR" ]] || {
+
+        echo "Directory: $LOG_DIR does not exists" >&2
+        exit 1
+}
+
+
+#METHOD 5 ONE LINE
+[[ -d "$LOG_DIR" ]] || { echo "Directory: $LOG_DIR does not exist" >&2; exit 1; }
+
 
 # ---------------------------------------------------------------------------
 # SECTION 3: FILE DISCOVERY & GLOB HANDLING
