@@ -549,11 +549,13 @@ fi
 # ---------------------------------------------------------------------------
 # Enable nullglob: if no files match the pattern, the array becomes empty
 # instead of containing the literal pattern string
+# 1. FIXED: You must turn on nullglob here, otherwise an empty folder 
+# breaks the array assignment due to 'set -u' (unbound variable error)
 shopt -s nullglob
 
-# Create an array of all .log files in the LOG_DIR
-# The quotes around "$LOG_DIR"/*.log prevent word splitting on filenames with spaces
-files=("$LOG_DIR"/*.log)
+files=("$LOG_DIR"/*)
+
+shopt -u nullglob # Optional: turn it off right after if you prefer
 
 # Check if any .log files were found
 if (( ${#files[@]} == 0 )); then
